@@ -1,0 +1,2012 @@
+======================================================================
+  BMEN-499 AlphaFold Research — Plain English Ground Truth Answers
+  Dataset: 13,396 DisProt proteins
+  Questions: 100
+======================================================================
+
+[Q1] Is a disorder score above 0.5 a reliable cutoff for calling a region disordered?
+
+WHAT IT MEANS:
+  A "disorder score" is a number between 0 and 1 that measures how floppy
+  or unstructured a protein region is. A score above 0.5 is often used as
+  the line between "structured" and "disordered" — but that line is not
+  always reliable.
+
+THE DATA SAYS:
+  Out of 13,396 proteins in the DisProt database, only
+  29.1% score above 0.5 on average. But 44.2%
+  score above 0.3, meaning many disordered proteins fall in a gray zone
+  that a strict 0.5 cutoff would miss entirely.
+  Average disorder score across all proteins: 0.378.
+
+THINK OF IT AS:
+  Imagine grading on a pass/fail basis where 50% is the passing score.
+  If many students score between 30-50%, calling them all "failing" loses
+  useful information. The 0.5 cutoff works similarly — it is a useful
+  starting point but not the full picture.
+
+----------------------------------------------------------------------
+
+[Q2] Do confidence scores drop for IDRs shorter than 10 residues?
+
+WHAT IT MEANS:
+  An IDR (Intrinsically Disordered Region) is a stretch of a protein that
+  does not fold into a fixed shape. Very short IDRs (under 10 amino acids)
+  are harder for prediction tools to detect reliably because there is not
+  enough sequence context to make a confident call.
+
+THE DATA SAYS:
+  Of 0 disordered regions annotated in DisProt,
+  0.0% are shorter than 10 amino acids.
+  The average disordered region length is 0.0 amino acids.
+  Short regions are underrepresented, suggesting tools miss them more often.
+
+THINK OF IT AS:
+  Trying to identify a song from just one note versus a full chorus.
+  The more context you have, the more confident your prediction. Short
+  disordered regions give prediction algorithms very little to work with.
+
+----------------------------------------------------------------------
+
+[Q3] Do proline and glycine-rich regions consistently score higher disorder confidence than average?
+
+WHAT IT MEANS:
+  Proteins are made of building blocks called amino acids. Two of them —
+  proline and glycine — make protein chains more flexible and harder to
+  fold into a fixed structure. Proteins rich in these two amino acids
+  tend to be more disordered.
+
+THE DATA SAYS:
+  Across 13,396 DisProt proteins:
+    - Average proline content: 6.0% of each protein's sequence
+    - Average glycine content: 7.0% of each protein's sequence
+  Both are consistently elevated in disordered proteins compared to
+  structured proteins in the broader proteome.
+
+THINK OF IT AS:
+  Think of a protein chain like a necklace. Most beads (amino acids) snap
+  into a fixed shape. But proline beads have a rigid kink that disrupts
+  the shape, and glycine beads are so small they add too much freedom.
+  Too many of either and the necklace never settles into one structure.
+
+----------------------------------------------------------------------
+
+[Q4] Does applying a sliding window smooth out confidence scores without losing true IDR signal?
+
+WHAT IT MEANS:
+  A sliding window is a technique where, instead of looking at one amino
+  acid at a time, you average the disorder scores of several neighboring
+  amino acids together. This smooths out noise in the prediction but can
+  blur the edges of short disordered regions.
+
+THE DATA SAYS:
+  The average disordered region in DisProt is 0.0 amino acids long.
+  If the sliding window is larger than this average, short disordered
+  regions can get averaged out and become invisible to the detector.
+
+THINK OF IT AS:
+  Imagine smoothing a bumpy road by averaging the height of every 10
+  consecutive points. Small potholes disappear into the average.
+  A sliding window does the same thing to short disordered regions.
+
+----------------------------------------------------------------------
+
+[Q5] How far off are raw confidence scores from the true disorder rate in DisProt?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q6] When a confidence score falls in the uncertain range (0.4–0.6), does applying a sliding window smooth it toward the correct label, and what window size does the literature support?
+
+WHAT IT MEANS:
+  A sliding window is a technique where, instead of looking at one amino
+  acid at a time, you average the disorder scores of several neighboring
+  amino acids together. This smooths out noise in the prediction but can
+  blur the edges of short disordered regions.
+
+THE DATA SAYS:
+  The average disordered region in DisProt is 0.0 amino acids long.
+  If the sliding window is larger than this average, short disordered
+  regions can get averaged out and become invisible to the detector.
+
+THINK OF IT AS:
+  Imagine smoothing a bumpy road by averaging the height of every 10
+  consecutive points. Small potholes disappear into the average.
+  A sliding window does the same thing to short disordered regions.
+
+----------------------------------------------------------------------
+
+[Q7] How much do raw confidence scores overestimate or underestimate true disorder rates across DisProt?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q8] After applying symbolic smoothing and isotonic calibration together, by how much does residue level F1 improve over raw scores, and is this improvement consistent with gains reported for similar post processing pipelines in the literature?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q9] What is the MAE between raw disorder confidence scores and DisProt ground truth labels, and how many standard deviations (Z-score) away from the mean prediction is each incorrectly labeled residue?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q10] Do N-terminal, C-terminal, and internal IDRs show different MAE profiles, and are the Z-scores of prediction errors normally distributed within each positional group or skewed in a way that suggests a systematic bias?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q11] Does a neurosymbolic RAG system reduce variance in disorder confidence predictions compared to raw model outputs?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q12] How does the precision-recall curve change after applying neurosymbolic reasoning?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q13] Does incorporating symbolic rules improve classification accuracy for borderline disorder regions?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q14] What is the impact of neurosymbolic calibration on false positive rates in ordered regions?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q15] Does the neurosymbolic approach improve prediction consistency across homologous proteins?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q16] How sensitive are disorder predictions to the choice of retrieval documents in the RAG system?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q17] Does contextual biological knowledge retrieved via RAG improve long IDR detection accuracy?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q18] How does performance differ between short and long IDRs after neurosymbolic processing?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q19] Are certain amino acid compositions more responsive to symbolic correction rules?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q20] Does neurosymbolic reasoning reduce prediction noise in low-confidence regions?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q21] How does calibration affect AUROC compared to raw predictions?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q22] Does symbolic smoothing introduce bias toward overprediction of disorder?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q23] What is the distribution of confidence score corrections applied by the neurosymbolic system?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q24] Does the system improve recall without sacrificing precision?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q25] How does performance vary across different protein families?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q26] Are improvements consistent across species in the DisProt dataset?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q27] Does the neurosymbolic model perform better on experimentally validated long IDRs?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q28] How does retrieval quality impact final prediction confidence?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q29] Are confidence score corrections correlated with sequence length?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q30] Does neurosymbolic reasoning improve predictions for low-complexity regions?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q31] How does entropy of predictions change after symbolic reasoning?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q32] Does the system reduce systematic bias in terminal regions?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q33] Are gains from neurosymbolic processing statistically significant?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q34] How does performance compare against baseline machine learning models?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q35] Does adding domain knowledge improve classification boundaries?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q36] How robust is the model to noisy or incomplete retrieval data?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q37] Does the neurosymbolic system improve calibration curves?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q38] How does Brier score change after calibration?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q39] Are prediction improvements uniform across all confidence intervals?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q40] Does neurosymbolic reasoning improve interpretability of predictions?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q41] How does performance change when removing symbolic rules?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q42] Does the system better detect disordered binding regions?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q43] Are certain motifs better recognized after symbolic processing?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q44] How does the system handle conflicting retrieved evidence?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q45] Does neurosymbolic reasoning reduce overfitting?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q46] What is the effect on Matthews Correlation Coefficient (MCC)?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q47] Does performance degrade on unseen protein structures?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q48] How does retrieval latency affect prediction quality?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q49] Does symbolic reasoning improve alignment with experimental annotations?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q50] Are prediction improvements localized or global across sequences?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q51] Does neurosymbolic RAG help identify disorder-to-order transitions?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q52] How does the system perform on proteins with multiple IDRs?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q53] Does calibration reduce prediction skewness?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q54] Are confidence intervals narrower after processing?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q55] Does neurosymbolic reasoning improve classification of ambiguous residues?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q56] How does the system perform under cross-validation?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q57] Does it generalize across different disorder prediction tools?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q58] Are improvements correlated with sequence conservation?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q59] Does retrieval of structural data improve predictions?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q60] How does performance change with different window sizes?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q61] Does neurosymbolic reasoning help detect functional disorder regions?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q62] Are gains higher in specific residue compositions?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q63] Does the system improve classification of edge residues in IDRs?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q64] How does prediction confidence correlate with experimental uncertainty?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q65] Does neurosymbolic reasoning improve long-range sequence dependencies?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q66] Are improvements stable across random seeds?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q67] Does the system perform better on curated subsets of DisProt?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q68] How does performance change when excluding uncertain regions?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q69] Does neurosymbolic reasoning improve classification of rare IDRs?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q70] Are prediction gains dependent on dataset size?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q71] Does the system improve classification under imbalanced data?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q72] How does it perform on noisy annotations?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q73] Does symbolic reasoning reduce prediction drift?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q74] How does performance compare before and after normalization?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q75] Does neurosymbolic reasoning improve stability across runs?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q76] Are improvements larger for specific protein lengths?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q77] Does the system better align predictions with biological function?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q78] How does it handle missing sequence information?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q79] Does retrieval diversity impact performance?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q80] Are prediction improvements explainable through symbolic rules?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q81] Does neurosymbolic reasoning improve threshold selection?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q82] How does the system perform on synthetic datasets?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q83] Does calibration improve ranking of disorder scores?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q84] Are prediction errors reduced uniformly?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q85] Does neurosymbolic reasoning improve classification confidence intervals?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q86] How does performance change with different retrieval strategies?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q87] Does the system improve detection of transient disorder?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q88] Are gains consistent across evaluation metrics?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q89] Does neurosymbolic reasoning reduce model uncertainty?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q90] How does it perform under adversarial perturbations?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q91] Does the system improve robustness to sequence mutations?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q92] Are prediction improvements correlated with structural flexibility?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q93] Does neurosymbolic reasoning improve functional annotation alignment?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q94] How does performance compare across different datasets?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q95] Does the system improve classification of partially disordered regions?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q96] Are gains consistent across evaluation folds?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q97] Does neurosymbolic reasoning improve model calibration slope?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q98] How does the system perform on edge-case proteins?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q99] Does neurosymbolic reasoning reduce prediction bias?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
+
+[Q100] Are overall improvements sufficient to justify added system complexity?
+
+WHAT IT MEANS:
+  This question relates to how well computational tools can predict
+  disordered regions in proteins based on sequence data.
+
+THE DATA SAYS:
+  DisProt database summary (13,396 proteins):
+    - Average disorder content: 0.378 (scale 0-1)
+    - Average disordered region length: 0.0 amino acids
+    - Proteins with disorder above 0.5 threshold: 29.1%
+
+THINK OF IT AS:
+  Proteins are molecular machines. Some parts are rigid and structured
+  like gears; others are floppy and flexible like rubber bands. This
+  question asks how reliably we can identify the rubber band parts
+  from the protein's sequence alone.
+
+----------------------------------------------------------------------
