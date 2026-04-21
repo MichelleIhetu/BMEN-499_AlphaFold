@@ -1,0 +1,3337 @@
+======================================================================
+  BMEN-499 AlphaFold -- LLM Judge 2: Vanilla RAG Predictions
+  Model     : microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract
+  Method    : Vanilla RAG (retrieve + read, NO symbolic rules)
+  Dataset   : 13,396 DisProt proteins
+  Questions : 100
+======================================================================
+
+WHAT IS VANILLA RAG?
+----------------------------------------------------------------------
+  Vanilla RAG has three steps:
+  1. INDEX    -- DisProt facts are encoded into a knowledge base
+  2. RETRIEVE -- BiomedBERT finds the most relevant facts for
+                 each question using semantic similarity
+  3. GENERATE -- Retrieved facts are combined into an answer
+
+  NOTE: Unlike LLM Judge 1, this pipeline has NO symbolic rules
+  and NO calibration. It is a pure neural retrieval baseline.
+  Comparing Judge 1 vs Judge 2 shows the value of symbolic rules.
+
+  Prediction quality summary:
+    HIGH   : 100  (retrieval score > 0.7)
+    MEDIUM : 0  (retrieval score 0.3-0.7)
+    LOW    : 0  (retrieval score < 0.3)
+
+======================================================================
+[Q1] Is a disorder score above 0.5 a reliable cutoff for calling a region disordered?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Disorder scores between 0.3 and 0.5 define an 
+  ambiguous gray zone where proteins cannot be confidently 
+  classified as ordered or disordered. In the DisProt dataset of 
+  13,396 proteins, a substantial fraction falls in this mid-range. 
+  These regions require secondary validation using sequence 
+  composition or experimental methods. [Retrieved 2] Disorder 
+  scores above 0.7 represent high confidence intrinsic disorder. 
+  These regions consistently correspond to experimentally 
+  validated IDRs in DisProt and typically show AlphaFold pLDDT 
+  scores below 50, indicating very low structural confidence from 
+  the AlphaFold model. [Retrieved 3] AlphaFold assigns each amino 
+  acid a pLDDT confidence score from 0 to 100. Scores below 50 
+  indicate very low structural confidence and strongly correlate 
+  with intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions, making this the most reliable single computational 
+  signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-002 -- gray zone ambiguous disorder             score=0.9766
+    [2] KB-003 -- high confidence disorder strong signal   score=0.9745
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9738
+
+  Top retrieved doc  : KB-002
+  Top retrieval score: 0.9766
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q2] Do confidence scores drop for IDRs shorter than 10 residues?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Disordered regions shorter than 10 amino acids are 
+  difficult to predict reliably. Of 0 annotated disordered regions 
+  in DisProt, 0.0% are shorter than 10 residues, with a mean 
+  region length of 0.0 aa. Short IDRs are underrepresented in 
+  experimental databases because prediction tools lack sufficient 
+  sequence context for short stretches. [Retrieved 2] AlphaFold 
+  pLDDT scores of 70 or above indicate high confidence in the 
+  predicted structure. Regions with these scores are likely 
+  ordered and not intrinsically disordered. Where DisProt 
+  experimental annotations exist for the same region, experimental 
+  data should take precedence over computational predictions. 
+  [Retrieved 3] Sliding window averaging is applied to per-residue 
+  disorder scores to reduce noise. The mean disordered region 
+  length in DisProt is 0.0 amino acids. If the sliding window size 
+  exceeds this mean, short disordered regions risk being smoothed 
+  out and lost. Window size must be chosen carefully to balance 
+  noise reduction against signal preservation. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-007 -- short IDR region length prediction confidence score=0.9737
+    [2] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9709
+    [3] KB-008 -- sliding window smoothing IDR signal noise score=0.9705
+
+  Top retrieved doc  : KB-007
+  Top retrieval score: 0.9737
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q3] Do proline and glycine-rich regions consistently score higher disorder confidence than average?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold assigns each amino acid a pLDDT 
+  confidence score from 0 to 100. Scores below 50 indicate very 
+  low structural confidence and strongly correlate with intrinsic 
+  disorder. DisProt experimentally confirms disorder in 13,396 
+  proteins; regions annotated as disordered in DisProt 
+  consistently show pLDDT below 50 in AlphaFold predictions, 
+  making this the most reliable single computational signal. 
+  [Retrieved 2] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. [Retrieved 
+  3] AlphaFold pLDDT scores of 70 or above indicate high 
+  confidence in the predicted structure. Regions with these scores 
+  are likely ordered and not intrinsically disordered. Where 
+  DisProt experimental annotations exist for the same region, 
+  experimental data should take precedence over computational 
+  predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9775
+    [2] KB-003 -- high confidence disorder strong signal   score=0.9767
+    [3] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9764
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9775
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q4] Does applying a sliding window smooth out confidence scores without losing true IDR signal?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. [Retrieved 
+  2] AlphaFold pLDDT scores between 50 and 70 indicate low but not 
+  absent structural confidence. These regions may be conditionally 
+  disordered -- unstructured in isolation but folding upon binding 
+  to a partner molecule. Such regions are called Molecular 
+  Recognition Features (MoRFs) and require experimental validation 
+  to distinguish from stably structured regions. [Retrieved 3] 
+  Sliding window averaging is applied to per-residue disorder 
+  scores to reduce noise. The mean disordered region length in 
+  DisProt is 0.0 amino acids. If the sliding window size exceeds 
+  this mean, short disordered regions risk being smoothed out and 
+  lost. Window size must be chosen carefully to balance noise 
+  reduction against signal preservation. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-003 -- high confidence disorder strong signal   score=0.9708
+    [2] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9697
+    [3] KB-008 -- sliding window smoothing IDR signal noise score=0.9656
+
+  Top retrieved doc  : KB-003
+  Top retrieval score: 0.9708
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q5] How far off are raw confidence scores from the true disorder rate in DisProt?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. [Retrieved 
+  2] AlphaFold pLDDT scores between 50 and 70 indicate low but not 
+  absent structural confidence. These regions may be conditionally 
+  disordered -- unstructured in isolation but folding upon binding 
+  to a partner molecule. Such regions are called Molecular 
+  Recognition Features (MoRFs) and require experimental validation 
+  to distinguish from stably structured regions. [Retrieved 3] 
+  AlphaFold assigns each amino acid a pLDDT confidence score from 
+  0 to 100. Scores below 50 indicate very low structural 
+  confidence and strongly correlate with intrinsic disorder. 
+  DisProt experimentally confirms disorder in 13,396 proteins; 
+  regions annotated as disordered in DisProt consistently show 
+  pLDDT below 50 in AlphaFold predictions, making this the most 
+  reliable single computational signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-003 -- high confidence disorder strong signal   score=0.9757
+    [2] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9712
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9691
+
+  Top retrieved doc  : KB-003
+  Top retrieval score: 0.9757
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q6] When a confidence score falls in the uncertain range (0.4–0.6), does applying a sliding window smooth it toward the correct label, and what window size does the literature support?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. [Retrieved 
+  2] AlphaFold pLDDT scores between 50 and 70 indicate low but not 
+  absent structural confidence. These regions may be conditionally 
+  disordered -- unstructured in isolation but folding upon binding 
+  to a partner molecule. Such regions are called Molecular 
+  Recognition Features (MoRFs) and require experimental validation 
+  to distinguish from stably structured regions. [Retrieved 3] 
+  Disorder scores between 0.3 and 0.5 define an ambiguous gray 
+  zone where proteins cannot be confidently classified as ordered 
+  or disordered. In the DisProt dataset of 13,396 proteins, a 
+  substantial fraction falls in this mid-range. These regions 
+  require secondary validation using sequence composition or 
+  experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-003 -- high confidence disorder strong signal   score=0.9762
+    [2] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9757
+    [3] KB-002 -- gray zone ambiguous disorder             score=0.9753
+
+  Top retrieved doc  : KB-003
+  Top retrieval score: 0.9762
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q7] How much do raw confidence scores overestimate or underestimate true disorder rates across DisProt?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. [Retrieved 
+  2] AlphaFold assigns each amino acid a pLDDT confidence score 
+  from 0 to 100. Scores below 50 indicate very low structural 
+  confidence and strongly correlate with intrinsic disorder. 
+  DisProt experimentally confirms disorder in 13,396 proteins; 
+  regions annotated as disordered in DisProt consistently show 
+  pLDDT below 50 in AlphaFold predictions, making this the most 
+  reliable single computational signal. [Retrieved 3] AlphaFold 
+  pLDDT scores of 70 or above indicate high confidence in the 
+  predicted structure. Regions with these scores are likely 
+  ordered and not intrinsically disordered. Where DisProt 
+  experimental annotations exist for the same region, experimental 
+  data should take precedence over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-003 -- high confidence disorder strong signal   score=0.9700
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9699
+    [3] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9660
+
+  Top retrieved doc  : KB-003
+  Top retrieval score: 0.9700
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q8] After applying symbolic smoothing and isotonic calibration together, by how much does residue level F1 improve over raw scores, and is this improvement consistent with gains reported for similar post processing pipelines in the literature?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. [Retrieved 
+  2] AlphaFold pLDDT scores between 50 and 70 indicate low but not 
+  absent structural confidence. These regions may be conditionally 
+  disordered -- unstructured in isolation but folding upon binding 
+  to a partner molecule. Such regions are called Molecular 
+  Recognition Features (MoRFs) and require experimental validation 
+  to distinguish from stably structured regions. [Retrieved 3] 
+  AlphaFold assigns each amino acid a pLDDT confidence score from 
+  0 to 100. Scores below 50 indicate very low structural 
+  confidence and strongly correlate with intrinsic disorder. 
+  DisProt experimentally confirms disorder in 13,396 proteins; 
+  regions annotated as disordered in DisProt consistently show 
+  pLDDT below 50 in AlphaFold predictions, making this the most 
+  reliable single computational signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-003 -- high confidence disorder strong signal   score=0.9775
+    [2] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9747
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9734
+
+  Top retrieved doc  : KB-003
+  Top retrieval score: 0.9775
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q9] What is the MAE between raw disorder confidence scores and DisProt ground truth labels, and how many standard deviations (Z-score) away from the mean prediction is each incorrectly labeled residue?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. [Retrieved 
+  2] AlphaFold pLDDT scores between 50 and 70 indicate low but not 
+  absent structural confidence. These regions may be conditionally 
+  disordered -- unstructured in isolation but folding upon binding 
+  to a partner molecule. Such regions are called Molecular 
+  Recognition Features (MoRFs) and require experimental validation 
+  to distinguish from stably structured regions. [Retrieved 3] 
+  AlphaFold assigns each amino acid a pLDDT confidence score from 
+  0 to 100. Scores below 50 indicate very low structural 
+  confidence and strongly correlate with intrinsic disorder. 
+  DisProt experimentally confirms disorder in 13,396 proteins; 
+  regions annotated as disordered in DisProt consistently show 
+  pLDDT below 50 in AlphaFold predictions, making this the most 
+  reliable single computational signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-003 -- high confidence disorder strong signal   score=0.9779
+    [2] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9758
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9730
+
+  Top retrieved doc  : KB-003
+  Top retrieval score: 0.9779
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q10] Do N-terminal, C-terminal, and internal IDRs show different MAE profiles, and are the Z-scores of prediction errors normally distributed within each positional group or skewed in a way that suggests a systematic bias?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Disorder scores between 0.3 and 0.5 define an 
+  ambiguous gray zone where proteins cannot be confidently 
+  classified as ordered or disordered. In the DisProt dataset of 
+  13,396 proteins, a substantial fraction falls in this mid-range. 
+  These regions require secondary validation using sequence 
+  composition or experimental methods. [Retrieved 2] AlphaFold 
+  assigns each amino acid a pLDDT confidence score from 0 to 100. 
+  Scores below 50 indicate very low structural confidence and 
+  strongly correlate with intrinsic disorder. DisProt 
+  experimentally confirms disorder in 13,396 proteins; regions 
+  annotated as disordered in DisProt consistently show pLDDT below 
+  50 in AlphaFold predictions, making this the most reliable 
+  single computational signal. [Retrieved 3] When both proline 
+  (6.0% mean) and glycine (7.0% mean) are elevated together, they 
+  form a strong composite disorder signal. Proline introduces 
+  backbone kinks while glycine adds excess conformational freedom 
+  -- together they strongly predict intrinsically disordered 
+  regions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-002 -- gray zone ambiguous disorder             score=0.9808
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9803
+    [3] KB-006 -- proline glycine combined disorder signal composition score=0.9790
+
+  Top retrieved doc  : KB-002
+  Top retrieval score: 0.9808
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q11] Does a neurosymbolic RAG system reduce variance in disorder confidence predictions compared to raw model outputs?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold assigns each amino acid a pLDDT 
+  confidence score from 0 to 100. Scores below 50 indicate very 
+  low structural confidence and strongly correlate with intrinsic 
+  disorder. DisProt experimentally confirms disorder in 13,396 
+  proteins; regions annotated as disordered in DisProt 
+  consistently show pLDDT below 50 in AlphaFold predictions, 
+  making this the most reliable single computational signal. 
+  [Retrieved 2] AlphaFold pLDDT scores between 50 and 70 indicate 
+  low but not absent structural confidence. These regions may be 
+  conditionally disordered -- unstructured in isolation but 
+  folding upon binding to a partner molecule. Such regions are 
+  called Molecular Recognition Features (MoRFs) and require 
+  experimental validation to distinguish from stably structured 
+  regions. [Retrieved 3] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9714
+    [2] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9712
+    [3] KB-003 -- high confidence disorder strong signal   score=0.9702
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9714
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q12] How does the precision-recall curve change after applying neurosymbolic reasoning?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores between 50 and 70 indicate 
+  low but not absent structural confidence. These regions may be 
+  conditionally disordered -- unstructured in isolation but 
+  folding upon binding to a partner molecule. Such regions are 
+  called Molecular Recognition Features (MoRFs) and require 
+  experimental validation to distinguish from stably structured 
+  regions. [Retrieved 2] AlphaFold assigns each amino acid a pLDDT 
+  confidence score from 0 to 100. Scores below 50 indicate very 
+  low structural confidence and strongly correlate with intrinsic 
+  disorder. DisProt experimentally confirms disorder in 13,396 
+  proteins; regions annotated as disordered in DisProt 
+  consistently show pLDDT below 50 in AlphaFold predictions, 
+  making this the most reliable single computational signal. 
+  [Retrieved 3] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9639
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9627
+    [3] KB-003 -- high confidence disorder strong signal   score=0.9613
+
+  Top retrieved doc  : KB-010
+  Top retrieval score: 0.9639
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q13] Does incorporating symbolic rules improve classification accuracy for borderline disorder regions?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. [Retrieved 
+  2] AlphaFold pLDDT scores between 50 and 70 indicate low but not 
+  absent structural confidence. These regions may be conditionally 
+  disordered -- unstructured in isolation but folding upon binding 
+  to a partner molecule. Such regions are called Molecular 
+  Recognition Features (MoRFs) and require experimental validation 
+  to distinguish from stably structured regions. [Retrieved 3] 
+  AlphaFold assigns each amino acid a pLDDT confidence score from 
+  0 to 100. Scores below 50 indicate very low structural 
+  confidence and strongly correlate with intrinsic disorder. 
+  DisProt experimentally confirms disorder in 13,396 proteins; 
+  regions annotated as disordered in DisProt consistently show 
+  pLDDT below 50 in AlphaFold predictions, making this the most 
+  reliable single computational signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-003 -- high confidence disorder strong signal   score=0.9696
+    [2] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9673
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9661
+
+  Top retrieved doc  : KB-003
+  Top retrieval score: 0.9696
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q14] What is the impact of neurosymbolic calibration on false positive rates in ordered regions?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold assigns each amino acid a pLDDT 
+  confidence score from 0 to 100. Scores below 50 indicate very 
+  low structural confidence and strongly correlate with intrinsic 
+  disorder. DisProt experimentally confirms disorder in 13,396 
+  proteins; regions annotated as disordered in DisProt 
+  consistently show pLDDT below 50 in AlphaFold predictions, 
+  making this the most reliable single computational signal. 
+  [Retrieved 2] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. [Retrieved 
+  3] AlphaFold pLDDT scores of 70 or above indicate high 
+  confidence in the predicted structure. Regions with these scores 
+  are likely ordered and not intrinsically disordered. Where 
+  DisProt experimental annotations exist for the same region, 
+  experimental data should take precedence over computational 
+  predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9709
+    [2] KB-003 -- high confidence disorder strong signal   score=0.9706
+    [3] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9701
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9709
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q15] Does the neurosymbolic approach improve prediction consistency across homologous proteins?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] AlphaFold assigns each 
+  amino acid a pLDDT confidence score from 0 to 100. Scores below 
+  50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. [Retrieved 3] Proline is a strong 
+  predictor of intrinsic disorder. The mean proline content across 
+  13,396 DisProt proteins is 6.0%. Proline's rigid pyrrolidine 
+  ring disrupts alpha-helices and beta-sheets, preventing the 
+  formation of regular secondary structure. Regions with elevated 
+  proline are consistently associated with disordered behavior. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9691
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9668
+    [3] KB-004 -- proline amino acid disorder prediction   score=0.9653
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9691
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q16] How sensitive are disorder predictions to the choice of retrieval documents in the RAG system?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores between 50 and 70 indicate 
+  low but not absent structural confidence. These regions may be 
+  conditionally disordered -- unstructured in isolation but 
+  folding upon binding to a partner molecule. Such regions are 
+  called Molecular Recognition Features (MoRFs) and require 
+  experimental validation to distinguish from stably structured 
+  regions. [Retrieved 2] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. [Retrieved 
+  3] AlphaFold assigns each amino acid a pLDDT confidence score 
+  from 0 to 100. Scores below 50 indicate very low structural 
+  confidence and strongly correlate with intrinsic disorder. 
+  DisProt experimentally confirms disorder in 13,396 proteins; 
+  regions annotated as disordered in DisProt consistently show 
+  pLDDT below 50 in AlphaFold predictions, making this the most 
+  reliable single computational signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9666
+    [2] KB-003 -- high confidence disorder strong signal   score=0.9649
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9615
+
+  Top retrieved doc  : KB-010
+  Top retrieval score: 0.9666
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q17] Does contextual biological knowledge retrieved via RAG improve long IDR detection accuracy?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores between 50 and 70 indicate 
+  low but not absent structural confidence. These regions may be 
+  conditionally disordered -- unstructured in isolation but 
+  folding upon binding to a partner molecule. Such regions are 
+  called Molecular Recognition Features (MoRFs) and require 
+  experimental validation to distinguish from stably structured 
+  regions. [Retrieved 2] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. [Retrieved 
+  3] AlphaFold assigns each amino acid a pLDDT confidence score 
+  from 0 to 100. Scores below 50 indicate very low structural 
+  confidence and strongly correlate with intrinsic disorder. 
+  DisProt experimentally confirms disorder in 13,396 proteins; 
+  regions annotated as disordered in DisProt consistently show 
+  pLDDT below 50 in AlphaFold predictions, making this the most 
+  reliable single computational signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9689
+    [2] KB-003 -- high confidence disorder strong signal   score=0.9685
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9663
+
+  Top retrieved doc  : KB-010
+  Top retrieval score: 0.9689
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q18] How does performance differ between short and long IDRs after neurosymbolic processing?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Disordered regions shorter than 10 amino acids are 
+  difficult to predict reliably. Of 0 annotated disordered regions 
+  in DisProt, 0.0% are shorter than 10 residues, with a mean 
+  region length of 0.0 aa. Short IDRs are underrepresented in 
+  experimental databases because prediction tools lack sufficient 
+  sequence context for short stretches. [Retrieved 2] Sliding 
+  window averaging is applied to per-residue disorder scores to 
+  reduce noise. The mean disordered region length in DisProt is 
+  0.0 amino acids. If the sliding window size exceeds this mean, 
+  short disordered regions risk being smoothed out and lost. 
+  Window size must be chosen carefully to balance noise reduction 
+  against signal preservation. [Retrieved 3] AlphaFold assigns 
+  each amino acid a pLDDT confidence score from 0 to 100. Scores 
+  below 50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-007 -- short IDR region length prediction confidence score=0.9556
+    [2] KB-008 -- sliding window smoothing IDR signal noise score=0.9555
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9551
+
+  Top retrieved doc  : KB-007
+  Top retrieval score: 0.9556
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q19] Are certain amino acid compositions more responsive to symbolic correction rules?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores between 50 and 70 indicate 
+  low but not absent structural confidence. These regions may be 
+  conditionally disordered -- unstructured in isolation but 
+  folding upon binding to a partner molecule. Such regions are 
+  called Molecular Recognition Features (MoRFs) and require 
+  experimental validation to distinguish from stably structured 
+  regions. [Retrieved 2] Sliding window averaging is applied to 
+  per-residue disorder scores to reduce noise. The mean disordered 
+  region length in DisProt is 0.0 amino acids. If the sliding 
+  window size exceeds this mean, short disordered regions risk 
+  being smoothed out and lost. Window size must be chosen 
+  carefully to balance noise reduction against signal 
+  preservation. [Retrieved 3] AlphaFold pLDDT scores of 70 or 
+  above indicate high confidence in the predicted structure. 
+  Regions with these scores are likely ordered and not 
+  intrinsically disordered. Where DisProt experimental annotations 
+  exist for the same region, experimental data should take 
+  precedence over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9653
+    [2] KB-008 -- sliding window smoothing IDR signal noise score=0.9646
+    [3] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9643
+
+  Top retrieved doc  : KB-010
+  Top retrieval score: 0.9653
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q20] Does neurosymbolic reasoning reduce prediction noise in low-confidence regions?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold assigns each amino acid a pLDDT 
+  confidence score from 0 to 100. Scores below 50 indicate very 
+  low structural confidence and strongly correlate with intrinsic 
+  disorder. DisProt experimentally confirms disorder in 13,396 
+  proteins; regions annotated as disordered in DisProt 
+  consistently show pLDDT below 50 in AlphaFold predictions, 
+  making this the most reliable single computational signal. 
+  [Retrieved 2] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 3] AlphaFold pLDDT scores 
+  between 50 and 70 indicate low but not absent structural 
+  confidence. These regions may be conditionally disordered -- 
+  unstructured in isolation but folding upon binding to a partner 
+  molecule. Such regions are called Molecular Recognition Features 
+  (MoRFs) and require experimental validation to distinguish from 
+  stably structured regions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9652
+    [2] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9644
+    [3] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9641
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9652
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q21] How does calibration affect AUROC compared to raw predictions?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold assigns each amino acid a pLDDT 
+  confidence score from 0 to 100. Scores below 50 indicate very 
+  low structural confidence and strongly correlate with intrinsic 
+  disorder. DisProt experimentally confirms disorder in 13,396 
+  proteins; regions annotated as disordered in DisProt 
+  consistently show pLDDT below 50 in AlphaFold predictions, 
+  making this the most reliable single computational signal. 
+  [Retrieved 2] Sliding window averaging is applied to per-residue 
+  disorder scores to reduce noise. The mean disordered region 
+  length in DisProt is 0.0 amino acids. If the sliding window size 
+  exceeds this mean, short disordered regions risk being smoothed 
+  out and lost. Window size must be chosen carefully to balance 
+  noise reduction against signal preservation. [Retrieved 3] 
+  AlphaFold pLDDT scores of 70 or above indicate high confidence 
+  in the predicted structure. Regions with these scores are likely 
+  ordered and not intrinsically disordered. Where DisProt 
+  experimental annotations exist for the same region, experimental 
+  data should take precedence over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9579
+    [2] KB-008 -- sliding window smoothing IDR signal noise score=0.9568
+    [3] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9564
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9579
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q22] Does symbolic smoothing introduce bias toward overprediction of disorder?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. [Retrieved 
+  2] Sliding window averaging is applied to per-residue disorder 
+  scores to reduce noise. The mean disordered region length in 
+  DisProt is 0.0 amino acids. If the sliding window size exceeds 
+  this mean, short disordered regions risk being smoothed out and 
+  lost. Window size must be chosen carefully to balance noise 
+  reduction against signal preservation. [Retrieved 3] AlphaFold 
+  assigns each amino acid a pLDDT confidence score from 0 to 100. 
+  Scores below 50 indicate very low structural confidence and 
+  strongly correlate with intrinsic disorder. DisProt 
+  experimentally confirms disorder in 13,396 proteins; regions 
+  annotated as disordered in DisProt consistently show pLDDT below 
+  50 in AlphaFold predictions, making this the most reliable 
+  single computational signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-003 -- high confidence disorder strong signal   score=0.9637
+    [2] KB-008 -- sliding window smoothing IDR signal noise score=0.9636
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9635
+
+  Top retrieved doc  : KB-003
+  Top retrieval score: 0.9637
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q23] What is the distribution of confidence score corrections applied by the neurosymbolic system?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Sliding window averaging is applied to per-residue 
+  disorder scores to reduce noise. The mean disordered region 
+  length in DisProt is 0.0 amino acids. If the sliding window size 
+  exceeds this mean, short disordered regions risk being smoothed 
+  out and lost. Window size must be chosen carefully to balance 
+  noise reduction against signal preservation. [Retrieved 2] 
+  AlphaFold assigns each amino acid a pLDDT confidence score from 
+  0 to 100. Scores below 50 indicate very low structural 
+  confidence and strongly correlate with intrinsic disorder. 
+  DisProt experimentally confirms disorder in 13,396 proteins; 
+  regions annotated as disordered in DisProt consistently show 
+  pLDDT below 50 in AlphaFold predictions, making this the most 
+  reliable single computational signal. [Retrieved 3] AlphaFold 
+  pLDDT scores of 70 or above indicate high confidence in the 
+  predicted structure. Regions with these scores are likely 
+  ordered and not intrinsically disordered. Where DisProt 
+  experimental annotations exist for the same region, experimental 
+  data should take precedence over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-008 -- sliding window smoothing IDR signal noise score=0.9672
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9660
+    [3] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9639
+
+  Top retrieved doc  : KB-008
+  Top retrieval score: 0.9672
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q24] Does the system improve recall without sacrificing precision?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Glycine is the smallest amino acid and adds 
+  conformational freedom to protein backbones. The mean glycine 
+  content in DisProt is 7.0%. While elevated glycine can 
+  contribute to disorder, it is a weaker independent predictor 
+  than proline and should be evaluated in combination with other 
+  disorder signals. [Retrieved 2] Sliding window averaging is 
+  applied to per-residue disorder scores to reduce noise. The mean 
+  disordered region length in DisProt is 0.0 amino acids. If the 
+  sliding window size exceeds this mean, short disordered regions 
+  risk being smoothed out and lost. Window size must be chosen 
+  carefully to balance noise reduction against signal 
+  preservation. [Retrieved 3] Proline is a strong predictor of 
+  intrinsic disorder. The mean proline content across 13,396 
+  DisProt proteins is 6.0%. Proline's rigid pyrrolidine ring 
+  disrupts alpha-helices and beta-sheets, preventing the formation 
+  of regular secondary structure. Regions with elevated proline 
+  are consistently associated with disordered behavior. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-005 -- glycine amino acid flexible backbone     score=0.9517
+    [2] KB-008 -- sliding window smoothing IDR signal noise score=0.9498
+    [3] KB-004 -- proline amino acid disorder prediction   score=0.9493
+
+  Top retrieved doc  : KB-005
+  Top retrieval score: 0.9517
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q25] How does performance vary across different protein families?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Proline is a strong predictor of intrinsic 
+  disorder. The mean proline content across 13,396 DisProt 
+  proteins is 6.0%. Proline's rigid pyrrolidine ring disrupts 
+  alpha-helices and beta-sheets, preventing the formation of 
+  regular secondary structure. Regions with elevated proline are 
+  consistently associated with disordered behavior. [Retrieved 2] 
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and intrinsically disordered regions 
+  frequently co-occur in the same protein. Each region must be 
+  evaluated independently rather than classifying the whole 
+  protein as ordered or disordered. [Retrieved 3] Glycine is the 
+  smallest amino acid and adds conformational freedom to protein 
+  backbones. The mean glycine content in DisProt is 7.0%. While 
+  elevated glycine can contribute to disorder, it is a weaker 
+  independent predictor than proline and should be evaluated in 
+  combination with other disorder signals. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-004 -- proline amino acid disorder prediction   score=0.9305
+    [2] KB-012 -- Pfam domain structured mixed protein disorder score=0.9278
+    [3] KB-005 -- glycine amino acid flexible backbone     score=0.9272
+
+  Top retrieved doc  : KB-004
+  Top retrieval score: 0.9305
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q26] Are improvements consistent across species in the DisProt dataset?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold assigns each amino acid a pLDDT 
+  confidence score from 0 to 100. Scores below 50 indicate very 
+  low structural confidence and strongly correlate with intrinsic 
+  disorder. DisProt experimentally confirms disorder in 13,396 
+  proteins; regions annotated as disordered in DisProt 
+  consistently show pLDDT below 50 in AlphaFold predictions, 
+  making this the most reliable single computational signal. 
+  [Retrieved 2] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. [Retrieved 
+  3] AlphaFold pLDDT scores of 70 or above indicate high 
+  confidence in the predicted structure. Regions with these scores 
+  are likely ordered and not intrinsically disordered. Where 
+  DisProt experimental annotations exist for the same region, 
+  experimental data should take precedence over computational 
+  predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9667
+    [2] KB-003 -- high confidence disorder strong signal   score=0.9657
+    [3] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9650
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9667
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q27] Does the neurosymbolic model perform better on experimentally validated long IDRs?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores between 50 and 70 indicate 
+  low but not absent structural confidence. These regions may be 
+  conditionally disordered -- unstructured in isolation but 
+  folding upon binding to a partner molecule. Such regions are 
+  called Molecular Recognition Features (MoRFs) and require 
+  experimental validation to distinguish from stably structured 
+  regions. [Retrieved 2] AlphaFold pLDDT scores of 70 or above 
+  indicate high confidence in the predicted structure. Regions 
+  with these scores are likely ordered and not intrinsically 
+  disordered. Where DisProt experimental annotations exist for the 
+  same region, experimental data should take precedence over 
+  computational predictions. [Retrieved 3] AlphaFold assigns each 
+  amino acid a pLDDT confidence score from 0 to 100. Scores below 
+  50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9686
+    [2] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9682
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9682
+
+  Top retrieved doc  : KB-010
+  Top retrieval score: 0.9686
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q28] How does retrieval quality impact final prediction confidence?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] AlphaFold assigns each 
+  amino acid a pLDDT confidence score from 0 to 100. Scores below 
+  50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. [Retrieved 3] Sliding window averaging is 
+  applied to per-residue disorder scores to reduce noise. The mean 
+  disordered region length in DisProt is 0.0 amino acids. If the 
+  sliding window size exceeds this mean, short disordered regions 
+  risk being smoothed out and lost. Window size must be chosen 
+  carefully to balance noise reduction against signal 
+  preservation. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9621
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9613
+    [3] KB-008 -- sliding window smoothing IDR signal noise score=0.9588
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9621
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q29] Are confidence score corrections correlated with sequence length?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] Sliding window 
+  averaging is applied to per-residue disorder scores to reduce 
+  noise. The mean disordered region length in DisProt is 0.0 amino 
+  acids. If the sliding window size exceeds this mean, short 
+  disordered regions risk being smoothed out and lost. Window size 
+  must be chosen carefully to balance noise reduction against 
+  signal preservation. [Retrieved 3] AlphaFold assigns each amino 
+  acid a pLDDT confidence score from 0 to 100. Scores below 50 
+  indicate very low structural confidence and strongly correlate 
+  with intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions, making this the most reliable single computational 
+  signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9706
+    [2] KB-008 -- sliding window smoothing IDR signal noise score=0.9697
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9688
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9706
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q30] Does neurosymbolic reasoning improve predictions for low-complexity regions?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] AlphaFold pLDDT scores 
+  between 50 and 70 indicate low but not absent structural 
+  confidence. These regions may be conditionally disordered -- 
+  unstructured in isolation but folding upon binding to a partner 
+  molecule. Such regions are called Molecular Recognition Features 
+  (MoRFs) and require experimental validation to distinguish from 
+  stably structured regions. [Retrieved 3] AlphaFold assigns each 
+  amino acid a pLDDT confidence score from 0 to 100. Scores below 
+  50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9550
+    [2] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9547
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9544
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9550
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q31] How does entropy of predictions change after symbolic reasoning?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Sliding window averaging is applied to per-residue 
+  disorder scores to reduce noise. The mean disordered region 
+  length in DisProt is 0.0 amino acids. If the sliding window size 
+  exceeds this mean, short disordered regions risk being smoothed 
+  out and lost. Window size must be chosen carefully to balance 
+  noise reduction against signal preservation. [Retrieved 2] 
+  AlphaFold assigns each amino acid a pLDDT confidence score from 
+  0 to 100. Scores below 50 indicate very low structural 
+  confidence and strongly correlate with intrinsic disorder. 
+  DisProt experimentally confirms disorder in 13,396 proteins; 
+  regions annotated as disordered in DisProt consistently show 
+  pLDDT below 50 in AlphaFold predictions, making this the most 
+  reliable single computational signal. [Retrieved 3] AlphaFold 
+  pLDDT scores of 70 or above indicate high confidence in the 
+  predicted structure. Regions with these scores are likely 
+  ordered and not intrinsically disordered. Where DisProt 
+  experimental annotations exist for the same region, experimental 
+  data should take precedence over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-008 -- sliding window smoothing IDR signal noise score=0.9539
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9536
+    [3] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9535
+
+  Top retrieved doc  : KB-008
+  Top retrieval score: 0.9539
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q32] Does the system reduce systematic bias in terminal regions?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Sliding window averaging is applied to per-residue 
+  disorder scores to reduce noise. The mean disordered region 
+  length in DisProt is 0.0 amino acids. If the sliding window size 
+  exceeds this mean, short disordered regions risk being smoothed 
+  out and lost. Window size must be chosen carefully to balance 
+  noise reduction against signal preservation. [Retrieved 2] 
+  AlphaFold assigns each amino acid a pLDDT confidence score from 
+  0 to 100. Scores below 50 indicate very low structural 
+  confidence and strongly correlate with intrinsic disorder. 
+  DisProt experimentally confirms disorder in 13,396 proteins; 
+  regions annotated as disordered in DisProt consistently show 
+  pLDDT below 50 in AlphaFold predictions, making this the most 
+  reliable single computational signal. [Retrieved 3] AlphaFold 
+  pLDDT scores of 70 or above indicate high confidence in the 
+  predicted structure. Regions with these scores are likely 
+  ordered and not intrinsically disordered. Where DisProt 
+  experimental annotations exist for the same region, experimental 
+  data should take precedence over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-008 -- sliding window smoothing IDR signal noise score=0.9699
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9687
+    [3] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9687
+
+  Top retrieved doc  : KB-008
+  Top retrieval score: 0.9699
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q33] Are gains from neurosymbolic processing statistically significant?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold assigns each amino acid a pLDDT 
+  confidence score from 0 to 100. Scores below 50 indicate very 
+  low structural confidence and strongly correlate with intrinsic 
+  disorder. DisProt experimentally confirms disorder in 13,396 
+  proteins; regions annotated as disordered in DisProt 
+  consistently show pLDDT below 50 in AlphaFold predictions, 
+  making this the most reliable single computational signal. 
+  [Retrieved 2] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 3] Sliding window 
+  averaging is applied to per-residue disorder scores to reduce 
+  noise. The mean disordered region length in DisProt is 0.0 amino 
+  acids. If the sliding window size exceeds this mean, short 
+  disordered regions risk being smoothed out and lost. Window size 
+  must be chosen carefully to balance noise reduction against 
+  signal preservation. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9565
+    [2] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9558
+    [3] KB-008 -- sliding window smoothing IDR signal noise score=0.9541
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9565
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q34] How does performance compare against baseline machine learning models?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Glycine is the smallest amino acid and adds 
+  conformational freedom to protein backbones. The mean glycine 
+  content in DisProt is 7.0%. While elevated glycine can 
+  contribute to disorder, it is a weaker independent predictor 
+  than proline and should be evaluated in combination with other 
+  disorder signals. [Retrieved 2] Proline is a strong predictor of 
+  intrinsic disorder. The mean proline content across 13,396 
+  DisProt proteins is 6.0%. Proline's rigid pyrrolidine ring 
+  disrupts alpha-helices and beta-sheets, preventing the formation 
+  of regular secondary structure. Regions with elevated proline 
+  are consistently associated with disordered behavior. [Retrieved 
+  3] Sliding window averaging is applied to per-residue disorder 
+  scores to reduce noise. The mean disordered region length in 
+  DisProt is 0.0 amino acids. If the sliding window size exceeds 
+  this mean, short disordered regions risk being smoothed out and 
+  lost. Window size must be chosen carefully to balance noise 
+  reduction against signal preservation. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-005 -- glycine amino acid flexible backbone     score=0.9470
+    [2] KB-004 -- proline amino acid disorder prediction   score=0.9467
+    [3] KB-008 -- sliding window smoothing IDR signal noise score=0.9456
+
+  Top retrieved doc  : KB-005
+  Top retrieval score: 0.9470
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q35] Does adding domain knowledge improve classification boundaries?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] Disorder scores between 
+  0.3 and 0.5 define an ambiguous gray zone where proteins cannot 
+  be confidently classified as ordered or disordered. In the 
+  DisProt dataset of 13,396 proteins, a substantial fraction falls 
+  in this mid-range. These regions require secondary validation 
+  using sequence composition or experimental methods. [Retrieved 
+  3] Sliding window averaging is applied to per-residue disorder 
+  scores to reduce noise. The mean disordered region length in 
+  DisProt is 0.0 amino acids. If the sliding window size exceeds 
+  this mean, short disordered regions risk being smoothed out and 
+  lost. Window size must be chosen carefully to balance noise 
+  reduction against signal preservation. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9549
+    [2] KB-002 -- gray zone ambiguous disorder             score=0.9549
+    [3] KB-008 -- sliding window smoothing IDR signal noise score=0.9548
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9549
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q36] How robust is the model to noisy or incomplete retrieval data?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Sliding window averaging is applied to per-residue 
+  disorder scores to reduce noise. The mean disordered region 
+  length in DisProt is 0.0 amino acids. If the sliding window size 
+  exceeds this mean, short disordered regions risk being smoothed 
+  out and lost. Window size must be chosen carefully to balance 
+  noise reduction against signal preservation. [Retrieved 2] 
+  AlphaFold pLDDT scores of 70 or above indicate high confidence 
+  in the predicted structure. Regions with these scores are likely 
+  ordered and not intrinsically disordered. Where DisProt 
+  experimental annotations exist for the same region, experimental 
+  data should take precedence over computational predictions. 
+  [Retrieved 3] Glycine is the smallest amino acid and adds 
+  conformational freedom to protein backbones. The mean glycine 
+  content in DisProt is 7.0%. While elevated glycine can 
+  contribute to disorder, it is a weaker independent predictor 
+  than proline and should be evaluated in combination with other 
+  disorder signals. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-008 -- sliding window smoothing IDR signal noise score=0.9548
+    [2] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9539
+    [3] KB-005 -- glycine amino acid flexible backbone     score=0.9509
+
+  Top retrieved doc  : KB-008
+  Top retrieval score: 0.9548
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q37] Does the neurosymbolic system improve calibration curves?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] AlphaFold assigns each 
+  amino acid a pLDDT confidence score from 0 to 100. Scores below 
+  50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. [Retrieved 3] AlphaFold pLDDT scores 
+  between 50 and 70 indicate low but not absent structural 
+  confidence. These regions may be conditionally disordered -- 
+  unstructured in isolation but folding upon binding to a partner 
+  molecule. Such regions are called Molecular Recognition Features 
+  (MoRFs) and require experimental validation to distinguish from 
+  stably structured regions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9543
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9540
+    [3] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9534
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9543
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q38] How does Brier score change after calibration?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Sliding window averaging is applied to per-residue 
+  disorder scores to reduce noise. The mean disordered region 
+  length in DisProt is 0.0 amino acids. If the sliding window size 
+  exceeds this mean, short disordered regions risk being smoothed 
+  out and lost. Window size must be chosen carefully to balance 
+  noise reduction against signal preservation. [Retrieved 2] 
+  AlphaFold assigns each amino acid a pLDDT confidence score from 
+  0 to 100. Scores below 50 indicate very low structural 
+  confidence and strongly correlate with intrinsic disorder. 
+  DisProt experimentally confirms disorder in 13,396 proteins; 
+  regions annotated as disordered in DisProt consistently show 
+  pLDDT below 50 in AlphaFold predictions, making this the most 
+  reliable single computational signal. [Retrieved 3] AlphaFold 
+  pLDDT scores between 50 and 70 indicate low but not absent 
+  structural confidence. These regions may be conditionally 
+  disordered -- unstructured in isolation but folding upon binding 
+  to a partner molecule. Such regions are called Molecular 
+  Recognition Features (MoRFs) and require experimental validation 
+  to distinguish from stably structured regions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-008 -- sliding window smoothing IDR signal noise score=0.9536
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9526
+    [3] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9505
+
+  Top retrieved doc  : KB-008
+  Top retrieval score: 0.9536
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q39] Are prediction improvements uniform across all confidence intervals?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] AlphaFold assigns each 
+  amino acid a pLDDT confidence score from 0 to 100. Scores below 
+  50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. [Retrieved 3] Sliding window averaging is 
+  applied to per-residue disorder scores to reduce noise. The mean 
+  disordered region length in DisProt is 0.0 amino acids. If the 
+  sliding window size exceeds this mean, short disordered regions 
+  risk being smoothed out and lost. Window size must be chosen 
+  carefully to balance noise reduction against signal 
+  preservation. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9636
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9627
+    [3] KB-008 -- sliding window smoothing IDR signal noise score=0.9607
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9636
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q40] Does neurosymbolic reasoning improve interpretability of predictions?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] AlphaFold assigns each 
+  amino acid a pLDDT confidence score from 0 to 100. Scores below 
+  50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. [Retrieved 3] Glycine is the smallest 
+  amino acid and adds conformational freedom to protein backbones. 
+  The mean glycine content in DisProt is 7.0%. While elevated 
+  glycine can contribute to disorder, it is a weaker independent 
+  predictor than proline and should be evaluated in combination 
+  with other disorder signals. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9542
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9524
+    [3] KB-005 -- glycine amino acid flexible backbone     score=0.9501
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9542
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q41] How does performance change when removing symbolic rules?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Sliding window averaging is applied to per-residue 
+  disorder scores to reduce noise. The mean disordered region 
+  length in DisProt is 0.0 amino acids. If the sliding window size 
+  exceeds this mean, short disordered regions risk being smoothed 
+  out and lost. Window size must be chosen carefully to balance 
+  noise reduction against signal preservation. [Retrieved 2] 
+  Proline is a strong predictor of intrinsic disorder. The mean 
+  proline content across 13,396 DisProt proteins is 6.0%. 
+  Proline's rigid pyrrolidine ring disrupts alpha-helices and 
+  beta-sheets, preventing the formation of regular secondary 
+  structure. Regions with elevated proline are consistently 
+  associated with disordered behavior. [Retrieved 3] Glycine is 
+  the smallest amino acid and adds conformational freedom to 
+  protein backbones. The mean glycine content in DisProt is 7.0%. 
+  While elevated glycine can contribute to disorder, it is a 
+  weaker independent predictor than proline and should be 
+  evaluated in combination with other disorder signals. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-008 -- sliding window smoothing IDR signal noise score=0.9419
+    [2] KB-004 -- proline amino acid disorder prediction   score=0.9405
+    [3] KB-005 -- glycine amino acid flexible backbone     score=0.9400
+
+  Top retrieved doc  : KB-008
+  Top retrieval score: 0.9419
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q42] Does the system better detect disordered binding regions?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] 92.6% of DisProt 
+  proteins contain at least one Pfam structured domain alongside 
+  their disordered regions. This confirms that structured domains 
+  and intrinsically disordered regions frequently co-occur in the 
+  same protein. Each region must be evaluated independently rather 
+  than classifying the whole protein as ordered or disordered. 
+  [Retrieved 3] Proline is a strong predictor of intrinsic 
+  disorder. The mean proline content across 13,396 DisProt 
+  proteins is 6.0%. Proline's rigid pyrrolidine ring disrupts 
+  alpha-helices and beta-sheets, preventing the formation of 
+  regular secondary structure. Regions with elevated proline are 
+  consistently associated with disordered behavior. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9559
+    [2] KB-012 -- Pfam domain structured mixed protein disorder score=0.9558
+    [3] KB-004 -- proline amino acid disorder prediction   score=0.9541
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9559
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q43] Are certain motifs better recognized after symbolic processing?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores between 50 and 70 indicate 
+  low but not absent structural confidence. These regions may be 
+  conditionally disordered -- unstructured in isolation but 
+  folding upon binding to a partner molecule. Such regions are 
+  called Molecular Recognition Features (MoRFs) and require 
+  experimental validation to distinguish from stably structured 
+  regions. [Retrieved 2] AlphaFold pLDDT scores of 70 or above 
+  indicate high confidence in the predicted structure. Regions 
+  with these scores are likely ordered and not intrinsically 
+  disordered. Where DisProt experimental annotations exist for the 
+  same region, experimental data should take precedence over 
+  computational predictions. [Retrieved 3] Sliding window 
+  averaging is applied to per-residue disorder scores to reduce 
+  noise. The mean disordered region length in DisProt is 0.0 amino 
+  acids. If the sliding window size exceeds this mean, short 
+  disordered regions risk being smoothed out and lost. Window size 
+  must be chosen carefully to balance noise reduction against 
+  signal preservation. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9596
+    [2] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9551
+    [3] KB-008 -- sliding window smoothing IDR signal noise score=0.9537
+
+  Top retrieved doc  : KB-010
+  Top retrieval score: 0.9596
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q44] How does the system handle conflicting retrieved evidence?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] Sliding window 
+  averaging is applied to per-residue disorder scores to reduce 
+  noise. The mean disordered region length in DisProt is 0.0 amino 
+  acids. If the sliding window size exceeds this mean, short 
+  disordered regions risk being smoothed out and lost. Window size 
+  must be chosen carefully to balance noise reduction against 
+  signal preservation. [Retrieved 3] 92.6% of DisProt proteins 
+  contain at least one Pfam structured domain alongside their 
+  disordered regions. This confirms that structured domains and 
+  intrinsically disordered regions frequently co-occur in the same 
+  protein. Each region must be evaluated independently rather than 
+  classifying the whole protein as ordered or disordered. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9451
+    [2] KB-008 -- sliding window smoothing IDR signal noise score=0.9433
+    [3] KB-012 -- Pfam domain structured mixed protein disorder score=0.9404
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9451
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q45] Does neurosymbolic reasoning reduce overfitting?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold assigns each amino acid a pLDDT 
+  confidence score from 0 to 100. Scores below 50 indicate very 
+  low structural confidence and strongly correlate with intrinsic 
+  disorder. DisProt experimentally confirms disorder in 13,396 
+  proteins; regions annotated as disordered in DisProt 
+  consistently show pLDDT below 50 in AlphaFold predictions, 
+  making this the most reliable single computational signal. 
+  [Retrieved 2] AlphaFold pLDDT scores between 50 and 70 indicate 
+  low but not absent structural confidence. These regions may be 
+  conditionally disordered -- unstructured in isolation but 
+  folding upon binding to a partner molecule. Such regions are 
+  called Molecular Recognition Features (MoRFs) and require 
+  experimental validation to distinguish from stably structured 
+  regions. [Retrieved 3] Sliding window averaging is applied to 
+  per-residue disorder scores to reduce noise. The mean disordered 
+  region length in DisProt is 0.0 amino acids. If the sliding 
+  window size exceeds this mean, short disordered regions risk 
+  being smoothed out and lost. Window size must be chosen 
+  carefully to balance noise reduction against signal 
+  preservation. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9563
+    [2] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9559
+    [3] KB-008 -- sliding window smoothing IDR signal noise score=0.9547
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9563
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q46] What is the effect on Matthews Correlation Coefficient (MCC)?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Sliding window averaging is applied to per-residue 
+  disorder scores to reduce noise. The mean disordered region 
+  length in DisProt is 0.0 amino acids. If the sliding window size 
+  exceeds this mean, short disordered regions risk being smoothed 
+  out and lost. Window size must be chosen carefully to balance 
+  noise reduction against signal preservation. [Retrieved 2] 
+  Disorder scores between 0.3 and 0.5 define an ambiguous gray 
+  zone where proteins cannot be confidently classified as ordered 
+  or disordered. In the DisProt dataset of 13,396 proteins, a 
+  substantial fraction falls in this mid-range. These regions 
+  require secondary validation using sequence composition or 
+  experimental methods. [Retrieved 3] AlphaFold pLDDT scores of 70 
+  or above indicate high confidence in the predicted structure. 
+  Regions with these scores are likely ordered and not 
+  intrinsically disordered. Where DisProt experimental annotations 
+  exist for the same region, experimental data should take 
+  precedence over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-008 -- sliding window smoothing IDR signal noise score=0.9543
+    [2] KB-002 -- gray zone ambiguous disorder             score=0.9519
+    [3] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9514
+
+  Top retrieved doc  : KB-008
+  Top retrieval score: 0.9543
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q47] Does performance degrade on unseen protein structures?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] Sliding window 
+  averaging is applied to per-residue disorder scores to reduce 
+  noise. The mean disordered region length in DisProt is 0.0 amino 
+  acids. If the sliding window size exceeds this mean, short 
+  disordered regions risk being smoothed out and lost. Window size 
+  must be chosen carefully to balance noise reduction against 
+  signal preservation. [Retrieved 3] AlphaFold assigns each amino 
+  acid a pLDDT confidence score from 0 to 100. Scores below 50 
+  indicate very low structural confidence and strongly correlate 
+  with intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions, making this the most reliable single computational 
+  signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9532
+    [2] KB-008 -- sliding window smoothing IDR signal noise score=0.9486
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9485
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9532
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q48] How does retrieval latency affect prediction quality?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Glycine is the smallest amino acid and adds 
+  conformational freedom to protein backbones. The mean glycine 
+  content in DisProt is 7.0%. While elevated glycine can 
+  contribute to disorder, it is a weaker independent predictor 
+  than proline and should be evaluated in combination with other 
+  disorder signals. [Retrieved 2] Sliding window averaging is 
+  applied to per-residue disorder scores to reduce noise. The mean 
+  disordered region length in DisProt is 0.0 amino acids. If the 
+  sliding window size exceeds this mean, short disordered regions 
+  risk being smoothed out and lost. Window size must be chosen 
+  carefully to balance noise reduction against signal 
+  preservation. [Retrieved 3] AlphaFold pLDDT scores of 70 or 
+  above indicate high confidence in the predicted structure. 
+  Regions with these scores are likely ordered and not 
+  intrinsically disordered. Where DisProt experimental annotations 
+  exist for the same region, experimental data should take 
+  precedence over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-005 -- glycine amino acid flexible backbone     score=0.9481
+    [2] KB-008 -- sliding window smoothing IDR signal noise score=0.9480
+    [3] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9465
+
+  Top retrieved doc  : KB-005
+  Top retrieval score: 0.9481
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q49] Does symbolic reasoning improve alignment with experimental annotations?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] AlphaFold assigns each 
+  amino acid a pLDDT confidence score from 0 to 100. Scores below 
+  50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. [Retrieved 3] AlphaFold pLDDT scores 
+  between 50 and 70 indicate low but not absent structural 
+  confidence. These regions may be conditionally disordered -- 
+  unstructured in isolation but folding upon binding to a partner 
+  molecule. Such regions are called Molecular Recognition Features 
+  (MoRFs) and require experimental validation to distinguish from 
+  stably structured regions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9636
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9615
+    [3] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9599
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9636
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q50] Are prediction improvements localized or global across sequences?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] AlphaFold assigns each 
+  amino acid a pLDDT confidence score from 0 to 100. Scores below 
+  50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. [Retrieved 3] AlphaFold pLDDT scores 
+  between 50 and 70 indicate low but not absent structural 
+  confidence. These regions may be conditionally disordered -- 
+  unstructured in isolation but folding upon binding to a partner 
+  molecule. Such regions are called Molecular Recognition Features 
+  (MoRFs) and require experimental validation to distinguish from 
+  stably structured regions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9701
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9691
+    [3] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9687
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9701
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q51] Does neurosymbolic RAG help identify disorder-to-order transitions?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores between 50 and 70 indicate 
+  low but not absent structural confidence. These regions may be 
+  conditionally disordered -- unstructured in isolation but 
+  folding upon binding to a partner molecule. Such regions are 
+  called Molecular Recognition Features (MoRFs) and require 
+  experimental validation to distinguish from stably structured 
+  regions. [Retrieved 2] Sliding window averaging is applied to 
+  per-residue disorder scores to reduce noise. The mean disordered 
+  region length in DisProt is 0.0 amino acids. If the sliding 
+  window size exceeds this mean, short disordered regions risk 
+  being smoothed out and lost. Window size must be chosen 
+  carefully to balance noise reduction against signal 
+  preservation. [Retrieved 3] AlphaFold assigns each amino acid a 
+  pLDDT confidence score from 0 to 100. Scores below 50 indicate 
+  very low structural confidence and strongly correlate with 
+  intrinsic disorder. DisProt experimentally confirms disorder in 
+  13,396 proteins; regions annotated as disordered in DisProt 
+  consistently show pLDDT below 50 in AlphaFold predictions, 
+  making this the most reliable single computational signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9655
+    [2] KB-008 -- sliding window smoothing IDR signal noise score=0.9648
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9645
+
+  Top retrieved doc  : KB-010
+  Top retrieval score: 0.9655
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q52] How does the system perform on proteins with multiple IDRs?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] 92.6% of DisProt proteins contain at least one 
+  Pfam structured domain alongside their disordered regions. This 
+  confirms that structured domains and intrinsically disordered 
+  regions frequently co-occur in the same protein. Each region 
+  must be evaluated independently rather than classifying the 
+  whole protein as ordered or disordered. [Retrieved 2] Proteins 
+  with no detectable Pfam domains and high overall disorder 
+  content are classified as Intrinsically Disordered Proteins 
+  (IDPs) or Fully Disordered Proteins (FDPs). If mean disorder 
+  content exceeds 0.5 and no structured domains are found, the 
+  protein is likely an IDP. These are common in signaling, 
+  transcription regulation, and hub proteins. [Retrieved 3] 
+  AlphaFold pLDDT scores of 70 or above indicate high confidence 
+  in the predicted structure. Regions with these scores are likely 
+  ordered and not intrinsically disordered. Where DisProt 
+  experimental annotations exist for the same region, experimental 
+  data should take precedence over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-012 -- Pfam domain structured mixed protein disorder score=0.9578
+    [2] KB-013 -- fully disordered protein IDP no domain   score=0.9560
+    [3] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9548
+
+  Top retrieved doc  : KB-012
+  Top retrieval score: 0.9578
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q53] Does calibration reduce prediction skewness?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Sliding window averaging is applied to per-residue 
+  disorder scores to reduce noise. The mean disordered region 
+  length in DisProt is 0.0 amino acids. If the sliding window size 
+  exceeds this mean, short disordered regions risk being smoothed 
+  out and lost. Window size must be chosen carefully to balance 
+  noise reduction against signal preservation. [Retrieved 2] 
+  AlphaFold assigns each amino acid a pLDDT confidence score from 
+  0 to 100. Scores below 50 indicate very low structural 
+  confidence and strongly correlate with intrinsic disorder. 
+  DisProt experimentally confirms disorder in 13,396 proteins; 
+  regions annotated as disordered in DisProt consistently show 
+  pLDDT below 50 in AlphaFold predictions, making this the most 
+  reliable single computational signal. [Retrieved 3] AlphaFold 
+  pLDDT scores of 70 or above indicate high confidence in the 
+  predicted structure. Regions with these scores are likely 
+  ordered and not intrinsically disordered. Where DisProt 
+  experimental annotations exist for the same region, experimental 
+  data should take precedence over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-008 -- sliding window smoothing IDR signal noise score=0.9553
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9510
+    [3] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9509
+
+  Top retrieved doc  : KB-008
+  Top retrieval score: 0.9553
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q54] Are confidence intervals narrower after processing?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Sliding window averaging is applied to per-residue 
+  disorder scores to reduce noise. The mean disordered region 
+  length in DisProt is 0.0 amino acids. If the sliding window size 
+  exceeds this mean, short disordered regions risk being smoothed 
+  out and lost. Window size must be chosen carefully to balance 
+  noise reduction against signal preservation. [Retrieved 2] 
+  AlphaFold pLDDT scores of 70 or above indicate high confidence 
+  in the predicted structure. Regions with these scores are likely 
+  ordered and not intrinsically disordered. Where DisProt 
+  experimental annotations exist for the same region, experimental 
+  data should take precedence over computational predictions. 
+  [Retrieved 3] Glycine is the smallest amino acid and adds 
+  conformational freedom to protein backbones. The mean glycine 
+  content in DisProt is 7.0%. While elevated glycine can 
+  contribute to disorder, it is a weaker independent predictor 
+  than proline and should be evaluated in combination with other 
+  disorder signals. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-008 -- sliding window smoothing IDR signal noise score=0.9403
+    [2] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9367
+    [3] KB-005 -- glycine amino acid flexible backbone     score=0.9358
+
+  Top retrieved doc  : KB-008
+  Top retrieval score: 0.9403
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q55] Does neurosymbolic reasoning improve classification of ambiguous residues?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold assigns each amino acid a pLDDT 
+  confidence score from 0 to 100. Scores below 50 indicate very 
+  low structural confidence and strongly correlate with intrinsic 
+  disorder. DisProt experimentally confirms disorder in 13,396 
+  proteins; regions annotated as disordered in DisProt 
+  consistently show pLDDT below 50 in AlphaFold predictions, 
+  making this the most reliable single computational signal. 
+  [Retrieved 2] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 3] AlphaFold pLDDT scores 
+  between 50 and 70 indicate low but not absent structural 
+  confidence. These regions may be conditionally disordered -- 
+  unstructured in isolation but folding upon binding to a partner 
+  molecule. Such regions are called Molecular Recognition Features 
+  (MoRFs) and require experimental validation to distinguish from 
+  stably structured regions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9667
+    [2] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9665
+    [3] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9657
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9667
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q56] How does the system perform under cross-validation?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] AlphaFold assigns each 
+  amino acid a pLDDT confidence score from 0 to 100. Scores below 
+  50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. [Retrieved 3] Sliding window averaging is 
+  applied to per-residue disorder scores to reduce noise. The mean 
+  disordered region length in DisProt is 0.0 amino acids. If the 
+  sliding window size exceeds this mean, short disordered regions 
+  risk being smoothed out and lost. Window size must be chosen 
+  carefully to balance noise reduction against signal 
+  preservation. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9502
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9478
+    [3] KB-008 -- sliding window smoothing IDR signal noise score=0.9471
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9502
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q57] Does it generalize across different disorder prediction tools?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Glycine is the smallest amino acid and adds 
+  conformational freedom to protein backbones. The mean glycine 
+  content in DisProt is 7.0%. While elevated glycine can 
+  contribute to disorder, it is a weaker independent predictor 
+  than proline and should be evaluated in combination with other 
+  disorder signals. [Retrieved 2] Proline is a strong predictor of 
+  intrinsic disorder. The mean proline content across 13,396 
+  DisProt proteins is 6.0%. Proline's rigid pyrrolidine ring 
+  disrupts alpha-helices and beta-sheets, preventing the formation 
+  of regular secondary structure. Regions with elevated proline 
+  are consistently associated with disordered behavior. [Retrieved 
+  3] AlphaFold pLDDT scores of 70 or above indicate high 
+  confidence in the predicted structure. Regions with these scores 
+  are likely ordered and not intrinsically disordered. Where 
+  DisProt experimental annotations exist for the same region, 
+  experimental data should take precedence over computational 
+  predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-005 -- glycine amino acid flexible backbone     score=0.9548
+    [2] KB-004 -- proline amino acid disorder prediction   score=0.9532
+    [3] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9493
+
+  Top retrieved doc  : KB-005
+  Top retrieval score: 0.9548
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q58] Are improvements correlated with sequence conservation?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] AlphaFold assigns each 
+  amino acid a pLDDT confidence score from 0 to 100. Scores below 
+  50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. [Retrieved 3] Disorder scores between 0.3 
+  and 0.5 define an ambiguous gray zone where proteins cannot be 
+  confidently classified as ordered or disordered. In the DisProt 
+  dataset of 13,396 proteins, a substantial fraction falls in this 
+  mid-range. These regions require secondary validation using 
+  sequence composition or experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9610
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9559
+    [3] KB-002 -- gray zone ambiguous disorder             score=0.9553
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9610
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q59] Does retrieval of structural data improve predictions?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] 92.6% of DisProt 
+  proteins contain at least one Pfam structured domain alongside 
+  their disordered regions. This confirms that structured domains 
+  and intrinsically disordered regions frequently co-occur in the 
+  same protein. Each region must be evaluated independently rather 
+  than classifying the whole protein as ordered or disordered. 
+  [Retrieved 3] Glycine is the smallest amino acid and adds 
+  conformational freedom to protein backbones. The mean glycine 
+  content in DisProt is 7.0%. While elevated glycine can 
+  contribute to disorder, it is a weaker independent predictor 
+  than proline and should be evaluated in combination with other 
+  disorder signals. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9531
+    [2] KB-012 -- Pfam domain structured mixed protein disorder score=0.9457
+    [3] KB-005 -- glycine amino acid flexible backbone     score=0.9424
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9531
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q60] How does performance change with different window sizes?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Glycine is the smallest amino acid and adds 
+  conformational freedom to protein backbones. The mean glycine 
+  content in DisProt is 7.0%. While elevated glycine can 
+  contribute to disorder, it is a weaker independent predictor 
+  than proline and should be evaluated in combination with other 
+  disorder signals. [Retrieved 2] Proline is a strong predictor of 
+  intrinsic disorder. The mean proline content across 13,396 
+  DisProt proteins is 6.0%. Proline's rigid pyrrolidine ring 
+  disrupts alpha-helices and beta-sheets, preventing the formation 
+  of regular secondary structure. Regions with elevated proline 
+  are consistently associated with disordered behavior. [Retrieved 
+  3] The 0.5 disorder score threshold is commonly used to classify 
+  protein regions as intrinsically disordered. Analysis of 13,396 
+  DisProt proteins shows that 29.1% exceed this threshold, with a 
+  dataset mean disorder score of 0.378. However, 44.2% of proteins 
+  exceed 0.3, suggesting many disordered regions fall below the 
+  0.5 cutoff and would be missed. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-005 -- glycine amino acid flexible backbone     score=0.9356
+    [2] KB-004 -- proline amino acid disorder prediction   score=0.9333
+    [3] KB-001 -- disorder score cutoff                    score=0.9323
+
+  Top retrieved doc  : KB-005
+  Top retrieval score: 0.9356
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q61] Does neurosymbolic reasoning help detect functional disorder regions?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores between 50 and 70 indicate 
+  low but not absent structural confidence. These regions may be 
+  conditionally disordered -- unstructured in isolation but 
+  folding upon binding to a partner molecule. Such regions are 
+  called Molecular Recognition Features (MoRFs) and require 
+  experimental validation to distinguish from stably structured 
+  regions. [Retrieved 2] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. [Retrieved 
+  3] AlphaFold assigns each amino acid a pLDDT confidence score 
+  from 0 to 100. Scores below 50 indicate very low structural 
+  confidence and strongly correlate with intrinsic disorder. 
+  DisProt experimentally confirms disorder in 13,396 proteins; 
+  regions annotated as disordered in DisProt consistently show 
+  pLDDT below 50 in AlphaFold predictions, making this the most 
+  reliable single computational signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9680
+    [2] KB-003 -- high confidence disorder strong signal   score=0.9667
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9650
+
+  Top retrieved doc  : KB-010
+  Top retrieval score: 0.9680
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q62] Are gains higher in specific residue compositions?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] AlphaFold assigns each 
+  amino acid a pLDDT confidence score from 0 to 100. Scores below 
+  50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. [Retrieved 3] AlphaFold pLDDT scores 
+  between 50 and 70 indicate low but not absent structural 
+  confidence. These regions may be conditionally disordered -- 
+  unstructured in isolation but folding upon binding to a partner 
+  molecule. Such regions are called Molecular Recognition Features 
+  (MoRFs) and require experimental validation to distinguish from 
+  stably structured regions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9595
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9591
+    [3] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9582
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9595
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q63] Does the system improve classification of edge residues in IDRs?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] AlphaFold assigns each 
+  amino acid a pLDDT confidence score from 0 to 100. Scores below 
+  50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. [Retrieved 3] Disorder scores between 0.3 
+  and 0.5 define an ambiguous gray zone where proteins cannot be 
+  confidently classified as ordered or disordered. In the DisProt 
+  dataset of 13,396 proteins, a substantial fraction falls in this 
+  mid-range. These regions require secondary validation using 
+  sequence composition or experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9754
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9750
+    [3] KB-002 -- gray zone ambiguous disorder             score=0.9723
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9754
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q64] How does prediction confidence correlate with experimental uncertainty?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] Glycine is the smallest 
+  amino acid and adds conformational freedom to protein backbones. 
+  The mean glycine content in DisProt is 7.0%. While elevated 
+  glycine can contribute to disorder, it is a weaker independent 
+  predictor than proline and should be evaluated in combination 
+  with other disorder signals. [Retrieved 3] AlphaFold assigns 
+  each amino acid a pLDDT confidence score from 0 to 100. Scores 
+  below 50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9572
+    [2] KB-005 -- glycine amino acid flexible backbone     score=0.9570
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9555
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9572
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q65] Does neurosymbolic reasoning improve long-range sequence dependencies?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores between 50 and 70 indicate 
+  low but not absent structural confidence. These regions may be 
+  conditionally disordered -- unstructured in isolation but 
+  folding upon binding to a partner molecule. Such regions are 
+  called Molecular Recognition Features (MoRFs) and require 
+  experimental validation to distinguish from stably structured 
+  regions. [Retrieved 2] AlphaFold pLDDT scores of 70 or above 
+  indicate high confidence in the predicted structure. Regions 
+  with these scores are likely ordered and not intrinsically 
+  disordered. Where DisProt experimental annotations exist for the 
+  same region, experimental data should take precedence over 
+  computational predictions. [Retrieved 3] AlphaFold assigns each 
+  amino acid a pLDDT confidence score from 0 to 100. Scores below 
+  50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9622
+    [2] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9598
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9596
+
+  Top retrieved doc  : KB-010
+  Top retrieval score: 0.9622
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q66] Are improvements stable across random seeds?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores between 50 and 70 indicate 
+  low but not absent structural confidence. These regions may be 
+  conditionally disordered -- unstructured in isolation but 
+  folding upon binding to a partner molecule. Such regions are 
+  called Molecular Recognition Features (MoRFs) and require 
+  experimental validation to distinguish from stably structured 
+  regions. [Retrieved 2] AlphaFold assigns each amino acid a pLDDT 
+  confidence score from 0 to 100. Scores below 50 indicate very 
+  low structural confidence and strongly correlate with intrinsic 
+  disorder. DisProt experimentally confirms disorder in 13,396 
+  proteins; regions annotated as disordered in DisProt 
+  consistently show pLDDT below 50 in AlphaFold predictions, 
+  making this the most reliable single computational signal. 
+  [Retrieved 3] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9594
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9592
+    [3] KB-003 -- high confidence disorder strong signal   score=0.9573
+
+  Top retrieved doc  : KB-010
+  Top retrieval score: 0.9594
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q67] Does the system perform better on curated subsets of DisProt?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] AlphaFold assigns each 
+  amino acid a pLDDT confidence score from 0 to 100. Scores below 
+  50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. [Retrieved 3] AlphaFold pLDDT scores 
+  between 50 and 70 indicate low but not absent structural 
+  confidence. These regions may be conditionally disordered -- 
+  unstructured in isolation but folding upon binding to a partner 
+  molecule. Such regions are called Molecular Recognition Features 
+  (MoRFs) and require experimental validation to distinguish from 
+  stably structured regions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9614
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9612
+    [3] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9603
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9614
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q68] How does performance change when excluding uncertain regions?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Sliding window averaging is applied to per-residue 
+  disorder scores to reduce noise. The mean disordered region 
+  length in DisProt is 0.0 amino acids. If the sliding window size 
+  exceeds this mean, short disordered regions risk being smoothed 
+  out and lost. Window size must be chosen carefully to balance 
+  noise reduction against signal preservation. [Retrieved 2] 
+  Glycine is the smallest amino acid and adds conformational 
+  freedom to protein backbones. The mean glycine content in 
+  DisProt is 7.0%. While elevated glycine can contribute to 
+  disorder, it is a weaker independent predictor than proline and 
+  should be evaluated in combination with other disorder signals. 
+  [Retrieved 3] 92.6% of DisProt proteins contain at least one 
+  Pfam structured domain alongside their disordered regions. This 
+  confirms that structured domains and intrinsically disordered 
+  regions frequently co-occur in the same protein. Each region 
+  must be evaluated independently rather than classifying the 
+  whole protein as ordered or disordered. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-008 -- sliding window smoothing IDR signal noise score=0.9524
+    [2] KB-005 -- glycine amino acid flexible backbone     score=0.9507
+    [3] KB-012 -- Pfam domain structured mixed protein disorder score=0.9499
+
+  Top retrieved doc  : KB-008
+  Top retrieval score: 0.9524
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q69] Does neurosymbolic reasoning improve classification of rare IDRs?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores between 50 and 70 indicate 
+  low but not absent structural confidence. These regions may be 
+  conditionally disordered -- unstructured in isolation but 
+  folding upon binding to a partner molecule. Such regions are 
+  called Molecular Recognition Features (MoRFs) and require 
+  experimental validation to distinguish from stably structured 
+  regions. [Retrieved 2] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. [Retrieved 
+  3] AlphaFold assigns each amino acid a pLDDT confidence score 
+  from 0 to 100. Scores below 50 indicate very low structural 
+  confidence and strongly correlate with intrinsic disorder. 
+  DisProt experimentally confirms disorder in 13,396 proteins; 
+  regions annotated as disordered in DisProt consistently show 
+  pLDDT below 50 in AlphaFold predictions, making this the most 
+  reliable single computational signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9668
+    [2] KB-003 -- high confidence disorder strong signal   score=0.9659
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9655
+
+  Top retrieved doc  : KB-010
+  Top retrieval score: 0.9668
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q70] Are prediction gains dependent on dataset size?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Glycine is the smallest amino acid and adds 
+  conformational freedom to protein backbones. The mean glycine 
+  content in DisProt is 7.0%. While elevated glycine can 
+  contribute to disorder, it is a weaker independent predictor 
+  than proline and should be evaluated in combination with other 
+  disorder signals. [Retrieved 2] AlphaFold pLDDT scores of 70 or 
+  above indicate high confidence in the predicted structure. 
+  Regions with these scores are likely ordered and not 
+  intrinsically disordered. Where DisProt experimental annotations 
+  exist for the same region, experimental data should take 
+  precedence over computational predictions. [Retrieved 3] Sliding 
+  window averaging is applied to per-residue disorder scores to 
+  reduce noise. The mean disordered region length in DisProt is 
+  0.0 amino acids. If the sliding window size exceeds this mean, 
+  short disordered regions risk being smoothed out and lost. 
+  Window size must be chosen carefully to balance noise reduction 
+  against signal preservation. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-005 -- glycine amino acid flexible backbone     score=0.9523
+    [2] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9495
+    [3] KB-008 -- sliding window smoothing IDR signal noise score=0.9493
+
+  Top retrieved doc  : KB-005
+  Top retrieval score: 0.9523
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q71] Does the system improve classification under imbalanced data?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Sliding window averaging is applied to per-residue 
+  disorder scores to reduce noise. The mean disordered region 
+  length in DisProt is 0.0 amino acids. If the sliding window size 
+  exceeds this mean, short disordered regions risk being smoothed 
+  out and lost. Window size must be chosen carefully to balance 
+  noise reduction against signal preservation. [Retrieved 2] 
+  AlphaFold pLDDT scores of 70 or above indicate high confidence 
+  in the predicted structure. Regions with these scores are likely 
+  ordered and not intrinsically disordered. Where DisProt 
+  experimental annotations exist for the same region, experimental 
+  data should take precedence over computational predictions. 
+  [Retrieved 3] Glycine is the smallest amino acid and adds 
+  conformational freedom to protein backbones. The mean glycine 
+  content in DisProt is 7.0%. While elevated glycine can 
+  contribute to disorder, it is a weaker independent predictor 
+  than proline and should be evaluated in combination with other 
+  disorder signals. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-008 -- sliding window smoothing IDR signal noise score=0.9479
+    [2] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9479
+    [3] KB-005 -- glycine amino acid flexible backbone     score=0.9471
+
+  Top retrieved doc  : KB-008
+  Top retrieval score: 0.9479
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q72] How does it perform on noisy annotations?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] Sliding window 
+  averaging is applied to per-residue disorder scores to reduce 
+  noise. The mean disordered region length in DisProt is 0.0 amino 
+  acids. If the sliding window size exceeds this mean, short 
+  disordered regions risk being smoothed out and lost. Window size 
+  must be chosen carefully to balance noise reduction against 
+  signal preservation. [Retrieved 3] AlphaFold assigns each amino 
+  acid a pLDDT confidence score from 0 to 100. Scores below 50 
+  indicate very low structural confidence and strongly correlate 
+  with intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions, making this the most reliable single computational 
+  signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9415
+    [2] KB-008 -- sliding window smoothing IDR signal noise score=0.9410
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9397
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9415
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q73] Does symbolic reasoning reduce prediction drift?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores between 50 and 70 indicate 
+  low but not absent structural confidence. These regions may be 
+  conditionally disordered -- unstructured in isolation but 
+  folding upon binding to a partner molecule. Such regions are 
+  called Molecular Recognition Features (MoRFs) and require 
+  experimental validation to distinguish from stably structured 
+  regions. [Retrieved 2] Sliding window averaging is applied to 
+  per-residue disorder scores to reduce noise. The mean disordered 
+  region length in DisProt is 0.0 amino acids. If the sliding 
+  window size exceeds this mean, short disordered regions risk 
+  being smoothed out and lost. Window size must be chosen 
+  carefully to balance noise reduction against signal 
+  preservation. [Retrieved 3] AlphaFold assigns each amino acid a 
+  pLDDT confidence score from 0 to 100. Scores below 50 indicate 
+  very low structural confidence and strongly correlate with 
+  intrinsic disorder. DisProt experimentally confirms disorder in 
+  13,396 proteins; regions annotated as disordered in DisProt 
+  consistently show pLDDT below 50 in AlphaFold predictions, 
+  making this the most reliable single computational signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9504
+    [2] KB-008 -- sliding window smoothing IDR signal noise score=0.9497
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9495
+
+  Top retrieved doc  : KB-010
+  Top retrieval score: 0.9504
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q74] How does performance compare before and after normalization?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Glycine is the smallest amino acid and adds 
+  conformational freedom to protein backbones. The mean glycine 
+  content in DisProt is 7.0%. While elevated glycine can 
+  contribute to disorder, it is a weaker independent predictor 
+  than proline and should be evaluated in combination with other 
+  disorder signals. [Retrieved 2] Proline is a strong predictor of 
+  intrinsic disorder. The mean proline content across 13,396 
+  DisProt proteins is 6.0%. Proline's rigid pyrrolidine ring 
+  disrupts alpha-helices and beta-sheets, preventing the formation 
+  of regular secondary structure. Regions with elevated proline 
+  are consistently associated with disordered behavior. [Retrieved 
+  3] The 0.5 disorder score threshold is commonly used to classify 
+  protein regions as intrinsically disordered. Analysis of 13,396 
+  DisProt proteins shows that 29.1% exceed this threshold, with a 
+  dataset mean disorder score of 0.378. However, 44.2% of proteins 
+  exceed 0.3, suggesting many disordered regions fall below the 
+  0.5 cutoff and would be missed. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-005 -- glycine amino acid flexible backbone     score=0.9411
+    [2] KB-004 -- proline amino acid disorder prediction   score=0.9376
+    [3] KB-001 -- disorder score cutoff                    score=0.9357
+
+  Top retrieved doc  : KB-005
+  Top retrieval score: 0.9411
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q75] Does neurosymbolic reasoning improve stability across runs?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores between 50 and 70 indicate 
+  low but not absent structural confidence. These regions may be 
+  conditionally disordered -- unstructured in isolation but 
+  folding upon binding to a partner molecule. Such regions are 
+  called Molecular Recognition Features (MoRFs) and require 
+  experimental validation to distinguish from stably structured 
+  regions. [Retrieved 2] AlphaFold assigns each amino acid a pLDDT 
+  confidence score from 0 to 100. Scores below 50 indicate very 
+  low structural confidence and strongly correlate with intrinsic 
+  disorder. DisProt experimentally confirms disorder in 13,396 
+  proteins; regions annotated as disordered in DisProt 
+  consistently show pLDDT below 50 in AlphaFold predictions, 
+  making this the most reliable single computational signal. 
+  [Retrieved 3] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9557
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9547
+    [3] KB-003 -- high confidence disorder strong signal   score=0.9532
+
+  Top retrieved doc  : KB-010
+  Top retrieval score: 0.9557
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q76] Are improvements larger for specific protein lengths?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Sliding window averaging is applied to per-residue 
+  disorder scores to reduce noise. The mean disordered region 
+  length in DisProt is 0.0 amino acids. If the sliding window size 
+  exceeds this mean, short disordered regions risk being smoothed 
+  out and lost. Window size must be chosen carefully to balance 
+  noise reduction against signal preservation. [Retrieved 2] 
+  AlphaFold pLDDT scores of 70 or above indicate high confidence 
+  in the predicted structure. Regions with these scores are likely 
+  ordered and not intrinsically disordered. Where DisProt 
+  experimental annotations exist for the same region, experimental 
+  data should take precedence over computational predictions. 
+  [Retrieved 3] Disordered regions shorter than 10 amino acids are 
+  difficult to predict reliably. Of 0 annotated disordered regions 
+  in DisProt, 0.0% are shorter than 10 residues, with a mean 
+  region length of 0.0 aa. Short IDRs are underrepresented in 
+  experimental databases because prediction tools lack sufficient 
+  sequence context for short stretches. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-008 -- sliding window smoothing IDR signal noise score=0.9584
+    [2] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9574
+    [3] KB-007 -- short IDR region length prediction confidence score=0.9560
+
+  Top retrieved doc  : KB-008
+  Top retrieval score: 0.9584
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q77] Does the system better align predictions with biological function?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] 92.6% of DisProt 
+  proteins contain at least one Pfam structured domain alongside 
+  their disordered regions. This confirms that structured domains 
+  and intrinsically disordered regions frequently co-occur in the 
+  same protein. Each region must be evaluated independently rather 
+  than classifying the whole protein as ordered or disordered. 
+  [Retrieved 3] Glycine is the smallest amino acid and adds 
+  conformational freedom to protein backbones. The mean glycine 
+  content in DisProt is 7.0%. While elevated glycine can 
+  contribute to disorder, it is a weaker independent predictor 
+  than proline and should be evaluated in combination with other 
+  disorder signals. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9564
+    [2] KB-012 -- Pfam domain structured mixed protein disorder score=0.9514
+    [3] KB-005 -- glycine amino acid flexible backbone     score=0.9506
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9564
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q78] How does it handle missing sequence information?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] 92.6% of DisProt proteins contain at least one 
+  Pfam structured domain alongside their disordered regions. This 
+  confirms that structured domains and intrinsically disordered 
+  regions frequently co-occur in the same protein. Each region 
+  must be evaluated independently rather than classifying the 
+  whole protein as ordered or disordered. [Retrieved 2] Glycine is 
+  the smallest amino acid and adds conformational freedom to 
+  protein backbones. The mean glycine content in DisProt is 7.0%. 
+  While elevated glycine can contribute to disorder, it is a 
+  weaker independent predictor than proline and should be 
+  evaluated in combination with other disorder signals. [Retrieved 
+  3] Proline is a strong predictor of intrinsic disorder. The mean 
+  proline content across 13,396 DisProt proteins is 6.0%. 
+  Proline's rigid pyrrolidine ring disrupts alpha-helices and 
+  beta-sheets, preventing the formation of regular secondary 
+  structure. Regions with elevated proline are consistently 
+  associated with disordered behavior. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-012 -- Pfam domain structured mixed protein disorder score=0.9337
+    [2] KB-005 -- glycine amino acid flexible backbone     score=0.9334
+    [3] KB-004 -- proline amino acid disorder prediction   score=0.9313
+
+  Top retrieved doc  : KB-012
+  Top retrieval score: 0.9337
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q79] Does retrieval diversity impact performance?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Glycine is the smallest amino acid and adds 
+  conformational freedom to protein backbones. The mean glycine 
+  content in DisProt is 7.0%. While elevated glycine can 
+  contribute to disorder, it is a weaker independent predictor 
+  than proline and should be evaluated in combination with other 
+  disorder signals. [Retrieved 2] Proline is a strong predictor of 
+  intrinsic disorder. The mean proline content across 13,396 
+  DisProt proteins is 6.0%. Proline's rigid pyrrolidine ring 
+  disrupts alpha-helices and beta-sheets, preventing the formation 
+  of regular secondary structure. Regions with elevated proline 
+  are consistently associated with disordered behavior. [Retrieved 
+  3] Sliding window averaging is applied to per-residue disorder 
+  scores to reduce noise. The mean disordered region length in 
+  DisProt is 0.0 amino acids. If the sliding window size exceeds 
+  this mean, short disordered regions risk being smoothed out and 
+  lost. Window size must be chosen carefully to balance noise 
+  reduction against signal preservation. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-005 -- glycine amino acid flexible backbone     score=0.9385
+    [2] KB-004 -- proline amino acid disorder prediction   score=0.9372
+    [3] KB-008 -- sliding window smoothing IDR signal noise score=0.9364
+
+  Top retrieved doc  : KB-005
+  Top retrieval score: 0.9385
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q80] Are prediction improvements explainable through symbolic rules?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores between 50 and 70 indicate 
+  low but not absent structural confidence. These regions may be 
+  conditionally disordered -- unstructured in isolation but 
+  folding upon binding to a partner molecule. Such regions are 
+  called Molecular Recognition Features (MoRFs) and require 
+  experimental validation to distinguish from stably structured 
+  regions. [Retrieved 2] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. [Retrieved 
+  3] AlphaFold assigns each amino acid a pLDDT confidence score 
+  from 0 to 100. Scores below 50 indicate very low structural 
+  confidence and strongly correlate with intrinsic disorder. 
+  DisProt experimentally confirms disorder in 13,396 proteins; 
+  regions annotated as disordered in DisProt consistently show 
+  pLDDT below 50 in AlphaFold predictions, making this the most 
+  reliable single computational signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9603
+    [2] KB-003 -- high confidence disorder strong signal   score=0.9548
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9530
+
+  Top retrieved doc  : KB-010
+  Top retrieval score: 0.9603
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q81] Does neurosymbolic reasoning improve threshold selection?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores between 50 and 70 indicate 
+  low but not absent structural confidence. These regions may be 
+  conditionally disordered -- unstructured in isolation but 
+  folding upon binding to a partner molecule. Such regions are 
+  called Molecular Recognition Features (MoRFs) and require 
+  experimental validation to distinguish from stably structured 
+  regions. [Retrieved 2] AlphaFold assigns each amino acid a pLDDT 
+  confidence score from 0 to 100. Scores below 50 indicate very 
+  low structural confidence and strongly correlate with intrinsic 
+  disorder. DisProt experimentally confirms disorder in 13,396 
+  proteins; regions annotated as disordered in DisProt 
+  consistently show pLDDT below 50 in AlphaFold predictions, 
+  making this the most reliable single computational signal. 
+  [Retrieved 3] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9617
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9597
+    [3] KB-003 -- high confidence disorder strong signal   score=0.9596
+
+  Top retrieved doc  : KB-010
+  Top retrieval score: 0.9617
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q82] How does the system perform on synthetic datasets?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] Sliding window 
+  averaging is applied to per-residue disorder scores to reduce 
+  noise. The mean disordered region length in DisProt is 0.0 amino 
+  acids. If the sliding window size exceeds this mean, short 
+  disordered regions risk being smoothed out and lost. Window size 
+  must be chosen carefully to balance noise reduction against 
+  signal preservation. [Retrieved 3] Proline is a strong predictor 
+  of intrinsic disorder. The mean proline content across 13,396 
+  DisProt proteins is 6.0%. Proline's rigid pyrrolidine ring 
+  disrupts alpha-helices and beta-sheets, preventing the formation 
+  of regular secondary structure. Regions with elevated proline 
+  are consistently associated with disordered behavior. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9351
+    [2] KB-008 -- sliding window smoothing IDR signal noise score=0.9339
+    [3] KB-004 -- proline amino acid disorder prediction   score=0.9335
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9351
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q83] Does calibration improve ranking of disorder scores?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold assigns each amino acid a pLDDT 
+  confidence score from 0 to 100. Scores below 50 indicate very 
+  low structural confidence and strongly correlate with intrinsic 
+  disorder. DisProt experimentally confirms disorder in 13,396 
+  proteins; regions annotated as disordered in DisProt 
+  consistently show pLDDT below 50 in AlphaFold predictions, 
+  making this the most reliable single computational signal. 
+  [Retrieved 2] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 3] Disorder scores above 
+  0.7 represent high confidence intrinsic disorder. These regions 
+  consistently correspond to experimentally validated IDRs in 
+  DisProt and typically show AlphaFold pLDDT scores below 50, 
+  indicating very low structural confidence from the AlphaFold 
+  model. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9636
+    [2] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9625
+    [3] KB-003 -- high confidence disorder strong signal   score=0.9610
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9636
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q84] Are prediction errors reduced uniformly?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] Disordered regions 
+  shorter than 10 amino acids are difficult to predict reliably. 
+  Of 0 annotated disordered regions in DisProt, 0.0% are shorter 
+  than 10 residues, with a mean region length of 0.0 aa. Short 
+  IDRs are underrepresented in experimental databases because 
+  prediction tools lack sufficient sequence context for short 
+  stretches. [Retrieved 3] Sliding window averaging is applied to 
+  per-residue disorder scores to reduce noise. The mean disordered 
+  region length in DisProt is 0.0 amino acids. If the sliding 
+  window size exceeds this mean, short disordered regions risk 
+  being smoothed out and lost. Window size must be chosen 
+  carefully to balance noise reduction against signal 
+  preservation. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9560
+    [2] KB-007 -- short IDR region length prediction confidence score=0.9553
+    [3] KB-008 -- sliding window smoothing IDR signal noise score=0.9553
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9560
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q85] Does neurosymbolic reasoning improve classification confidence intervals?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold assigns each amino acid a pLDDT 
+  confidence score from 0 to 100. Scores below 50 indicate very 
+  low structural confidence and strongly correlate with intrinsic 
+  disorder. DisProt experimentally confirms disorder in 13,396 
+  proteins; regions annotated as disordered in DisProt 
+  consistently show pLDDT below 50 in AlphaFold predictions, 
+  making this the most reliable single computational signal. 
+  [Retrieved 2] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 3] AlphaFold pLDDT scores 
+  between 50 and 70 indicate low but not absent structural 
+  confidence. These regions may be conditionally disordered -- 
+  unstructured in isolation but folding upon binding to a partner 
+  molecule. Such regions are called Molecular Recognition Features 
+  (MoRFs) and require experimental validation to distinguish from 
+  stably structured regions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9617
+    [2] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9598
+    [3] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9598
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9617
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q86] How does performance change with different retrieval strategies?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Glycine is the smallest amino acid and adds 
+  conformational freedom to protein backbones. The mean glycine 
+  content in DisProt is 7.0%. While elevated glycine can 
+  contribute to disorder, it is a weaker independent predictor 
+  than proline and should be evaluated in combination with other 
+  disorder signals. [Retrieved 2] Proline is a strong predictor of 
+  intrinsic disorder. The mean proline content across 13,396 
+  DisProt proteins is 6.0%. Proline's rigid pyrrolidine ring 
+  disrupts alpha-helices and beta-sheets, preventing the formation 
+  of regular secondary structure. Regions with elevated proline 
+  are consistently associated with disordered behavior. [Retrieved 
+  3] 92.6% of DisProt proteins contain at least one Pfam 
+  structured domain alongside their disordered regions. This 
+  confirms that structured domains and intrinsically disordered 
+  regions frequently co-occur in the same protein. Each region 
+  must be evaluated independently rather than classifying the 
+  whole protein as ordered or disordered. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-005 -- glycine amino acid flexible backbone     score=0.9283
+    [2] KB-004 -- proline amino acid disorder prediction   score=0.9272
+    [3] KB-012 -- Pfam domain structured mixed protein disorder score=0.9244
+
+  Top retrieved doc  : KB-005
+  Top retrieval score: 0.9283
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q87] Does the system improve detection of transient disorder?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Sliding window averaging is applied to per-residue 
+  disorder scores to reduce noise. The mean disordered region 
+  length in DisProt is 0.0 amino acids. If the sliding window size 
+  exceeds this mean, short disordered regions risk being smoothed 
+  out and lost. Window size must be chosen carefully to balance 
+  noise reduction against signal preservation. [Retrieved 2] 
+  AlphaFold pLDDT scores of 70 or above indicate high confidence 
+  in the predicted structure. Regions with these scores are likely 
+  ordered and not intrinsically disordered. Where DisProt 
+  experimental annotations exist for the same region, experimental 
+  data should take precedence over computational predictions. 
+  [Retrieved 3] Disorder scores between 0.3 and 0.5 define an 
+  ambiguous gray zone where proteins cannot be confidently 
+  classified as ordered or disordered. In the DisProt dataset of 
+  13,396 proteins, a substantial fraction falls in this mid-range. 
+  These regions require secondary validation using sequence 
+  composition or experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-008 -- sliding window smoothing IDR signal noise score=0.9588
+    [2] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9571
+    [3] KB-002 -- gray zone ambiguous disorder             score=0.9549
+
+  Top retrieved doc  : KB-008
+  Top retrieval score: 0.9588
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q88] Are gains consistent across evaluation metrics?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Sliding window averaging is applied to per-residue 
+  disorder scores to reduce noise. The mean disordered region 
+  length in DisProt is 0.0 amino acids. If the sliding window size 
+  exceeds this mean, short disordered regions risk being smoothed 
+  out and lost. Window size must be chosen carefully to balance 
+  noise reduction against signal preservation. [Retrieved 2] 
+  Proline is a strong predictor of intrinsic disorder. The mean 
+  proline content across 13,396 DisProt proteins is 6.0%. 
+  Proline's rigid pyrrolidine ring disrupts alpha-helices and 
+  beta-sheets, preventing the formation of regular secondary 
+  structure. Regions with elevated proline are consistently 
+  associated with disordered behavior. [Retrieved 3] AlphaFold 
+  pLDDT scores of 70 or above indicate high confidence in the 
+  predicted structure. Regions with these scores are likely 
+  ordered and not intrinsically disordered. Where DisProt 
+  experimental annotations exist for the same region, experimental 
+  data should take precedence over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-008 -- sliding window smoothing IDR signal noise score=0.9458
+    [2] KB-004 -- proline amino acid disorder prediction   score=0.9446
+    [3] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9442
+
+  Top retrieved doc  : KB-008
+  Top retrieval score: 0.9458
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q89] Does neurosymbolic reasoning reduce model uncertainty?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] AlphaFold assigns each 
+  amino acid a pLDDT confidence score from 0 to 100. Scores below 
+  50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. [Retrieved 3] Sliding window averaging is 
+  applied to per-residue disorder scores to reduce noise. The mean 
+  disordered region length in DisProt is 0.0 amino acids. If the 
+  sliding window size exceeds this mean, short disordered regions 
+  risk being smoothed out and lost. Window size must be chosen 
+  carefully to balance noise reduction against signal 
+  preservation. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9525
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9519
+    [3] KB-008 -- sliding window smoothing IDR signal noise score=0.9515
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9525
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q90] How does it perform under adversarial perturbations?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores between 50 and 70 indicate 
+  low but not absent structural confidence. These regions may be 
+  conditionally disordered -- unstructured in isolation but 
+  folding upon binding to a partner molecule. Such regions are 
+  called Molecular Recognition Features (MoRFs) and require 
+  experimental validation to distinguish from stably structured 
+  regions. [Retrieved 2] Sliding window averaging is applied to 
+  per-residue disorder scores to reduce noise. The mean disordered 
+  region length in DisProt is 0.0 amino acids. If the sliding 
+  window size exceeds this mean, short disordered regions risk 
+  being smoothed out and lost. Window size must be chosen 
+  carefully to balance noise reduction against signal 
+  preservation. [Retrieved 3] AlphaFold assigns each amino acid a 
+  pLDDT confidence score from 0 to 100. Scores below 50 indicate 
+  very low structural confidence and strongly correlate with 
+  intrinsic disorder. DisProt experimentally confirms disorder in 
+  13,396 proteins; regions annotated as disordered in DisProt 
+  consistently show pLDDT below 50 in AlphaFold predictions, 
+  making this the most reliable single computational signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9495
+    [2] KB-008 -- sliding window smoothing IDR signal noise score=0.9493
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9481
+
+  Top retrieved doc  : KB-010
+  Top retrieval score: 0.9495
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q91] Does the system improve robustness to sequence mutations?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Sliding window averaging is applied to per-residue 
+  disorder scores to reduce noise. The mean disordered region 
+  length in DisProt is 0.0 amino acids. If the sliding window size 
+  exceeds this mean, short disordered regions risk being smoothed 
+  out and lost. Window size must be chosen carefully to balance 
+  noise reduction against signal preservation. [Retrieved 2] 
+  Proline is a strong predictor of intrinsic disorder. The mean 
+  proline content across 13,396 DisProt proteins is 6.0%. 
+  Proline's rigid pyrrolidine ring disrupts alpha-helices and 
+  beta-sheets, preventing the formation of regular secondary 
+  structure. Regions with elevated proline are consistently 
+  associated with disordered behavior. [Retrieved 3] Glycine is 
+  the smallest amino acid and adds conformational freedom to 
+  protein backbones. The mean glycine content in DisProt is 7.0%. 
+  While elevated glycine can contribute to disorder, it is a 
+  weaker independent predictor than proline and should be 
+  evaluated in combination with other disorder signals. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-008 -- sliding window smoothing IDR signal noise score=0.9631
+    [2] KB-004 -- proline amino acid disorder prediction   score=0.9603
+    [3] KB-005 -- glycine amino acid flexible backbone     score=0.9602
+
+  Top retrieved doc  : KB-008
+  Top retrieval score: 0.9631
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q92] Are prediction improvements correlated with structural flexibility?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] AlphaFold assigns each 
+  amino acid a pLDDT confidence score from 0 to 100. Scores below 
+  50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. [Retrieved 3] Proline is a strong 
+  predictor of intrinsic disorder. The mean proline content across 
+  13,396 DisProt proteins is 6.0%. Proline's rigid pyrrolidine 
+  ring disrupts alpha-helices and beta-sheets, preventing the 
+  formation of regular secondary structure. Regions with elevated 
+  proline are consistently associated with disordered behavior. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9679
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9637
+    [3] KB-004 -- proline amino acid disorder prediction   score=0.9604
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9679
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q93] Does neurosymbolic reasoning improve functional annotation alignment?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] AlphaFold assigns each 
+  amino acid a pLDDT confidence score from 0 to 100. Scores below 
+  50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. [Retrieved 3] Disorder scores between 0.3 
+  and 0.5 define an ambiguous gray zone where proteins cannot be 
+  confidently classified as ordered or disordered. In the DisProt 
+  dataset of 13,396 proteins, a substantial fraction falls in this 
+  mid-range. These regions require secondary validation using 
+  sequence composition or experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9657
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9651
+    [3] KB-002 -- gray zone ambiguous disorder             score=0.9623
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9657
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q94] How does performance compare across different datasets?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] Proline is a strong predictor of intrinsic 
+  disorder. The mean proline content across 13,396 DisProt 
+  proteins is 6.0%. Proline's rigid pyrrolidine ring disrupts 
+  alpha-helices and beta-sheets, preventing the formation of 
+  regular secondary structure. Regions with elevated proline are 
+  consistently associated with disordered behavior. [Retrieved 2] 
+  Glycine is the smallest amino acid and adds conformational 
+  freedom to protein backbones. The mean glycine content in 
+  DisProt is 7.0%. While elevated glycine can contribute to 
+  disorder, it is a weaker independent predictor than proline and 
+  should be evaluated in combination with other disorder signals. 
+  [Retrieved 3] 92.6% of DisProt proteins contain at least one 
+  Pfam structured domain alongside their disordered regions. This 
+  confirms that structured domains and intrinsically disordered 
+  regions frequently co-occur in the same protein. Each region 
+  must be evaluated independently rather than classifying the 
+  whole protein as ordered or disordered. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-004 -- proline amino acid disorder prediction   score=0.9229
+    [2] KB-005 -- glycine amino acid flexible backbone     score=0.9223
+    [3] KB-012 -- Pfam domain structured mixed protein disorder score=0.9203
+
+  Top retrieved doc  : KB-004
+  Top retrieval score: 0.9229
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q95] Does the system improve classification of partially disordered regions?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] 92.6% of DisProt 
+  proteins contain at least one Pfam structured domain alongside 
+  their disordered regions. This confirms that structured domains 
+  and intrinsically disordered regions frequently co-occur in the 
+  same protein. Each region must be evaluated independently rather 
+  than classifying the whole protein as ordered or disordered. 
+  [Retrieved 3] Sliding window averaging is applied to per-residue 
+  disorder scores to reduce noise. The mean disordered region 
+  length in DisProt is 0.0 amino acids. If the sliding window size 
+  exceeds this mean, short disordered regions risk being smoothed 
+  out and lost. Window size must be chosen carefully to balance 
+  noise reduction against signal preservation. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9667
+    [2] KB-012 -- Pfam domain structured mixed protein disorder score=0.9654
+    [3] KB-008 -- sliding window smoothing IDR signal noise score=0.9637
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9667
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q96] Are gains consistent across evaluation folds?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 2] AlphaFold assigns each 
+  amino acid a pLDDT confidence score from 0 to 100. Scores below 
+  50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. [Retrieved 3] Sliding window averaging is 
+  applied to per-residue disorder scores to reduce noise. The mean 
+  disordered region length in DisProt is 0.0 amino acids. If the 
+  sliding window size exceeds this mean, short disordered regions 
+  risk being smoothed out and lost. Window size must be chosen 
+  carefully to balance noise reduction against signal 
+  preservation. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9543
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9543
+    [3] KB-008 -- sliding window smoothing IDR signal noise score=0.9532
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9543
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q97] Does neurosymbolic reasoning improve model calibration slope?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold assigns each amino acid a pLDDT 
+  confidence score from 0 to 100. Scores below 50 indicate very 
+  low structural confidence and strongly correlate with intrinsic 
+  disorder. DisProt experimentally confirms disorder in 13,396 
+  proteins; regions annotated as disordered in DisProt 
+  consistently show pLDDT below 50 in AlphaFold predictions, 
+  making this the most reliable single computational signal. 
+  [Retrieved 2] Disorder scores above 0.7 represent high 
+  confidence intrinsic disorder. These regions consistently 
+  correspond to experimentally validated IDRs in DisProt and 
+  typically show AlphaFold pLDDT scores below 50, indicating very 
+  low structural confidence from the AlphaFold model. [Retrieved 
+  3] AlphaFold pLDDT scores between 50 and 70 indicate low but not 
+  absent structural confidence. These regions may be conditionally 
+  disordered -- unstructured in isolation but folding upon binding 
+  to a partner molecule. Such regions are called Molecular 
+  Recognition Features (MoRFs) and require experimental validation 
+  to distinguish from stably structured regions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9620
+    [2] KB-003 -- high confidence disorder strong signal   score=0.9608
+    [3] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9605
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9620
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q98] How does the system perform on edge-case proteins?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores between 50 and 70 indicate 
+  low but not absent structural confidence. These regions may be 
+  conditionally disordered -- unstructured in isolation but 
+  folding upon binding to a partner molecule. Such regions are 
+  called Molecular Recognition Features (MoRFs) and require 
+  experimental validation to distinguish from stably structured 
+  regions. [Retrieved 2] AlphaFold pLDDT scores of 70 or above 
+  indicate high confidence in the predicted structure. Regions 
+  with these scores are likely ordered and not intrinsically 
+  disordered. Where DisProt experimental annotations exist for the 
+  same region, experimental data should take precedence over 
+  computational predictions. [Retrieved 3] AlphaFold assigns each 
+  amino acid a pLDDT confidence score from 0 to 100. Scores below 
+  50 indicate very low structural confidence and strongly 
+  correlate with intrinsic disorder. DisProt experimentally 
+  confirms disorder in 13,396 proteins; regions annotated as 
+  disordered in DisProt consistently show pLDDT below 50 in 
+  AlphaFold predictions, making this the most reliable single 
+  computational signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9556
+    [2] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9539
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9529
+
+  Top retrieved doc  : KB-010
+  Top retrieval score: 0.9556
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q99] Does neurosymbolic reasoning reduce prediction bias?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold assigns each amino acid a pLDDT 
+  confidence score from 0 to 100. Scores below 50 indicate very 
+  low structural confidence and strongly correlate with intrinsic 
+  disorder. DisProt experimentally confirms disorder in 13,396 
+  proteins; regions annotated as disordered in DisProt 
+  consistently show pLDDT below 50 in AlphaFold predictions, 
+  making this the most reliable single computational signal. 
+  [Retrieved 2] AlphaFold pLDDT scores of 70 or above indicate 
+  high confidence in the predicted structure. Regions with these 
+  scores are likely ordered and not intrinsically disordered. 
+  Where DisProt experimental annotations exist for the same 
+  region, experimental data should take precedence over 
+  computational predictions. [Retrieved 3] Sliding window 
+  averaging is applied to per-residue disorder scores to reduce 
+  noise. The mean disordered region length in DisProt is 0.0 amino 
+  acids. If the sliding window size exceeds this mean, short 
+  disordered regions risk being smoothed out and lost. Window size 
+  must be chosen carefully to balance noise reduction against 
+  signal preservation. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder  score=0.9510
+    [2] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9505
+    [3] KB-008 -- sliding window smoothing IDR signal noise score=0.9505
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9510
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+[Q100] Are overall improvements sufficient to justify added system complexity?
+
+  PREDICTED ANSWER (from retrieved passages):
+  [Retrieved 1] AlphaFold pLDDT scores between 50 and 70 indicate 
+  low but not absent structural confidence. These regions may be 
+  conditionally disordered -- unstructured in isolation but 
+  folding upon binding to a partner molecule. Such regions are 
+  called Molecular Recognition Features (MoRFs) and require 
+  experimental validation to distinguish from stably structured 
+  regions. [Retrieved 2] Sliding window averaging is applied to 
+  per-residue disorder scores to reduce noise. The mean disordered 
+  region length in DisProt is 0.0 amino acids. If the sliding 
+  window size exceeds this mean, short disordered regions risk 
+  being smoothed out and lost. Window size must be chosen 
+  carefully to balance noise reduction against signal 
+  preservation. [Retrieved 3] AlphaFold pLDDT scores of 70 or 
+  above indicate high confidence in the predicted structure. 
+  Regions with these scores are likely ordered and not 
+  intrinsically disordered. Where DisProt experimental annotations 
+  exist for the same region, experimental data should take 
+  precedence over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-010 -- AlphaFold pLDDT moderate conditional disorder MoRF score=0.9582
+    [2] KB-008 -- sliding window smoothing IDR signal noise score=0.9578
+    [3] KB-011 -- AlphaFold pLDDT high confidence structured folded score=0.9575
+
+  Top retrieved doc  : KB-010
+  Top retrieval score: 0.9582
+  Retrieval method   : BiomedBERT semantic similarity
+  Prediction quality : HIGH
+
+======================================================================
+  COMPARISON NOTE
+----------------------------------------------------------------------
+  LLM Judge 1 (BiomedBERT + Symbolic Rules + Calibration)
+    -- Rules ground answers in hard biological constraints
+    -- Calibrated confidence scores reflect real accuracy
+    -- More interpretable, explainable predictions
+
+  LLM Judge 2 (Vanilla RAG -- this file)
+    -- Pure neural retrieval, no hard constraints
+    -- Answers are data-driven but unconstrained
+    -- Useful baseline to measure symbolic rule benefit
+
+======================================================================
+  END OF PREDICTIONS
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
