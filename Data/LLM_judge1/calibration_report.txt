@@ -1,0 +1,235 @@
+======================================================================
+  BMEN-499 AlphaFold -- Symbolic Rule Calibration Report
+  DisProt proteins tested: 13,396
+  Rules evaluated: 13
+  Expected Calibration Error (ECE): 0.1260
+  (ECE closer to 0.0 = better calibrated)
+======================================================================
+
+WHAT IS CALIBRATION?
+----------------------------------------------------------------------
+  Calibration checks if a rule's confidence score matches
+  how often it is actually correct.
+  Example: A rule claiming 85% confidence should be right
+  about 85% of the time. If it is only right 60% of the
+  time, it is OVERCONFIDENT and needs adjustment.
+
+CATEGORY: Disorder Threshold
+----------------------------------------------------------------------
+  [DR-001] 0.5 Cutoff Reliability
+  Status           : UNDERCONFIDENT
+  Times fired      : 500
+  Times correct    : 500
+  Empirical accuracy : 100.0%
+  Assigned confidence: 85.0%
+  Calibration gap    : -15.0% (underconfident)
+  Calibrated confidence (adjusted): 95.5%
+  Empirical   [####################] 100%
+  Assigned    [#################...] 85%
+
+  [DR-002] Gray Zone Detection
+  Status           : UNDERCONFIDENT
+  Times fired      : 61
+  Times correct    : 61
+  Empirical accuracy : 100.0%
+  Assigned confidence: 75.0%
+  Calibration gap    : -25.0% (underconfident)
+  Calibrated confidence (adjusted): 92.5%
+  Empirical   [####################] 100%
+  Assigned    [###############.....] 75%
+
+  [DR-003] High Confidence Disorder
+  Status           : UNDERCONFIDENT
+  Times fired      : 231
+  Times correct    : 231
+  Empirical accuracy : 100.0%
+  Assigned confidence: 95.0%
+  Calibration gap    : -5.0% (underconfident)
+  Calibrated confidence (adjusted): 98.5%
+  Empirical   [####################] 100%
+  Assigned    [###################.] 95%
+
+
+CATEGORY: Sequence Composition
+----------------------------------------------------------------------
+  [SC-001] Proline Enrichment
+  Status           : UNDERCONFIDENT
+  Times fired      : 121
+  Times correct    : 116
+  Empirical accuracy : 95.9%
+  Assigned confidence: 82.0%
+  Calibration gap    : -13.9% (underconfident)
+  Calibrated confidence (adjusted): 91.7%
+  Empirical   [###################.] 96%
+  Assigned    [################....] 82%
+
+  [SC-002] Glycine Enrichment
+  Status           : UNDERCONFIDENT
+  Times fired      : 77
+  Times correct    : 75
+  Empirical accuracy : 97.4%
+  Assigned confidence: 80.0%
+  Calibration gap    : -17.4% (underconfident)
+  Calibrated confidence (adjusted): 92.2%
+  Empirical   [###################.] 97%
+  Assigned    [################....] 80%
+
+  [SC-003] Combined Pro-Gly Signal
+  Status           : UNDERCONFIDENT
+  Times fired      : 141
+  Times correct    : 141
+  Empirical accuracy : 100.0%
+  Assigned confidence: 88.0%
+  Calibration gap    : -12.0% (underconfident)
+  Calibrated confidence (adjusted): 96.4%
+  Empirical   [####################] 100%
+  Assigned    [#################...] 88%
+
+
+CATEGORY: Region Length
+----------------------------------------------------------------------
+  [RL-001] Short IDR Warning
+  Status           : NOT FIRED
+  Times fired      : 0
+  Times correct    : 0
+  Result: Rule never fired on this dataset
+
+  [RL-002] Typical IDR Length
+  Status           : NOT FIRED
+  Times fired      : 0
+  Times correct    : 0
+  Result: Rule never fired on this dataset
+
+
+CATEGORY: AlphaFold pLDDT
+----------------------------------------------------------------------
+  [AF-001] Very Low pLDDT -- High Disorder
+  Status           : UNDERCONFIDENT
+  Times fired      : 274
+  Times correct    : 274
+  Empirical accuracy : 100.0%
+  Assigned confidence: 92.0%
+  Calibration gap    : -8.0% (underconfident)
+  Calibrated confidence (adjusted): 97.6%
+  Empirical   [####################] 100%
+  Assigned    [##################..] 92%
+
+  [AF-002] Moderate pLDDT -- Ambiguous
+  Status           : UNDERCONFIDENT
+  Times fired      : 71
+  Times correct    : 71
+  Empirical accuracy : 100.0%
+  Assigned confidence: 72.0%
+  Calibration gap    : -28.0% (underconfident)
+  Calibrated confidence (adjusted): 91.6%
+  Empirical   [####################] 100%
+  Assigned    [##############......] 72%
+
+  [AF-003] High pLDDT -- Structured
+  Status           : UNDERCONFIDENT
+  Times fired      : 155
+  Times correct    : 150
+  Empirical accuracy : 96.8%
+  Assigned confidence: 90.0%
+  Calibration gap    : -6.8% (underconfident)
+  Calibrated confidence (adjusted): 94.7%
+  Empirical   [###################.] 97%
+  Assigned    [##################..] 90%
+
+
+CATEGORY: Structural Domain
+----------------------------------------------------------------------
+  [SD-001] Pfam Domain Co-occurrence
+  Status           : UNDERCONFIDENT
+  Times fired      : 467
+  Times correct    : 467
+  Empirical accuracy : 100.0%
+  Assigned confidence: 87.0%
+  Calibration gap    : -13.0% (underconfident)
+  Calibrated confidence (adjusted): 96.1%
+  Empirical   [####################] 100%
+  Assigned    [#################...] 87%
+
+  [SD-002] No Pfam Domain -- Likely Full IDR
+  Status           : UNDERCONFIDENT
+  Times fired      : 33
+  Times correct    : 33
+  Empirical accuracy : 100.0%
+  Assigned confidence: 80.0%
+  Calibration gap    : -20.0% (underconfident)
+  Calibrated confidence (adjusted): 94.0%
+  Empirical   [####################] 100%
+  Assigned    [################....] 80%
+
+
+CALIBRATION SUMMARY TABLE
+----------------------------------------------------------------------
+  Rule ID      Assigned  Empirical      Gap Status              
+  ---------- ---------- ---------- -------- --------------------
+  DR-001         85.0%     100.0%   -15.0%  UNDERCONFIDENT      
+  DR-002         75.0%     100.0%   -25.0%  UNDERCONFIDENT      
+  DR-003         95.0%     100.0%    -5.0%  UNDERCONFIDENT      
+  SC-001         82.0%      95.9%   -13.9%  UNDERCONFIDENT      
+  SC-002         80.0%      97.4%   -17.4%  UNDERCONFIDENT      
+  SC-003         88.0%     100.0%   -12.0%  UNDERCONFIDENT      
+  RL-001         78.0%        N/A      N/A  NOT FIRED           
+  RL-002         85.0%        N/A      N/A  NOT FIRED           
+  AF-001         92.0%     100.0%    -8.0%  UNDERCONFIDENT      
+  AF-002         72.0%     100.0%   -28.0%  UNDERCONFIDENT      
+  AF-003         90.0%      96.8%    -6.8%  UNDERCONFIDENT      
+  SD-001         87.0%     100.0%   -13.0%  UNDERCONFIDENT      
+  SD-002         80.0%     100.0%   -20.0%  UNDERCONFIDENT      
+
+  Overall ECE: 0.1260 (target < 0.05 for well-calibrated system)
+
+RECOMMENDATIONS
+----------------------------------------------------------------------
+  Well calibrated : 0 rules -- no action needed
+  Overconfident   : 0 rules -- lower confidence scores
+  Underconfident  : 11 rules -- raise confidence scores
+
+  Rules to raise confidence:
+    [DR-001] 0.5 Cutoff Reliability: 85% -> 96%
+    [DR-002] Gray Zone Detection: 75% -> 92%
+    [DR-003] High Confidence Disorder: 95% -> 98%
+    [SC-001] Proline Enrichment: 82% -> 92%
+    [SC-002] Glycine Enrichment: 80% -> 92%
+    [SC-003] Combined Pro-Gly Signal: 88% -> 96%
+    [AF-001] Very Low pLDDT -- High Disorder: 92% -> 98%
+    [AF-002] Moderate pLDDT -- Ambiguous: 72% -> 92%
+    [AF-003] High pLDDT -- Structured: 90% -> 95%
+    [SD-001] Pfam Domain Co-occurrence: 87% -> 96%
+    [SD-002] No Pfam Domain -- Likely Full IDR: 80% -> 94%
+
+======================================================================
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
+
+CALIBRATED RULE CONFIDENCE SCORES
+(Use these updated values in SymbolicRules.py)
+----------------------------------------------------------------------
+  [DR-001] 0.5 Cutoff Reliability              85% -> 96%
+  [DR-002] Gray Zone Detection                 75% -> 92%
+  [DR-003] High Confidence Disorder            95% -> 98%
+  [SC-001] Proline Enrichment                  82% -> 92%
+  [SC-002] Glycine Enrichment                  80% -> 92%
+  [SC-003] Combined Pro-Gly Signal             88% -> 96%
+  [RL-001] Short IDR Warning                   78% -> NOT FIRED (keep assigned value)
+  [RL-002] Typical IDR Length                  85% -> NOT FIRED (keep assigned value)
+  [AF-001] Very Low pLDDT -- High Disorder     92% -> 98%
+  [AF-002] Moderate pLDDT -- Ambiguous         72% -> 92%
+  [AF-003] High pLDDT -- Structured            90% -> 95%
+  [SD-001] Pfam Domain Co-occurrence           87% -> 96%
+  [SD-002] No Pfam Domain -- Likely Full IDR   80% -> 94%
+
+HOW TO APPLY CALIBRATION
+----------------------------------------------------------------------
+  1. Open Data/LLM_judge1/SymbolicRules.py
+  2. Find each rule by its Rule ID (e.g. DR-001)
+  3. Replace confidence value with the calibrated value above
+  4. Re-run the pipeline -- calibrated rules produce more
+     reliable inferences because confidence matches real accuracy
+
+======================================================================
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
