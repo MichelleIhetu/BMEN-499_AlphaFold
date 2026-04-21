@@ -1,0 +1,1924 @@
+======================================================================
+  BMEN-499 AlphaFold -- LLM Judge 1: BiomedBERT Predictions
+  Model   : microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract
+  Method  : BiomedBERT semantic similarity + calibrated symbolic rules
+  Dataset : 13,396 DisProt proteins
+  Questions evaluated: 100
+======================================================================
+
+HOW PREDICTIONS ARE MADE
+----------------------------------------------------------------------
+  Step 1 -- BiomedBERT encodes each question into a semantic vector
+  Step 2 -- Each symbolic rule's topic is also encoded
+  Step 3 -- Cosine similarity finds the most relevant rule
+  Step 4 -- Calibrated confidence scores weight the match
+  Step 5 -- The best matching rule's answer becomes the prediction
+  Step 6 -- Prediction quality is flagged (HIGH / MEDIUM / LOW)
+
+  Prediction quality summary:
+    HIGH   : 95  questions
+    MEDIUM : 5  questions
+    LOW    : 0  questions (general fallback used)
+
+======================================================================
+[Q1] Is a disorder score above 0.5 a reliable cutoff for calling a region disordered?
+
+  PREDICTED ANSWER:
+  Based on 13,396 DisProt proteins, a disorder score above 0.5 is 
+  a commonly used cutoff but it is conservative. Only 29.1% of 
+  proteins exceed 0.5, while 44.2% exceed 0.3. Many true IDRs fall 
+  in the 0.3-0.5 range and would be missed by a strict 0.5 
+  threshold. The cutoff is a useful starting point but not fully 
+  reliable on its own. 
+
+  Rule used        : [DR-001] Disorder Threshold
+  Calibrated conf  : 96%
+  Neural score     : 0.9590  (BiomedBERT similarity)
+  Symbolic score   : 0.8000  (keyword match)
+  Combined score   : 0.8596  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('DR-001', 0.8596), ('AF-001', 0.5498), ('SD-001', 0.5415)]
+
+======================================================================
+[Q2] Do confidence scores drop for IDRs shorter than 10 residues?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9269  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6234  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.6234), ('RL-001', 0.622), ('RL-002', 0.6151)]
+
+======================================================================
+[Q3] Do proline and glycine-rich regions consistently score higher disorder confidence than average?
+
+  PREDICTED ANSWER:
+  Based on 13,396 DisProt proteins, a disorder score above 0.5 is 
+  a commonly used cutoff but it is conservative. Only 29.1% of 
+  proteins exceed 0.5, while 44.2% exceed 0.3. Many true IDRs fall 
+  in the 0.3-0.5 range and would be missed by a strict 0.5 
+  threshold. The cutoff is a useful starting point but not fully 
+  reliable on its own. 
+
+  Rule used        : [DR-001] Disorder Threshold
+  Calibrated conf  : 96%
+  Neural score     : 0.9381  (BiomedBERT similarity)
+  Symbolic score   : 0.4000  (keyword match)
+  Combined score   : 0.6940  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('DR-001', 0.694), ('SC-003', 0.6405), ('SC-001', 0.6359)]
+
+======================================================================
+[Q4] Does applying a sliding window smooth out confidence scores without losing true IDR signal?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9558  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6404  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.6404), ('DR-001', 0.6249), ('RL-002', 0.549)]
+
+======================================================================
+[Q5] How far off are raw confidence scores from the true disorder rate in DisProt?
+
+  PREDICTED ANSWER:
+  Based on 13,396 DisProt proteins, a disorder score above 0.5 is 
+  a commonly used cutoff but it is conservative. Only 29.1% of 
+  proteins exceed 0.5, while 44.2% exceed 0.3. Many true IDRs fall 
+  in the 0.3-0.5 range and would be missed by a strict 0.5 
+  threshold. The cutoff is a useful starting point but not fully 
+  reliable on its own. 
+
+  Rule used        : [DR-001] Disorder Threshold
+  Calibrated conf  : 96%
+  Neural score     : 0.9544  (BiomedBERT similarity)
+  Symbolic score   : 0.4000  (keyword match)
+  Combined score   : 0.7033  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('DR-001', 0.7033), ('AF-001', 0.6396), ('RL-002', 0.5495)]
+
+======================================================================
+[Q6] When a confidence score falls in the uncertain range (0.4–0.6), does applying a sliding window smooth it toward the correct label, and what window size does the literature support?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9550  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6399  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.6399), ('DR-001', 0.6276), ('DR-002', 0.6039)]
+
+======================================================================
+[Q7] How much do raw confidence scores overestimate or underestimate true disorder rates across DisProt?
+
+  PREDICTED ANSWER:
+  Based on 13,396 DisProt proteins, a disorder score above 0.5 is 
+  a commonly used cutoff but it is conservative. Only 29.1% of 
+  proteins exceed 0.5, while 44.2% exceed 0.3. Many true IDRs fall 
+  in the 0.3-0.5 range and would be missed by a strict 0.5 
+  threshold. The cutoff is a useful starting point but not fully 
+  reliable on its own. 
+
+  Rule used        : [DR-001] Disorder Threshold
+  Calibrated conf  : 96%
+  Neural score     : 0.9454  (BiomedBERT similarity)
+  Symbolic score   : 0.4000  (keyword match)
+  Combined score   : 0.6982  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('DR-001', 0.6982), ('AF-001', 0.6298), ('SD-001', 0.5395)]
+
+======================================================================
+[Q8] After applying symbolic smoothing and isotonic calibration together, by how much does residue level F1 improve over raw scores, and is this improvement consistent with gains reported for similar post processing pipelines in the literature?
+
+  PREDICTED ANSWER:
+  Based on 13,396 DisProt proteins, a disorder score above 0.5 is 
+  a commonly used cutoff but it is conservative. Only 29.1% of 
+  proteins exceed 0.5, while 44.2% exceed 0.3. Many true IDRs fall 
+  in the 0.3-0.5 range and would be missed by a strict 0.5 
+  threshold. The cutoff is a useful starting point but not fully 
+  reliable on its own. 
+
+  Rule used        : [DR-001] Disorder Threshold
+  Calibrated conf  : 96%
+  Neural score     : 0.9506  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6243  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('DR-001', 0.6243), ('AF-001', 0.5588), ('RL-002', 0.5484)]
+
+======================================================================
+[Q9] What is the MAE between raw disorder confidence scores and DisProt ground truth labels, and how many standard deviations (Z-score) away from the mean prediction is each incorrectly labeled residue?
+
+  PREDICTED ANSWER:
+  Based on 13,396 DisProt proteins, a disorder score above 0.5 is 
+  a commonly used cutoff but it is conservative. Only 29.1% of 
+  proteins exceed 0.5, while 44.2% exceed 0.3. Many true IDRs fall 
+  in the 0.3-0.5 range and would be missed by a strict 0.5 
+  threshold. The cutoff is a useful starting point but not fully 
+  reliable on its own. 
+
+  Rule used        : [DR-001] Disorder Threshold
+  Calibrated conf  : 96%
+  Neural score     : 0.9533  (BiomedBERT similarity)
+  Symbolic score   : 0.4000  (keyword match)
+  Combined score   : 0.7027  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('DR-001', 0.7027), ('AF-001', 0.6431), ('RL-002', 0.5553)]
+
+======================================================================
+[Q10] Do N-terminal, C-terminal, and internal IDRs show different MAE profiles, and are the Z-scores of prediction errors normally distributed within each positional group or skewed in a way that suggests a systematic bias?
+
+  PREDICTED ANSWER:
+  Based on 13,396 DisProt proteins, a disorder score above 0.5 is 
+  a commonly used cutoff but it is conservative. Only 29.1% of 
+  proteins exceed 0.5, while 44.2% exceed 0.3. Many true IDRs fall 
+  in the 0.3-0.5 range and would be missed by a strict 0.5 
+  threshold. The cutoff is a useful starting point but not fully 
+  reliable on its own. 
+
+  Rule used        : [DR-001] Disorder Threshold
+  Calibrated conf  : 96%
+  Neural score     : 0.9385  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6174  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('DR-001', 0.6174), ('AF-001', 0.5486), ('SD-001', 0.5423)]
+
+======================================================================
+[Q11] Does a neurosymbolic RAG system reduce variance in disorder confidence predictions compared to raw model outputs?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9352  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6283  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.6283), ('DR-001', 0.617), ('SD-001', 0.5435)]
+
+======================================================================
+[Q12] How does the precision-recall curve change after applying neurosymbolic reasoning?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9291  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5463  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.5463), ('SD-001', 0.5424), ('DR-001', 0.5418)]
+
+======================================================================
+[Q13] Does incorporating symbolic rules improve classification accuracy for borderline disorder regions?
+
+  PREDICTED ANSWER:
+  Based on 13,396 DisProt proteins, a disorder score above 0.5 is 
+  a commonly used cutoff but it is conservative. Only 29.1% of 
+  proteins exceed 0.5, while 44.2% exceed 0.3. Many true IDRs fall 
+  in the 0.3-0.5 range and would be missed by a strict 0.5 
+  threshold. The cutoff is a useful starting point but not fully 
+  reliable on its own. 
+
+  Rule used        : [DR-001] Disorder Threshold
+  Calibrated conf  : 96%
+  Neural score     : 0.9492  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6235  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('DR-001', 0.6235), ('DR-002', 0.5917), ('AF-001', 0.5476)]
+
+======================================================================
+[Q14] What is the impact of neurosymbolic calibration on false positive rates in ordered regions?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9278  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5455  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.5455), ('SD-001', 0.5428), ('DR-001', 0.5405)]
+
+======================================================================
+[Q15] Does the neurosymbolic approach improve prediction consistency across homologous proteins?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9258  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5333  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5333), ('AF-001', 0.527), ('SC-001', 0.5253)]
+
+======================================================================
+[Q16] How sensitive are disorder predictions to the choice of retrieval documents in the RAG system?
+
+  PREDICTED ANSWER:
+  Based on 13,396 DisProt proteins, a disorder score above 0.5 is 
+  a commonly used cutoff but it is conservative. Only 29.1% of 
+  proteins exceed 0.5, while 44.2% exceed 0.3. Many true IDRs fall 
+  in the 0.3-0.5 range and would be missed by a strict 0.5 
+  threshold. The cutoff is a useful starting point but not fully 
+  reliable on its own. 
+
+  Rule used        : [DR-001] Disorder Threshold
+  Calibrated conf  : 96%
+  Neural score     : 0.9427  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6198  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('DR-001', 0.6198), ('AF-001', 0.552), ('RL-002', 0.5432)]
+
+======================================================================
+[Q17] Does contextual biological knowledge retrieved via RAG improve long IDR detection accuracy?
+
+  PREDICTED ANSWER:
+  The average disordered region in DisProt spans 0.0 amino acids 
+  across 0 annotated regions. Regions of 10 or more residues 
+  provide sufficient sequence context for reliable disorder 
+  prediction. Sliding window methods work best when the window 
+  size stays well below this mean to avoid smoothing out true 
+  signal. 
+
+  Rule used        : [RL-002] Region Length
+  Calibrated conf  : 96%
+  Neural score     : 0.9370  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6165  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('RL-002', 0.6165), ('AF-001', 0.5484), ('SD-001', 0.544)]
+
+======================================================================
+[Q18] How does performance differ between short and long IDRs after neurosymbolic processing?
+
+  PREDICTED ANSWER:
+  The average disordered region in DisProt spans 0.0 amino acids 
+  across 0 annotated regions. Regions of 10 or more residues 
+  provide sufficient sequence context for reliable disorder 
+  prediction. Sliding window methods work best when the window 
+  size stays well below this mean to avoid smoothing out true 
+  signal. 
+
+  Rule used        : [RL-002] Region Length
+  Calibrated conf  : 96%
+  Neural score     : 0.9059  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.5986  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('RL-002', 0.5986), ('SD-001', 0.5295), ('DR-001', 0.5288)]
+
+======================================================================
+[Q19] Are certain amino acid compositions more responsive to symbolic correction rules?
+
+  PREDICTED ANSWER:
+  Proline content is a strong predictor of intrinsic disorder. The 
+  DisProt dataset mean proline fraction is 6.0%. Regions with 
+  proline content above 1.5x this mean are very likely disordered 
+  because proline's rigid ring structure disrupts alpha-helices 
+  and beta-sheets, preventing regular folding. 
+
+  Rule used        : [SC-001] Sequence Composition
+  Calibrated conf  : 95%
+  Neural score     : 0.9436  (BiomedBERT similarity)
+  Symbolic score   : 0.5000  (keyword match)
+  Combined score   : 0.7278  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SC-001', 0.7278), ('AF-001', 0.5418), ('SD-001', 0.5376)]
+
+======================================================================
+[Q20] Does neurosymbolic reasoning reduce prediction noise in low-confidence regions?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9152  (BiomedBERT similarity)
+  Symbolic score   : 0.4000  (keyword match)
+  Combined score   : 0.6949  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.6949), ('SD-001', 0.5371), ('DR-001', 0.5325)]
+
+======================================================================
+[Q21] How does calibration affect AUROC compared to raw predictions?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9266  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5337  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5337), ('AF-001', 0.5337), ('DR-001', 0.5315)]
+
+======================================================================
+[Q22] Does symbolic smoothing introduce bias toward overprediction of disorder?
+
+  PREDICTED ANSWER:
+  Based on 13,396 DisProt proteins, a disorder score above 0.5 is 
+  a commonly used cutoff but it is conservative. Only 29.1% of 
+  proteins exceed 0.5, while 44.2% exceed 0.3. Many true IDRs fall 
+  in the 0.3-0.5 range and would be missed by a strict 0.5 
+  threshold. The cutoff is a useful starting point but not fully 
+  reliable on its own. 
+
+  Rule used        : [DR-001] Disorder Threshold
+  Calibrated conf  : 96%
+  Neural score     : 0.9429  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6199  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('DR-001', 0.6199), ('AF-001', 0.5459), ('SD-001', 0.5384)]
+
+======================================================================
+[Q23] What is the distribution of confidence score corrections applied by the neurosymbolic system?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9247  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6221  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.6221), ('DR-001', 0.6125), ('SD-001', 0.5391)]
+
+======================================================================
+[Q24] Does the system improve recall without sacrificing precision?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.8976  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5170  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.517), ('AF-001', 0.5168), ('DR-001', 0.5165)]
+
+======================================================================
+[Q25] How does performance vary across different protein families?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.8343  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.4806  (weighted total)
+  Prediction quality: MEDIUM
+  Top 3 rule matches: [('SD-001', 0.4806), ('SC-001', 0.4727), ('DR-001', 0.4719)]
+
+======================================================================
+[Q26] Are improvements consistent across species in the DisProt dataset?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9379  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5402  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5402), ('AF-001', 0.54), ('DR-001', 0.5356)]
+
+======================================================================
+[Q27] Does the neurosymbolic model perform better on experimentally validated long IDRs?
+
+  PREDICTED ANSWER:
+  The average disordered region in DisProt spans 0.0 amino acids 
+  across 0 annotated regions. Regions of 10 or more residues 
+  provide sufficient sequence context for reliable disorder 
+  prediction. Sliding window methods work best when the window 
+  size stays well below this mean to avoid smoothing out true 
+  signal. 
+
+  Rule used        : [RL-002] Region Length
+  Calibrated conf  : 96%
+  Neural score     : 0.9288  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6118  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('RL-002', 0.6118), ('AF-001', 0.5427), ('SD-001', 0.5423)]
+
+======================================================================
+[Q28] How does retrieval quality impact final prediction confidence?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9048  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6104  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.6104), ('SD-001', 0.5326), ('DR-001', 0.5319)]
+
+======================================================================
+[Q29] Are confidence score corrections correlated with sequence length?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9226  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6209  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.6209), ('DR-001', 0.6134), ('SD-001', 0.5405)]
+
+======================================================================
+[Q30] Does neurosymbolic reasoning improve predictions for low-complexity regions?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9055  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6108  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.6108), ('SD-001', 0.5321), ('DR-001', 0.5303)]
+
+======================================================================
+[Q31] How does entropy of predictions change after symbolic reasoning?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9209  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5304  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5304), ('AF-001', 0.5287), ('DR-001', 0.5279)]
+
+======================================================================
+[Q32] Does the system reduce systematic bias in terminal regions?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9310  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5474  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.5474), ('SD-001', 0.5428), ('RL-002', 0.5424)]
+
+======================================================================
+[Q33] Are gains from neurosymbolic processing statistically significant?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9089  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5344  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.5344), ('SD-001', 0.5338), ('DR-001', 0.5307)]
+
+======================================================================
+[Q34] How does performance compare against baseline machine learning models?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.8981  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5173  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5173), ('DR-001', 0.515), ('AF-001', 0.5119)]
+
+======================================================================
+[Q35] Does adding domain knowledge improve classification boundaries?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9238  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6089  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.6089), ('DR-001', 0.5318), ('AF-001', 0.5311)]
+
+======================================================================
+[Q36] How robust is the model to noisy or incomplete retrieval data?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9046  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5210  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.521), ('AF-001', 0.5193), ('DR-001', 0.5152)]
+
+======================================================================
+[Q37] Does the neurosymbolic system improve calibration curves?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9323  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5370  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.537), ('AF-001', 0.5358), ('DR-001', 0.5325)]
+
+======================================================================
+[Q38] How does Brier score change after calibration?
+
+  PREDICTED ANSWER:
+  Based on 13,396 DisProt proteins, a disorder score above 0.5 is 
+  a commonly used cutoff but it is conservative. Only 29.1% of 
+  proteins exceed 0.5, while 44.2% exceed 0.3. Many true IDRs fall 
+  in the 0.3-0.5 range and would be missed by a strict 0.5 
+  threshold. The cutoff is a useful starting point but not fully 
+  reliable on its own. 
+
+  Rule used        : [DR-001] Disorder Threshold
+  Calibrated conf  : 96%
+  Neural score     : 0.9318  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6135  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('DR-001', 0.6135), ('SD-001', 0.5391), ('AF-001', 0.5376)]
+
+======================================================================
+[Q39] Are prediction improvements uniform across all confidence intervals?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9058  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6110  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.611), ('DR-001', 0.5275), ('SD-001', 0.5274)]
+
+======================================================================
+[Q40] Does neurosymbolic reasoning improve interpretability of predictions?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9178  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5286  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5286), ('AF-001', 0.5264), ('DR-001', 0.5231)]
+
+======================================================================
+[Q41] How does performance change when removing symbolic rules?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9029  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5201  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5201), ('DR-001', 0.5178), ('AF-001', 0.5154)]
+
+======================================================================
+[Q42] Does the system better detect disordered binding regions?
+
+  PREDICTED ANSWER:
+  Based on 13,396 DisProt proteins, a disorder score above 0.5 is 
+  a commonly used cutoff but it is conservative. Only 29.1% of 
+  proteins exceed 0.5, while 44.2% exceed 0.3. Many true IDRs fall 
+  in the 0.3-0.5 range and would be missed by a strict 0.5 
+  threshold. The cutoff is a useful starting point but not fully 
+  reliable on its own. 
+
+  Rule used        : [DR-001] Disorder Threshold
+  Calibrated conf  : 96%
+  Neural score     : 0.8931  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.5912  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('DR-001', 0.5912), ('SD-001', 0.5232), ('AF-001', 0.5127)]
+
+======================================================================
+[Q43] Are certain motifs better recognized after symbolic processing?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9289  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5351  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5351), ('AF-001', 0.5348), ('DR-001', 0.5314)]
+
+======================================================================
+[Q44] How does the system handle conflicting retrieved evidence?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9030  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5201  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5201), ('AF-001', 0.5145), ('DR-001', 0.5142)]
+
+======================================================================
+[Q45] Does neurosymbolic reasoning reduce overfitting?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9177  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5396  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.5396), ('SD-001', 0.5354), ('DR-001', 0.5321)]
+
+======================================================================
+[Q46] What is the effect on Matthews Correlation Coefficient (MCC)?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9183  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5289  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5289), ('DR-001', 0.5253), ('AF-001', 0.5239)]
+
+======================================================================
+[Q47] Does performance degrade on unseen protein structures?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9060  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5219  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5219), ('AF-001', 0.5156), ('DR-001', 0.5136)]
+
+======================================================================
+[Q48] How does retrieval latency affect prediction quality?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9038  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5206  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5206), ('DR-001', 0.5201), ('AF-001', 0.5169)]
+
+======================================================================
+[Q49] Does symbolic reasoning improve alignment with experimental annotations?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9296  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5354  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5354), ('AF-001', 0.5351), ('DR-001', 0.5299)]
+
+======================================================================
+[Q50] Are prediction improvements localized or global across sequences?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9248  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5438  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.5438), ('SD-001', 0.541), ('RL-002', 0.5385)]
+
+======================================================================
+[Q51] Does neurosymbolic RAG help identify disorder-to-order transitions?
+
+  PREDICTED ANSWER:
+  Based on 13,396 DisProt proteins, a disorder score above 0.5 is 
+  a commonly used cutoff but it is conservative. Only 29.1% of 
+  proteins exceed 0.5, while 44.2% exceed 0.3. Many true IDRs fall 
+  in the 0.3-0.5 range and would be missed by a strict 0.5 
+  threshold. The cutoff is a useful starting point but not fully 
+  reliable on its own. 
+
+  Rule used        : [DR-001] Disorder Threshold
+  Calibrated conf  : 96%
+  Neural score     : 0.9295  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6122  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('DR-001', 0.6122), ('AF-001', 0.5392), ('SD-001', 0.5387)]
+
+======================================================================
+[Q52] How does the system perform on proteins with multiple IDRs?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9120  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5253  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5253), ('AF-001', 0.5166), ('DR-001', 0.5147)]
+
+======================================================================
+[Q53] Does calibration reduce prediction skewness?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9032  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5311  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.5311), ('SD-001', 0.5305), ('DR-001', 0.5287)]
+
+======================================================================
+[Q54] Are confidence intervals narrower after processing?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.8736  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.5920  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.592), ('SD-001', 0.5144), ('DR-001', 0.514)]
+
+======================================================================
+[Q55] Does neurosymbolic reasoning improve classification of ambiguous residues?
+
+  PREDICTED ANSWER:
+  The average disordered region in DisProt spans 0.0 amino acids 
+  across 0 annotated regions. Regions of 10 or more residues 
+  provide sufficient sequence context for reliable disorder 
+  prediction. Sliding window methods work best when the window 
+  size stays well below this mean to avoid smoothing out true 
+  signal. 
+
+  Rule used        : [RL-002] Region Length
+  Calibrated conf  : 96%
+  Neural score     : 0.9315  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6134  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('RL-002', 0.6134), ('DR-002', 0.5821), ('AF-001', 0.5422)]
+
+======================================================================
+[Q56] How does the system perform under cross-validation?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9019  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5195  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5195), ('AF-001', 0.5171), ('DR-001', 0.5164)]
+
+======================================================================
+[Q57] Does it generalize across different disorder prediction tools?
+
+  PREDICTED ANSWER:
+  Based on 13,396 DisProt proteins, a disorder score above 0.5 is 
+  a commonly used cutoff but it is conservative. Only 29.1% of 
+  proteins exceed 0.5, while 44.2% exceed 0.3. Many true IDRs fall 
+  in the 0.3-0.5 range and would be missed by a strict 0.5 
+  threshold. The cutoff is a useful starting point but not fully 
+  reliable on its own. 
+
+  Rule used        : [DR-001] Disorder Threshold
+  Calibrated conf  : 96%
+  Neural score     : 0.9036  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.5973  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('DR-001', 0.5973), ('SD-001', 0.5205), ('AF-001', 0.5135)]
+
+======================================================================
+[Q58] Are improvements correlated with sequence conservation?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9214  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5307  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5307), ('AF-001', 0.5274), ('RL-002', 0.524)]
+
+======================================================================
+[Q59] Does retrieval of structural data improve predictions?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.8994  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5180  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.518), ('AF-001', 0.5084), ('SC-001', 0.5071)]
+
+======================================================================
+[Q60] How does performance change with different window sizes?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.8641  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.4977  (weighted total)
+  Prediction quality: MEDIUM
+  Top 3 rule matches: [('SD-001', 0.4977), ('DR-001', 0.4971), ('SC-001', 0.489)]
+
+======================================================================
+[Q61] Does neurosymbolic reasoning help detect functional disorder regions?
+
+  PREDICTED ANSWER:
+  Based on 13,396 DisProt proteins, a disorder score above 0.5 is 
+  a commonly used cutoff but it is conservative. Only 29.1% of 
+  proteins exceed 0.5, while 44.2% exceed 0.3. Many true IDRs fall 
+  in the 0.3-0.5 range and would be missed by a strict 0.5 
+  threshold. The cutoff is a useful starting point but not fully 
+  reliable on its own. 
+
+  Rule used        : [DR-001] Disorder Threshold
+  Calibrated conf  : 96%
+  Neural score     : 0.9393  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6178  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('DR-001', 0.6178), ('AF-001', 0.5464), ('SD-001', 0.543)]
+
+======================================================================
+[Q62] Are gains higher in specific residue compositions?
+
+  PREDICTED ANSWER:
+  Proline content is a strong predictor of intrinsic disorder. The 
+  DisProt dataset mean proline fraction is 6.0%. Regions with 
+  proline content above 1.5x this mean are very likely disordered 
+  because proline's rigid ring structure disrupts alpha-helices 
+  and beta-sheets, preventing regular folding. 
+
+  Rule used        : [SC-001] Sequence Composition
+  Calibrated conf  : 95%
+  Neural score     : 0.9381  (BiomedBERT similarity)
+  Symbolic score   : 0.2500  (keyword match)
+  Combined score   : 0.6297  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SC-001', 0.6297), ('AF-003', 0.5501), ('AF-001', 0.5465)]
+
+======================================================================
+[Q63] Does the system improve classification of edge residues in IDRs?
+
+  PREDICTED ANSWER:
+  The average disordered region in DisProt spans 0.0 amino acids 
+  across 0 annotated regions. Regions of 10 or more residues 
+  provide sufficient sequence context for reliable disorder 
+  prediction. Sliding window methods work best when the window 
+  size stays well below this mean to avoid smoothing out true 
+  signal. 
+
+  Rule used        : [RL-002] Region Length
+  Calibrated conf  : 96%
+  Neural score     : 0.9303  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6126  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('RL-002', 0.6126), ('SD-001', 0.5439), ('AF-001', 0.5434)]
+
+======================================================================
+[Q64] How does prediction confidence correlate with experimental uncertainty?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.8844  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.5984  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.5984), ('SD-001', 0.5221), ('DR-001', 0.5196)]
+
+======================================================================
+[Q65] Does neurosymbolic reasoning improve long-range sequence dependencies?
+
+  PREDICTED ANSWER:
+  The average disordered region in DisProt spans 0.0 amino acids 
+  across 0 annotated regions. Regions of 10 or more residues 
+  provide sufficient sequence context for reliable disorder 
+  prediction. Sliding window methods work best when the window 
+  size stays well below this mean to avoid smoothing out true 
+  signal. 
+
+  Rule used        : [RL-002] Region Length
+  Calibrated conf  : 96%
+  Neural score     : 0.9321  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6137  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('RL-002', 0.6137), ('AF-001', 0.5416), ('SD-001', 0.5396)]
+
+======================================================================
+[Q66] Are improvements stable across random seeds?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9247  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5437  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.5437), ('SD-001', 0.5371), ('RL-002', 0.5344)]
+
+======================================================================
+[Q67] Does the system perform better on curated subsets of DisProt?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9190  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5404  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.5404), ('SD-001', 0.5375), ('DR-001', 0.5328)]
+
+======================================================================
+[Q68] How does performance change when excluding uncertain regions?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.8967  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5165  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5165), ('AF-001', 0.5133), ('DR-001', 0.5123)]
+
+======================================================================
+[Q69] Does neurosymbolic reasoning improve classification of rare IDRs?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9273  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5452  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.5452), ('SD-001', 0.545), ('DR-001', 0.5378)]
+
+======================================================================
+[Q70] Are prediction gains dependent on dataset size?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.8873  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5111  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5111), ('DR-001', 0.5067), ('SC-001', 0.506)]
+
+======================================================================
+[Q71] Does the system improve classification under imbalanced data?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.8942  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5151  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5151), ('AF-001', 0.5128), ('DR-001', 0.5122)]
+
+======================================================================
+[Q72] How does it perform on noisy annotations?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9006  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5188  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5188), ('AF-001', 0.5132), ('DR-001', 0.5114)]
+
+======================================================================
+[Q73] Does symbolic reasoning reduce prediction drift?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9144  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5377  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.5377), ('SD-001', 0.5356), ('DR-001', 0.5348)]
+
+======================================================================
+[Q74] How does performance compare before and after normalization?
+
+  PREDICTED ANSWER:
+  Based on 13,396 DisProt proteins, a disorder score above 0.5 is 
+  a commonly used cutoff but it is conservative. Only 29.1% of 
+  proteins exceed 0.5, while 44.2% exceed 0.3. Many true IDRs fall 
+  in the 0.3-0.5 range and would be missed by a strict 0.5 
+  threshold. The cutoff is a useful starting point but not fully 
+  reliable on its own. 
+
+  Rule used        : [DR-001] Disorder Threshold
+  Calibrated conf  : 96%
+  Neural score     : 0.8655  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.4985  (weighted total)
+  Prediction quality: MEDIUM
+  Top 3 rule matches: [('DR-001', 0.4985), ('SD-001', 0.4975), ('SC-001', 0.4915)]
+
+======================================================================
+[Q75] Does neurosymbolic reasoning improve stability across runs?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9166  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5390  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.539), ('SD-001', 0.5368), ('DR-001', 0.533)]
+
+======================================================================
+[Q76] Are improvements larger for specific protein lengths?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9173  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5283  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5283), ('AF-001', 0.5279), ('RL-002', 0.5257)]
+
+======================================================================
+[Q77] Does the system better align predictions with biological function?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9002  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5185  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5185), ('DR-001', 0.5103), ('AF-001', 0.5082)]
+
+======================================================================
+[Q78] How does it handle missing sequence information?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.8712  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5018  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5018), ('SC-001', 0.4926), ('DR-001', 0.4914)]
+
+======================================================================
+[Q79] Does retrieval diversity impact performance?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.8980  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5172  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5172), ('DR-001', 0.5166), ('AF-001', 0.5106)]
+
+======================================================================
+[Q80] Are prediction improvements explainable through symbolic rules?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9309  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5474  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.5474), ('SD-001', 0.5418), ('RL-002', 0.5397)]
+
+======================================================================
+[Q81] Does neurosymbolic reasoning improve threshold selection?
+
+  PREDICTED ANSWER:
+  Based on 13,396 DisProt proteins, a disorder score above 0.5 is 
+  a commonly used cutoff but it is conservative. Only 29.1% of 
+  proteins exceed 0.5, while 44.2% exceed 0.3. Many true IDRs fall 
+  in the 0.3-0.5 range and would be missed by a strict 0.5 
+  threshold. The cutoff is a useful starting point but not fully 
+  reliable on its own. 
+
+  Rule used        : [DR-001] Disorder Threshold
+  Calibrated conf  : 96%
+  Neural score     : 0.9367  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6163  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('DR-001', 0.6163), ('AF-001', 0.5457), ('SD-001', 0.5423)]
+
+======================================================================
+[Q82] How does the system perform on synthetic datasets?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.8839  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5091  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5091), ('AF-001', 0.504), ('DR-001', 0.5035)]
+
+======================================================================
+[Q83] Does calibration improve ranking of disorder scores?
+
+  PREDICTED ANSWER:
+  Based on 13,396 DisProt proteins, a disorder score above 0.5 is 
+  a commonly used cutoff but it is conservative. Only 29.1% of 
+  proteins exceed 0.5, while 44.2% exceed 0.3. Many true IDRs fall 
+  in the 0.3-0.5 range and would be missed by a strict 0.5 
+  threshold. The cutoff is a useful starting point but not fully 
+  reliable on its own. 
+
+  Rule used        : [DR-001] Disorder Threshold
+  Calibrated conf  : 96%
+  Neural score     : 0.9406  (BiomedBERT similarity)
+  Symbolic score   : 0.4000  (keyword match)
+  Combined score   : 0.6954  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('DR-001', 0.6954), ('AF-001', 0.5409), ('SD-001', 0.5382)]
+
+======================================================================
+[Q84] Are prediction errors reduced uniformly?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9012  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5299  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.5299), ('SD-001', 0.5252), ('DR-001', 0.5236)]
+
+======================================================================
+[Q85] Does neurosymbolic reasoning improve classification confidence intervals?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9210  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6200  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.62), ('SD-001', 0.5372), ('DR-001', 0.5348)]
+
+======================================================================
+[Q86] How does performance change with different retrieval strategies?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.8537  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.4917  (weighted total)
+  Prediction quality: MEDIUM
+  Top 3 rule matches: [('SD-001', 0.4917), ('DR-001', 0.4904), ('SC-001', 0.4836)]
+
+======================================================================
+[Q87] Does the system improve detection of transient disorder?
+
+  PREDICTED ANSWER:
+  Based on 13,396 DisProt proteins, a disorder score above 0.5 is 
+  a commonly used cutoff but it is conservative. Only 29.1% of 
+  proteins exceed 0.5, while 44.2% exceed 0.3. Many true IDRs fall 
+  in the 0.3-0.5 range and would be missed by a strict 0.5 
+  threshold. The cutoff is a useful starting point but not fully 
+  reliable on its own. 
+
+  Rule used        : [DR-001] Disorder Threshold
+  Calibrated conf  : 96%
+  Neural score     : 0.9289  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.6119  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('DR-001', 0.6119), ('SD-001', 0.5342), ('AF-001', 0.5334)]
+
+======================================================================
+[Q88] Are gains consistent across evaluation metrics?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9067  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5222  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5222), ('DR-001', 0.5211), ('AF-001', 0.52)]
+
+======================================================================
+[Q89] Does neurosymbolic reasoning reduce model uncertainty?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9202  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5300  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.53), ('AF-001', 0.5265), ('DR-001', 0.524)]
+
+======================================================================
+[Q90] How does it perform under adversarial perturbations?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9068  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5332  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.5332), ('SD-001', 0.5324), ('DR-001', 0.5272)]
+
+======================================================================
+[Q91] Does the system improve robustness to sequence mutations?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9196  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5297  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5297), ('AF-001', 0.5285), ('DR-001', 0.5235)]
+
+======================================================================
+[Q92] Are prediction improvements correlated with structural flexibility?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9227  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5315  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5315), ('AF-001', 0.5266), ('DR-001', 0.5241)]
+
+======================================================================
+[Q93] Does neurosymbolic reasoning improve functional annotation alignment?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9396  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5412  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5412), ('AF-001', 0.5389), ('DR-001', 0.5338)]
+
+======================================================================
+[Q94] How does performance compare across different datasets?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.8364  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.4818  (weighted total)
+  Prediction quality: MEDIUM
+  Top 3 rule matches: [('SD-001', 0.4818), ('DR-001', 0.477), ('SC-001', 0.4744)]
+
+======================================================================
+[Q95] Does the system improve classification of partially disordered regions?
+
+  PREDICTED ANSWER:
+  Based on 13,396 DisProt proteins, a disorder score above 0.5 is 
+  a commonly used cutoff but it is conservative. Only 29.1% of 
+  proteins exceed 0.5, while 44.2% exceed 0.3. Many true IDRs fall 
+  in the 0.3-0.5 range and would be missed by a strict 0.5 
+  threshold. The cutoff is a useful starting point but not fully 
+  reliable on its own. 
+
+  Rule used        : [DR-001] Disorder Threshold
+  Calibrated conf  : 96%
+  Neural score     : 0.9078  (BiomedBERT similarity)
+  Symbolic score   : 0.2000  (keyword match)
+  Combined score   : 0.5997  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('DR-001', 0.5997), ('SD-001', 0.5292), ('AF-001', 0.5215)]
+
+======================================================================
+[Q96] Are gains consistent across evaluation folds?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9142  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5375  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.5375), ('SD-001', 0.5351), ('DR-001', 0.5337)]
+
+======================================================================
+[Q97] Does neurosymbolic reasoning improve model calibration slope?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9254  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5441  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.5441), ('SD-001', 0.5424), ('DR-001', 0.5377)]
+
+======================================================================
+[Q98] How does the system perform on edge-case proteins?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9265  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5337  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5337), ('AF-001', 0.5316), ('DR-001', 0.5254)]
+
+======================================================================
+[Q99] Does neurosymbolic reasoning reduce prediction bias?
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain at least one Pfam structured 
+  domain alongside their disordered regions. This confirms that 
+  structured domains and IDRs frequently co-occur in the same 
+  protein. Each region must be evaluated independently -- the 
+  presence of a Pfam domain does not mean the whole protein is 
+  ordered. 
+
+  Rule used        : [SD-001] Structural Domain
+  Calibrated conf  : 96%
+  Neural score     : 0.9223  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5313  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('SD-001', 0.5313), ('AF-001', 0.5295), ('DR-001', 0.5279)]
+
+======================================================================
+[Q100] Are overall improvements sufficient to justify added system complexity?
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT scores below 50 are strong computational 
+  evidence of intrinsic disorder. DisProt experimentally confirms 
+  disorder in 13,396 proteins; regions annotated as disordered in 
+  DisProt consistently show pLDDT below 50 in AlphaFold 
+  predictions. This is the most reliable single computational 
+  signal for disorder. 
+
+  Rule used        : [AF-001] AlphaFold pLDDT
+  Calibrated conf  : 98%
+  Neural score     : 0.9206  (BiomedBERT similarity)
+  Symbolic score   : 0.0000  (keyword match)
+  Combined score   : 0.5413  (weighted total)
+  Prediction quality: HIGH
+  Top 3 rule matches: [('AF-001', 0.5413), ('SD-001', 0.5367), ('DR-001', 0.5349)]
+
+======================================================================
+  END OF PREDICTIONS
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
