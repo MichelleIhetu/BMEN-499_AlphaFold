@@ -1,0 +1,1824 @@
+======================================================================
+  BMEN-499 AlphaFold -- Cosine Similarity: LLM Judge 1 vs Ground Truth
+  Model   : BiomedBERT + Calibrated Symbolic Rules (LLM Judge 1)
+  Metric  : TF-IDF Cosine Similarity
+  Dataset : 13,396 DisProt proteins
+  Questions evaluated: 100
+======================================================================
+
+WHAT IS COSINE SIMILARITY?
+----------------------------------------------------------------------
+  Cosine similarity measures the angle between two text vectors.
+  Score of 1.0 = identical meaning.
+  Score of 0.0 = no shared concepts.
+
+  How it works:
+  1. VECTORIZE  -- Each text is converted to a TF-IDF vector.
+     TF-IDF weights words by importance to the specific text
+     vs the whole corpus. Domain terms like 'disorder', 'pLDDT',
+     'IDR' get higher weight than common words.
+
+  2. NORMALIZE  -- Each vector is scaled to unit length.
+
+  3. DOT PRODUCT -- cos(angle) = v1 dot v2 / (|v1| x |v2|)
+     High dot product = vectors point in same direction
+     = texts talk about the same concepts.
+
+  Score interpretation:
+    0.9 - 1.0 : VERY HIGH -- nearly identical semantic content
+    0.7 - 0.9 : HIGH      -- strong semantic overlap
+    0.5 - 0.7 : MODERATE  -- partial overlap
+    0.3 - 0.5 : LOW       -- weak overlap
+    0.0 - 0.3 : VERY LOW  -- little to no overlap
+
+OVERALL RESULTS SUMMARY
+----------------------------------------------------------------------
+  Mean cosine similarity : 0.8645
+  Highest score          : Q10 = 1.0000 (VERY HIGH)
+  Lowest score           : Q29 = 0.0013 (VERY LOW)
+
+  Similarity breakdown:
+    VERY HIGH (0.9-1.0) :  72 questions
+    HIGH      (0.7-0.9) :   3 questions
+    MODERATE  (0.5-0.7) :   6 questions
+    LOW       (0.3-0.5) :  16 questions
+    VERY LOW  (0.0-0.3) :   3 questions
+
+  Score Distribution:
+    0.0-0.3 VERY LOW | ###................. | 3 questions
+    0.3-0.5 LOW      | ################.... | 16 questions
+    0.5-0.7 MODERATE | ######.............. | 6 questions
+    0.7-0.9 HIGH     | ###................. | 3 questions
+    0.9-1.0 VERY HIGH | ######################################################################## | 72 questions
+
+======================================================================
+  QUESTION-BY-QUESTION COSINE SIMILARITY SCORES
+======================================================================
+
+[Q1] Is a disorder score above 0.5 a reliable cutoff for calling a region disordered?
+  Cosine Similarity : 0.4989  --  LOW
+  Shared vocabulary : 20 terms
+  GT vocabulary     : 29 unique terms
+  Pred vocabulary   : 30 unique terms
+
+  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), 44(0.003), many(0.003), strict(0.003)
+  In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
+  In pred only      : fully, missed, only, point, reliable, score, starting, true
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q2] Do confidence scores drop for IDRs shorter than 10 residues?
+  Cosine Similarity : 0.6960  --  MODERATE
+  Shared vocabulary : 19 terms
+  GT vocabulary     : 23 unique terms
+  Pred vocabulary   : 26 unique terms
+
+  Top shared terms  : short(0.027), disordered(0.025), shorter(0.018), 10(0.018), regions(0.014), annotated(0.009)
+  In GT only        : confidence, drops, due, insufficient
+  In pred only      : aa, difficult, lack, predict, reliably, sufficient, tools
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+----------------------------------------------------------------------
+
+[Q3] Do proline and glycine-rich regions consistently score higher disorder confidence than average?
+  Cosine Similarity : 0.4989  --  LOW
+  Shared vocabulary : 20 terms
+  GT vocabulary     : 29 unique terms
+  Pred vocabulary   : 30 unique terms
+
+  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), 44(0.003), many(0.003), strict(0.003)
+  In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
+  In pred only      : fully, missed, only, point, reliable, score, starting, true
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q4] Does applying a sliding window smooth out confidence scores without losing true IDR signal?
+  Cosine Similarity : 0.7900  --  HIGH
+  Shared vocabulary : 26 terms
+  GT vocabulary     : 31 unique terms
+  Pred vocabulary   : 32 unique terms
+
+  Top shared terms  : window(0.054), noise(0.036), signal(0.018), size(0.018), sliding(0.018), averaging(0.009)
+  In GT only        : idr, larger, smoothing, true, windows
+  In pred only      : averaged, exceeds, if, length, lost, regions
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust balance noise reduction against signal preservation.
+----------------------------------------------------------------------
+
+[Q5] How far off are raw confidence scores from the true disorder rate in DisProt?
+  Cosine Similarity : 0.4989  --  LOW
+  Shared vocabulary : 20 terms
+  GT vocabulary     : 29 unique terms
+  Pred vocabulary   : 30 unique terms
+
+  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), 44(0.003), many(0.003), strict(0.003)
+  In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
+  In pred only      : fully, missed, only, point, reliable, score, starting, true
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q6] When a confidence score falls in the uncertain range (0.4–0.6), does applying a sliding window smooth it toward the correct label, and what window size does the literature support?
+  Cosine Similarity : 0.7900  --  HIGH
+  Shared vocabulary : 26 terms
+  GT vocabulary     : 31 unique terms
+  Pred vocabulary   : 32 unique terms
+
+  Top shared terms  : window(0.054), noise(0.036), signal(0.018), size(0.018), sliding(0.018), averaging(0.009)
+  In GT only        : idr, larger, smoothing, true, windows
+  In pred only      : averaged, exceeds, if, length, lost, regions
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust balance noise reduction against signal preservation.
+----------------------------------------------------------------------
+
+[Q7] How much do raw confidence scores overestimate or underestimate true disorder rates across DisProt?
+  Cosine Similarity : 0.4989  --  LOW
+  Shared vocabulary : 20 terms
+  GT vocabulary     : 29 unique terms
+  Pred vocabulary   : 30 unique terms
+
+  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), 44(0.003), many(0.003), strict(0.003)
+  In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
+  In pred only      : fully, missed, only, point, reliable, score, starting, true
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q8] After applying symbolic smoothing and isotonic calibration together, by how much does residue level F1 improve over raw scores, and is this improvement consistent with gains reported for similar post processing pipelines in the literature?
+  Cosine Similarity : 0.6960  --  MODERATE
+  Shared vocabulary : 19 terms
+  GT vocabulary     : 23 unique terms
+  Pred vocabulary   : 26 unique terms
+
+  Top shared terms  : short(0.027), disordered(0.025), shorter(0.018), 10(0.018), regions(0.014), annotated(0.009)
+  In GT only        : confidence, drops, due, insufficient
+  In pred only      : aa, difficult, lack, predict, reliably, sufficient, tools
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+----------------------------------------------------------------------
+
+[Q9] What is the MAE between raw disorder confidence scores and DisProt ground truth labels, and how many standard deviations (Z-score) away from the mean prediction is each incorrectly labeled residue?
+  Cosine Similarity : 0.4989  --  LOW
+  Shared vocabulary : 20 terms
+  GT vocabulary     : 29 unique terms
+  Pred vocabulary   : 30 unique terms
+
+  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), 44(0.003), many(0.003), strict(0.003)
+  In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
+  In pred only      : fully, missed, only, point, reliable, score, starting, true
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q10] Do N-terminal, C-terminal, and internal IDRs show different MAE profiles, and are the Z-scores of prediction errors normally distributed within each positional group or skewed in a way that suggests a systematic bias?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q11] Does a neurosymbolic RAG system reduce variance in disorder confidence predictions compared to raw model outputs?
+  Cosine Similarity : 0.4989  --  LOW
+  Shared vocabulary : 20 terms
+  GT vocabulary     : 29 unique terms
+  Pred vocabulary   : 30 unique terms
+
+  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), 44(0.003), many(0.003), strict(0.003)
+  In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
+  In pred only      : fully, missed, only, point, reliable, score, starting, true
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q12] How does the precision-recall curve change after applying neurosymbolic reasoning?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q13] Does incorporating symbolic rules improve classification accuracy for borderline disorder regions?
+  Cosine Similarity : 0.4989  --  LOW
+  Shared vocabulary : 20 terms
+  GT vocabulary     : 29 unique terms
+  Pred vocabulary   : 30 unique terms
+
+  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), 44(0.003), many(0.003), strict(0.003)
+  In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
+  In pred only      : fully, missed, only, point, reliable, score, starting, true
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q14] What is the impact of neurosymbolic calibration on false positive rates in ordered regions?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q15] Does the neurosymbolic approach improve prediction consistency across homologous proteins?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q16] How sensitive are disorder predictions to the choice of retrieval documents in the RAG system?
+  Cosine Similarity : 0.4989  --  LOW
+  Shared vocabulary : 20 terms
+  GT vocabulary     : 29 unique terms
+  Pred vocabulary   : 30 unique terms
+
+  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), 44(0.003), many(0.003), strict(0.003)
+  In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
+  In pred only      : fully, missed, only, point, reliable, score, starting, true
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q17] Does contextual biological knowledge retrieved via RAG improve long IDR detection accuracy?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q18] How does performance differ between short and long IDRs after neurosymbolic processing?
+  Cosine Similarity : 0.6960  --  MODERATE
+  Shared vocabulary : 19 terms
+  GT vocabulary     : 23 unique terms
+  Pred vocabulary   : 26 unique terms
+
+  Top shared terms  : short(0.027), disordered(0.025), shorter(0.018), 10(0.018), regions(0.014), annotated(0.009)
+  In GT only        : confidence, drops, due, insufficient
+  In pred only      : aa, difficult, lack, predict, reliably, sufficient, tools
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+----------------------------------------------------------------------
+
+[Q19] Are certain amino acid compositions more responsive to symbolic correction rules?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q20] Does neurosymbolic reasoning reduce prediction noise in low-confidence regions?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q21] How does calibration affect AUROC compared to raw predictions?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q22] Does symbolic smoothing introduce bias toward overprediction of disorder?
+  Cosine Similarity : 0.4989  --  LOW
+  Shared vocabulary : 20 terms
+  GT vocabulary     : 29 unique terms
+  Pred vocabulary   : 30 unique terms
+
+  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), 44(0.003), many(0.003), strict(0.003)
+  In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
+  In pred only      : fully, missed, only, point, reliable, score, starting, true
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q23] What is the distribution of confidence score corrections applied by the neurosymbolic system?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q24] Does the system improve recall without sacrificing precision?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q25] How does performance vary across different protein families?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q26] Are improvements consistent across species in the DisProt dataset?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q27] Does the neurosymbolic model perform better on experimentally validated long IDRs?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q28] How does retrieval quality impact final prediction confidence?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q29] Are confidence score corrections correlated with sequence length?
+  Cosine Similarity : 0.0013  --  VERY LOW
+  Shared vocabulary : 2 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 26 unique terms
+
+  Top shared terms  : mean(0.000), disprot(0.000)
+  In GT only        : 13, 378, 396, disorder, proteins, summary
+  In pred only      : 10, aa, acids, amino, annotated, context, difficult, disordered
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+----------------------------------------------------------------------
+
+[Q30] Does neurosymbolic reasoning improve predictions for low-complexity regions?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q31] How does entropy of predictions change after symbolic reasoning?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q32] Does the system reduce systematic bias in terminal regions?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q33] Are gains from neurosymbolic processing statistically significant?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q34] How does performance compare against baseline machine learning models?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q35] Does adding domain knowledge improve classification boundaries?
+  Cosine Similarity : 0.9092  --  VERY HIGH
+  Shared vocabulary : 25 terms
+  GT vocabulary     : 27 unique terms
+  Pred vocabulary   : 26 unique terms
+
+  Top shared terms  : structured(0.101), protein(0.050), ordered(0.025), alongside(0.025), domain(0.025), occur(0.025)
+  In GT only        : labeling, same
+  In pred only      : classifying
+
+  GROUND TRUTH:
+    92.6% of DisProt proteins contain at least one Pfam structured do
+    main alongside disordered regions. Structured domains and IDRs fr
+    equently co-occur in the same protein. Each region must be evalua
+    ted independently rather than labeling the whole protein as order
+    ed or disordered.
+
+  LLM1 PREDICTION:
+    92.6% of DisProt proteins contain at least one Pfam structured do
+    main alongside their disordered regions. Structured domains and I
+    DRs frequently co-occur. Each region must be evaluated independen
+    tly rather than classifying the whole protein as ordered or disor
+    dered.
+----------------------------------------------------------------------
+
+[Q36] How robust is the model to noisy or incomplete retrieval data?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q37] Does the neurosymbolic system improve calibration curves?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q38] How does Brier score change after calibration?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q39] Are prediction improvements uniform across all confidence intervals?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q40] Does neurosymbolic reasoning improve interpretability of predictions?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q41] How does performance change when removing symbolic rules?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q42] Does the system better detect disordered binding regions?
+  Cosine Similarity : 0.4989  --  LOW
+  Shared vocabulary : 20 terms
+  GT vocabulary     : 29 unique terms
+  Pred vocabulary   : 30 unique terms
+
+  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), 44(0.003), many(0.003), strict(0.003)
+  In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
+  In pred only      : fully, missed, only, point, reliable, score, starting, true
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q43] Are certain motifs better recognized after symbolic processing?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q44] How does the system handle conflicting retrieved evidence?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q45] Does neurosymbolic reasoning reduce overfitting?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q46] What is the effect on Matthews Correlation Coefficient (MCC)?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q47] Does performance degrade on unseen protein structures?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q48] How does retrieval latency affect prediction quality?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q49] Does symbolic reasoning improve alignment with experimental annotations?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q50] Are prediction improvements localized or global across sequences?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q51] Does neurosymbolic RAG help identify disorder-to-order transitions?
+  Cosine Similarity : 0.4989  --  LOW
+  Shared vocabulary : 20 terms
+  GT vocabulary     : 29 unique terms
+  Pred vocabulary   : 30 unique terms
+
+  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), 44(0.003), many(0.003), strict(0.003)
+  In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
+  In pred only      : fully, missed, only, point, reliable, score, starting, true
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q52] How does the system perform on proteins with multiple IDRs?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q53] Does calibration reduce prediction skewness?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q54] Are confidence intervals narrower after processing?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q55] Does neurosymbolic reasoning improve classification of ambiguous residues?
+  Cosine Similarity : 0.6960  --  MODERATE
+  Shared vocabulary : 19 terms
+  GT vocabulary     : 23 unique terms
+  Pred vocabulary   : 26 unique terms
+
+  Top shared terms  : short(0.027), disordered(0.025), shorter(0.018), 10(0.018), regions(0.014), annotated(0.009)
+  In GT only        : confidence, drops, due, insufficient
+  In pred only      : aa, difficult, lack, predict, reliably, sufficient, tools
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+----------------------------------------------------------------------
+
+[Q56] How does the system perform under cross-validation?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q57] Does it generalize across different disorder prediction tools?
+  Cosine Similarity : 0.4989  --  LOW
+  Shared vocabulary : 20 terms
+  GT vocabulary     : 29 unique terms
+  Pred vocabulary   : 30 unique terms
+
+  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), 44(0.003), many(0.003), strict(0.003)
+  In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
+  In pred only      : fully, missed, only, point, reliable, score, starting, true
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q58] Are improvements correlated with sequence conservation?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q59] Does retrieval of structural data improve predictions?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q60] How does performance change with different window sizes?
+  Cosine Similarity : 0.7900  --  HIGH
+  Shared vocabulary : 26 terms
+  GT vocabulary     : 31 unique terms
+  Pred vocabulary   : 32 unique terms
+
+  Top shared terms  : window(0.054), noise(0.036), signal(0.018), size(0.018), sliding(0.018), averaging(0.009)
+  In GT only        : idr, larger, smoothing, true, windows
+  In pred only      : averaged, exceeds, if, length, lost, regions
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust balance noise reduction against signal preservation.
+----------------------------------------------------------------------
+
+[Q61] Does neurosymbolic reasoning help detect functional disorder regions?
+  Cosine Similarity : 0.4989  --  LOW
+  Shared vocabulary : 20 terms
+  GT vocabulary     : 29 unique terms
+  Pred vocabulary   : 30 unique terms
+
+  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), 44(0.003), many(0.003), strict(0.003)
+  In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
+  In pred only      : fully, missed, only, point, reliable, score, starting, true
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q62] Are gains higher in specific residue compositions?
+  Cosine Similarity : 0.6960  --  MODERATE
+  Shared vocabulary : 19 terms
+  GT vocabulary     : 23 unique terms
+  Pred vocabulary   : 26 unique terms
+
+  Top shared terms  : short(0.027), disordered(0.025), shorter(0.018), 10(0.018), regions(0.014), annotated(0.009)
+  In GT only        : confidence, drops, due, insufficient
+  In pred only      : aa, difficult, lack, predict, reliably, sufficient, tools
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+----------------------------------------------------------------------
+
+[Q63] Does the system improve classification of edge residues in IDRs?
+  Cosine Similarity : 0.6960  --  MODERATE
+  Shared vocabulary : 19 terms
+  GT vocabulary     : 23 unique terms
+  Pred vocabulary   : 26 unique terms
+
+  Top shared terms  : short(0.027), disordered(0.025), shorter(0.018), 10(0.018), regions(0.014), annotated(0.009)
+  In GT only        : confidence, drops, due, insufficient
+  In pred only      : aa, difficult, lack, predict, reliably, sufficient, tools
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+----------------------------------------------------------------------
+
+[Q64] How does prediction confidence correlate with experimental uncertainty?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q65] Does neurosymbolic reasoning improve long-range sequence dependencies?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q66] Are improvements stable across random seeds?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q67] Does the system perform better on curated subsets of DisProt?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q68] How does performance change when excluding uncertain regions?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q69] Does neurosymbolic reasoning improve classification of rare IDRs?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q70] Are prediction gains dependent on dataset size?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q71] Does the system improve classification under imbalanced data?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q72] How does it perform on noisy annotations?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q73] Does symbolic reasoning reduce prediction drift?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q74] How does performance compare before and after normalization?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q75] Does neurosymbolic reasoning improve stability across runs?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q76] Are improvements larger for specific protein lengths?
+  Cosine Similarity : 0.0013  --  VERY LOW
+  Shared vocabulary : 2 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 26 unique terms
+
+  Top shared terms  : mean(0.000), disprot(0.000)
+  In GT only        : 13, 378, 396, disorder, proteins, summary
+  In pred only      : 10, aa, acids, amino, annotated, context, difficult, disordered
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+----------------------------------------------------------------------
+
+[Q77] Does the system better align predictions with biological function?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q78] How does it handle missing sequence information?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q79] Does retrieval diversity impact performance?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q80] Are prediction improvements explainable through symbolic rules?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q81] Does neurosymbolic reasoning improve threshold selection?
+  Cosine Similarity : 0.0110  --  VERY LOW
+  Shared vocabulary : 5 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 30 unique terms
+
+  Top shared terms  : proteins(0.000), 396(0.000), 13(0.000), disorder(0.000), disprot(0.000)
+  In GT only        : 378, mean, summary
+  In pred only      : 29, 44, above, based, commonly, conservative, cutoff, exceed
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q82] How does the system perform on synthetic datasets?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q83] Does calibration improve ranking of disorder scores?
+  Cosine Similarity : 0.4989  --  LOW
+  Shared vocabulary : 20 terms
+  GT vocabulary     : 29 unique terms
+  Pred vocabulary   : 30 unique terms
+
+  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), 44(0.003), many(0.003), strict(0.003)
+  In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
+  In pred only      : fully, missed, only, point, reliable, score, starting, true
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q84] Are prediction errors reduced uniformly?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q85] Does neurosymbolic reasoning improve classification confidence intervals?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q86] How does performance change with different retrieval strategies?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q87] Does the system improve detection of transient disorder?
+  Cosine Similarity : 0.4989  --  LOW
+  Shared vocabulary : 20 terms
+  GT vocabulary     : 29 unique terms
+  Pred vocabulary   : 30 unique terms
+
+  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), 44(0.003), many(0.003), strict(0.003)
+  In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
+  In pred only      : fully, missed, only, point, reliable, score, starting, true
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q88] Are gains consistent across evaluation metrics?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q89] Does neurosymbolic reasoning reduce model uncertainty?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q90] How does it perform under adversarial perturbations?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q91] Does the system improve robustness to sequence mutations?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q92] Are prediction improvements correlated with structural flexibility?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q93] Does neurosymbolic reasoning improve functional annotation alignment?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q94] How does performance compare across different datasets?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q95] Does the system improve classification of partially disordered regions?
+  Cosine Similarity : 0.4989  --  LOW
+  Shared vocabulary : 20 terms
+  GT vocabulary     : 29 unique terms
+  Pred vocabulary   : 30 unique terms
+
+  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), 44(0.003), many(0.003), strict(0.003)
+  In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
+  In pred only      : fully, missed, only, point, reliable, score, starting, true
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q96] Are gains consistent across evaluation folds?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q97] Does neurosymbolic reasoning improve model calibration slope?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q98] How does the system perform on edge-case proteins?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q99] Does neurosymbolic reasoning reduce prediction bias?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q100] Are overall improvements sufficient to justify added system complexity?
+  Cosine Similarity : 1.0000  --  VERY HIGH
+  Shared vocabulary : 8 terms
+  GT vocabulary     : 8 unique terms
+  Pred vocabulary   : 8 unique terms
+
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+======================================================================
+  END OF COSINE SIMILARITY -- LLM Judge 1
+  Mean: 0.8645 | Very High: 72 | High: 3 | Moderate: 6 | Low: 16 | Very Low: 3
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
