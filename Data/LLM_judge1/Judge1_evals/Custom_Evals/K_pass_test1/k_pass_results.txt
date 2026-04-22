@@ -1,0 +1,2836 @@
+======================================================================
+  BMEN-499 AlphaFold -- K-Pass Test (K=5): LLM Judge 1
+  Model   : BiomedBERT + Calibrated Symbolic Rules (LLM Judge 1)
+  K       : 5 evaluation passes per question
+  Dataset : 13,396 DisProt proteins
+  Questions evaluated: 100
+======================================================================
+
+WHAT IS A K-PASS TEST?
+----------------------------------------------------------------------
+  A K-pass test evaluates each answer 5 times, each time from
+  a different evaluative perspective. An answer must hold up
+  under ALL K passes to be considered truly reliable.
+
+  Pass threshold: score >= 0.5 to PASS a pass.
+  Weighted K-pass score = weighted mean across all passes.
+
+  Pass 1 -- Factual Pass (weight=30%)
+    Are stated numbers correct vs ground truth? (tolerance 5%)
+
+  Pass 2 -- Completeness Pass (weight=25%)
+    Does prediction cover all key GT concepts?
+
+  Pass 3 -- Semantic Pass (weight=20%)
+    Do prediction and GT express the same meaning?
+
+  Pass 4 -- Terminology Pass (weight=15%)
+    Does prediction use correct biomedical terminology?
+
+  Pass 5 -- Consistency Pass (weight=10%)
+    Is the prediction internally self-consistent?
+
+OVERALL K-PASS RESULTS
+----------------------------------------------------------------------
+  Overall pass rate       : 98.6% (493/500 pass-question combinations)
+  Mean weighted K-score   : 0.9460  (std=0.1137)
+  Mean unweighted K-score : 0.9540
+  Best  : Q10 = 1.0000 (PASSED ALL 5)
+  Worst : Q29 = 0.3336 (FAILED 3/5)
+
+  Questions passing ALL 5 passes    : 97
+  Questions passing 4/5 passes      : 98
+  Questions passing 3/5 passes      : 0
+  Questions failing majority         : 2
+
+  PER-PASS PERFORMANCE:
+    Pass                      Mean Score   Pass Rate    Hardest?
+    ------------------------- ------------ ------------ ----------
+    Factual Pass              [#########.] 0.9589  98.0%
+    Completeness Pass         [#########.] 0.9133  98.0%
+    Semantic Pass             [#########.] 0.9076  97.0%
+    Terminology Pass          [#########.] 0.9903  100.0%
+    Consistency Pass          [##########] 1.0000  100.0%
+
+  Hardest pass : Pass 3 -- Semantic Pass (mean=0.9076)
+  Easiest pass : Pass 5 -- Consistency Pass (mean=1.0000)
+
+  K-Pass Score Distribution:
+    <0.25 VERY LOW  | .................... | 0 questions
+    <0.50 LOW       | ##.................. | 2 questions
+    <0.75 MODERATE  | #................... | 1 questions
+    <0.90 HIGH      | ###################. | 19 questions
+    >=0.90 VERY HIGH | ############################################################################## | 78 questions
+
+======================================================================
+  QUESTION-BY-QUESTION K-PASS REPORT
+======================================================================
+
+[Q1] Is a disorder score above 0.5 a reliable cutoff for calling a region disordered?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.8223
+  Mean score    : 0.8496
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [########..] 0.8889  PASS
+           Detail : Matched: [13.0, 396.0, 29.1, 0.5] | Missing/wrong: [0.378]
+           Issues : 0.378
+    Pass 2 [Completeness Pass ] [######....] 0.6774  PASS
+           Detail : 21/31 GT concepts covered
+           Issues : 378, content, entirely
+    Pass 3 [Semantic Pass     ] [######....] 0.6816  PASS
+           Detail : Cosine=0.6816 | Top shared: cutoff, proteins, exceed, 29, many, above
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 6/6 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q2] Do confidence scores drop for IDRs shorter than 10 residues?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.9080
+  Mean score    : 0.9118
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [10.0]
+    Pass 2 [Completeness Pass ] [########..] 0.8333  PASS
+           Detail : 20/24 GT concepts covered
+           Issues : confidence, drops, due
+    Pass 3 [Semantic Pass     ] [########..] 0.8165  PASS
+           Detail : Cosine=0.8165 | Top shared: short, disordered, shorter, regions, than, 10
+    Pass 4 [Terminology Pass  ] [#########.] 0.9091  PASS
+           Detail : 10/11 domain terms present
+           Issues : confidence
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q3] Do proline and glycine-rich regions consistently score higher disorder confidence than average?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.8223
+  Mean score    : 0.8496
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [########..] 0.8889  PASS
+           Detail : Matched: [13.0, 396.0, 29.1, 0.5] | Missing/wrong: [0.378]
+           Issues : 0.378
+    Pass 2 [Completeness Pass ] [######....] 0.6774  PASS
+           Detail : 21/31 GT concepts covered
+           Issues : 378, content, entirely
+    Pass 3 [Semantic Pass     ] [######....] 0.6816  PASS
+           Detail : Cosine=0.6816 | Top shared: cutoff, proteins, exceed, 29, many, above
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 6/6 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q4] Does applying a sliding window smooth out confidence scores without losing true IDR signal?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.8969
+  Mean score    : 0.8991
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust balance noise reduction against signal preservation.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : All numeric facts correct
+    Pass 2 [Completeness Pass ] [########..] 0.8125  PASS
+           Detail : 26/32 GT concepts covered
+           Issues : idr, larger, smoothing
+    Pass 3 [Semantic Pass     ] [########..] 0.8260  PASS
+           Detail : Cosine=0.8260 | Top shared: window, mean, noise, signal, sliding, disordered
+    Pass 4 [Terminology Pass  ] [########..] 0.8571  PASS
+           Detail : 6/7 domain terms present
+           Issues : idr
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q5] How far off are raw confidence scores from the true disorder rate in DisProt?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.8223
+  Mean score    : 0.8496
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [########..] 0.8889  PASS
+           Detail : Matched: [13.0, 396.0, 29.1, 0.5] | Missing/wrong: [0.378]
+           Issues : 0.378
+    Pass 2 [Completeness Pass ] [######....] 0.6774  PASS
+           Detail : 21/31 GT concepts covered
+           Issues : 378, content, entirely
+    Pass 3 [Semantic Pass     ] [######....] 0.6816  PASS
+           Detail : Cosine=0.6816 | Top shared: cutoff, proteins, exceed, 29, many, above
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 6/6 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q6] When a confidence score falls in the uncertain range (0.4–0.6), does applying a sliding window smooth it toward the correct label, and what window size does the literature support?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.8969
+  Mean score    : 0.8991
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust balance noise reduction against signal preservation.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : All numeric facts correct
+    Pass 2 [Completeness Pass ] [########..] 0.8125  PASS
+           Detail : 26/32 GT concepts covered
+           Issues : idr, larger, smoothing
+    Pass 3 [Semantic Pass     ] [########..] 0.8260  PASS
+           Detail : Cosine=0.8260 | Top shared: window, mean, noise, signal, sliding, disordered
+    Pass 4 [Terminology Pass  ] [########..] 0.8571  PASS
+           Detail : 6/7 domain terms present
+           Issues : idr
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q7] How much do raw confidence scores overestimate or underestimate true disorder rates across DisProt?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.8223
+  Mean score    : 0.8496
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [########..] 0.8889  PASS
+           Detail : Matched: [13.0, 396.0, 29.1, 0.5] | Missing/wrong: [0.378]
+           Issues : 0.378
+    Pass 2 [Completeness Pass ] [######....] 0.6774  PASS
+           Detail : 21/31 GT concepts covered
+           Issues : 378, content, entirely
+    Pass 3 [Semantic Pass     ] [######....] 0.6816  PASS
+           Detail : Cosine=0.6816 | Top shared: cutoff, proteins, exceed, 29, many, above
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 6/6 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q8] After applying symbolic smoothing and isotonic calibration together, by how much does residue level F1 improve over raw scores, and is this improvement consistent with gains reported for similar post processing pipelines in the literature?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.9080
+  Mean score    : 0.9118
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [10.0]
+    Pass 2 [Completeness Pass ] [########..] 0.8333  PASS
+           Detail : 20/24 GT concepts covered
+           Issues : confidence, drops, due
+    Pass 3 [Semantic Pass     ] [########..] 0.8165  PASS
+           Detail : Cosine=0.8165 | Top shared: short, disordered, shorter, regions, than, 10
+    Pass 4 [Terminology Pass  ] [#########.] 0.9091  PASS
+           Detail : 10/11 domain terms present
+           Issues : confidence
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q9] What is the MAE between raw disorder confidence scores and DisProt ground truth labels, and how many standard deviations (Z-score) away from the mean prediction is each incorrectly labeled residue?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.8223
+  Mean score    : 0.8496
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [########..] 0.8889  PASS
+           Detail : Matched: [13.0, 396.0, 29.1, 0.5] | Missing/wrong: [0.378]
+           Issues : 0.378
+    Pass 2 [Completeness Pass ] [######....] 0.6774  PASS
+           Detail : 21/31 GT concepts covered
+           Issues : 378, content, entirely
+    Pass 3 [Semantic Pass     ] [######....] 0.6816  PASS
+           Detail : Cosine=0.6816 | Top shared: cutoff, proteins, exceed, 29, many, above
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 6/6 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q10] Do N-terminal, C-terminal, and internal IDRs show different MAE profiles, and are the Z-scores of prediction errors normally distributed within each positional group or skewed in a way that suggests a systematic bias?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q11] Does a neurosymbolic RAG system reduce variance in disorder confidence predictions compared to raw model outputs?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.8223
+  Mean score    : 0.8496
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [########..] 0.8889  PASS
+           Detail : Matched: [13.0, 396.0, 29.1, 0.5] | Missing/wrong: [0.378]
+           Issues : 0.378
+    Pass 2 [Completeness Pass ] [######....] 0.6774  PASS
+           Detail : 21/31 GT concepts covered
+           Issues : 378, content, entirely
+    Pass 3 [Semantic Pass     ] [######....] 0.6816  PASS
+           Detail : Cosine=0.6816 | Top shared: cutoff, proteins, exceed, 29, many, above
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 6/6 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q12] How does the precision-recall curve change after applying neurosymbolic reasoning?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q13] Does incorporating symbolic rules improve classification accuracy for borderline disorder regions?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.8223
+  Mean score    : 0.8496
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [########..] 0.8889  PASS
+           Detail : Matched: [13.0, 396.0, 29.1, 0.5] | Missing/wrong: [0.378]
+           Issues : 0.378
+    Pass 2 [Completeness Pass ] [######....] 0.6774  PASS
+           Detail : 21/31 GT concepts covered
+           Issues : 378, content, entirely
+    Pass 3 [Semantic Pass     ] [######....] 0.6816  PASS
+           Detail : Cosine=0.6816 | Top shared: cutoff, proteins, exceed, 29, many, above
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 6/6 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q14] What is the impact of neurosymbolic calibration on false positive rates in ordered regions?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q15] Does the neurosymbolic approach improve prediction consistency across homologous proteins?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q16] How sensitive are disorder predictions to the choice of retrieval documents in the RAG system?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.8223
+  Mean score    : 0.8496
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [########..] 0.8889  PASS
+           Detail : Matched: [13.0, 396.0, 29.1, 0.5] | Missing/wrong: [0.378]
+           Issues : 0.378
+    Pass 2 [Completeness Pass ] [######....] 0.6774  PASS
+           Detail : 21/31 GT concepts covered
+           Issues : 378, content, entirely
+    Pass 3 [Semantic Pass     ] [######....] 0.6816  PASS
+           Detail : Cosine=0.6816 | Top shared: cutoff, proteins, exceed, 29, many, above
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 6/6 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q17] Does contextual biological knowledge retrieved via RAG improve long IDR detection accuracy?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q18] How does performance differ between short and long IDRs after neurosymbolic processing?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.9080
+  Mean score    : 0.9118
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [10.0]
+    Pass 2 [Completeness Pass ] [########..] 0.8333  PASS
+           Detail : 20/24 GT concepts covered
+           Issues : confidence, drops, due
+    Pass 3 [Semantic Pass     ] [########..] 0.8165  PASS
+           Detail : Cosine=0.8165 | Top shared: short, disordered, shorter, regions, than, 10
+    Pass 4 [Terminology Pass  ] [#########.] 0.9091  PASS
+           Detail : 10/11 domain terms present
+           Issues : confidence
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q19] Are certain amino acid compositions more responsive to symbolic correction rules?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q20] Does neurosymbolic reasoning reduce prediction noise in low-confidence regions?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q21] How does calibration affect AUROC compared to raw predictions?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q22] Does symbolic smoothing introduce bias toward overprediction of disorder?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.8223
+  Mean score    : 0.8496
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [########..] 0.8889  PASS
+           Detail : Matched: [13.0, 396.0, 29.1, 0.5] | Missing/wrong: [0.378]
+           Issues : 0.378
+    Pass 2 [Completeness Pass ] [######....] 0.6774  PASS
+           Detail : 21/31 GT concepts covered
+           Issues : 378, content, entirely
+    Pass 3 [Semantic Pass     ] [######....] 0.6816  PASS
+           Detail : Cosine=0.6816 | Top shared: cutoff, proteins, exceed, 29, many, above
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 6/6 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q23] What is the distribution of confidence score corrections applied by the neurosymbolic system?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q24] Does the system improve recall without sacrificing precision?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q25] How does performance vary across different protein families?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q26] Are improvements consistent across species in the DisProt dataset?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q27] Does the neurosymbolic model perform better on experimentally validated long IDRs?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q28] How does retrieval quality impact final prediction confidence?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q29] Are confidence score corrections correlated with sequence length?
+  K-Pass Result : FAILED 3/5
+  Weighted score: 0.3336
+  Mean score    : 0.4711
+  Passed        : 2/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [..........] 0.0000  FAIL
+           Detail : Missing/wrong: [13.0, 396.0, 0.378]
+           Issues : 13.0, 396.0, 0.378
+    Pass 2 [Completeness Pass ] [##........] 0.2500  FAIL
+           Detail : 2/8 GT concepts covered
+           Issues : 13, 378, 396
+    Pass 3 [Semantic Pass     ] [#.........] 0.1054  FAIL
+           Detail : Cosine=0.1054 | Top shared: disprot, mean
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q30] Does neurosymbolic reasoning improve predictions for low-complexity regions?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q31] How does entropy of predictions change after symbolic reasoning?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q32] Does the system reduce systematic bias in terminal regions?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q33] Are gains from neurosymbolic processing statistically significant?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q34] How does performance compare against baseline machine learning models?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q35] Does adding domain knowledge improve classification boundaries?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.9682
+  Mean score    : 0.9718
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    92.6% of DisProt proteins contain at least one Pfam structured do
+    main alongside disordered regions. Structured domains and IDRs fr
+    equently co-occur in the same protein. Each region must be evalua
+    ted independently rather than labeling the whole protein as order
+    ed or disordered.
+
+  LLM1 PREDICTION:
+    92.6% of DisProt proteins contain at least one Pfam structured do
+    main alongside their disordered regions. Structured domains and I
+    DRs frequently co-occur. Each region must be evaluated independen
+    tly rather than classifying the whole protein as ordered or disor
+    dered.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [92.6]
+    Pass 2 [Completeness Pass ] [#########.] 0.9286  PASS
+           Detail : 26/28 GT concepts covered
+           Issues : labeling, same
+    Pass 3 [Semantic Pass     ] [#########.] 0.9304  PASS
+           Detail : Cosine=0.9304 | Top shared: disordered, structured, protein, rather, regions, domain
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 7/7 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q36] How robust is the model to noisy or incomplete retrieval data?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q37] Does the neurosymbolic system improve calibration curves?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q38] How does Brier score change after calibration?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q39] Are prediction improvements uniform across all confidence intervals?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q40] Does neurosymbolic reasoning improve interpretability of predictions?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q41] How does performance change when removing symbolic rules?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q42] Does the system better detect disordered binding regions?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.8223
+  Mean score    : 0.8496
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [########..] 0.8889  PASS
+           Detail : Matched: [13.0, 396.0, 29.1, 0.5] | Missing/wrong: [0.378]
+           Issues : 0.378
+    Pass 2 [Completeness Pass ] [######....] 0.6774  PASS
+           Detail : 21/31 GT concepts covered
+           Issues : 378, content, entirely
+    Pass 3 [Semantic Pass     ] [######....] 0.6816  PASS
+           Detail : Cosine=0.6816 | Top shared: cutoff, proteins, exceed, 29, many, above
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 6/6 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q43] Are certain motifs better recognized after symbolic processing?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q44] How does the system handle conflicting retrieved evidence?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q45] Does neurosymbolic reasoning reduce overfitting?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q46] What is the effect on Matthews Correlation Coefficient (MCC)?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q47] Does performance degrade on unseen protein structures?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q48] How does retrieval latency affect prediction quality?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q49] Does symbolic reasoning improve alignment with experimental annotations?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q50] Are prediction improvements localized or global across sequences?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q51] Does neurosymbolic RAG help identify disorder-to-order transitions?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.8223
+  Mean score    : 0.8496
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [########..] 0.8889  PASS
+           Detail : Matched: [13.0, 396.0, 29.1, 0.5] | Missing/wrong: [0.378]
+           Issues : 0.378
+    Pass 2 [Completeness Pass ] [######....] 0.6774  PASS
+           Detail : 21/31 GT concepts covered
+           Issues : 378, content, entirely
+    Pass 3 [Semantic Pass     ] [######....] 0.6816  PASS
+           Detail : Cosine=0.6816 | Top shared: cutoff, proteins, exceed, 29, many, above
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 6/6 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q52] How does the system perform on proteins with multiple IDRs?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q53] Does calibration reduce prediction skewness?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q54] Are confidence intervals narrower after processing?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q55] Does neurosymbolic reasoning improve classification of ambiguous residues?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.9080
+  Mean score    : 0.9118
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [10.0]
+    Pass 2 [Completeness Pass ] [########..] 0.8333  PASS
+           Detail : 20/24 GT concepts covered
+           Issues : confidence, drops, due
+    Pass 3 [Semantic Pass     ] [########..] 0.8165  PASS
+           Detail : Cosine=0.8165 | Top shared: short, disordered, shorter, regions, than, 10
+    Pass 4 [Terminology Pass  ] [#########.] 0.9091  PASS
+           Detail : 10/11 domain terms present
+           Issues : confidence
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q56] How does the system perform under cross-validation?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q57] Does it generalize across different disorder prediction tools?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.8223
+  Mean score    : 0.8496
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [########..] 0.8889  PASS
+           Detail : Matched: [13.0, 396.0, 29.1, 0.5] | Missing/wrong: [0.378]
+           Issues : 0.378
+    Pass 2 [Completeness Pass ] [######....] 0.6774  PASS
+           Detail : 21/31 GT concepts covered
+           Issues : 378, content, entirely
+    Pass 3 [Semantic Pass     ] [######....] 0.6816  PASS
+           Detail : Cosine=0.6816 | Top shared: cutoff, proteins, exceed, 29, many, above
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 6/6 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q58] Are improvements correlated with sequence conservation?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q59] Does retrieval of structural data improve predictions?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q60] How does performance change with different window sizes?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.8969
+  Mean score    : 0.8991
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust balance noise reduction against signal preservation.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : All numeric facts correct
+    Pass 2 [Completeness Pass ] [########..] 0.8125  PASS
+           Detail : 26/32 GT concepts covered
+           Issues : idr, larger, smoothing
+    Pass 3 [Semantic Pass     ] [########..] 0.8260  PASS
+           Detail : Cosine=0.8260 | Top shared: window, mean, noise, signal, sliding, disordered
+    Pass 4 [Terminology Pass  ] [########..] 0.8571  PASS
+           Detail : 6/7 domain terms present
+           Issues : idr
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q61] Does neurosymbolic reasoning help detect functional disorder regions?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.8223
+  Mean score    : 0.8496
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [########..] 0.8889  PASS
+           Detail : Matched: [13.0, 396.0, 29.1, 0.5] | Missing/wrong: [0.378]
+           Issues : 0.378
+    Pass 2 [Completeness Pass ] [######....] 0.6774  PASS
+           Detail : 21/31 GT concepts covered
+           Issues : 378, content, entirely
+    Pass 3 [Semantic Pass     ] [######....] 0.6816  PASS
+           Detail : Cosine=0.6816 | Top shared: cutoff, proteins, exceed, 29, many, above
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 6/6 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q62] Are gains higher in specific residue compositions?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.9080
+  Mean score    : 0.9118
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [10.0]
+    Pass 2 [Completeness Pass ] [########..] 0.8333  PASS
+           Detail : 20/24 GT concepts covered
+           Issues : confidence, drops, due
+    Pass 3 [Semantic Pass     ] [########..] 0.8165  PASS
+           Detail : Cosine=0.8165 | Top shared: short, disordered, shorter, regions, than, 10
+    Pass 4 [Terminology Pass  ] [#########.] 0.9091  PASS
+           Detail : 10/11 domain terms present
+           Issues : confidence
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q63] Does the system improve classification of edge residues in IDRs?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.9080
+  Mean score    : 0.9118
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [10.0]
+    Pass 2 [Completeness Pass ] [########..] 0.8333  PASS
+           Detail : 20/24 GT concepts covered
+           Issues : confidence, drops, due
+    Pass 3 [Semantic Pass     ] [########..] 0.8165  PASS
+           Detail : Cosine=0.8165 | Top shared: short, disordered, shorter, regions, than, 10
+    Pass 4 [Terminology Pass  ] [#########.] 0.9091  PASS
+           Detail : 10/11 domain terms present
+           Issues : confidence
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q64] How does prediction confidence correlate with experimental uncertainty?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q65] Does neurosymbolic reasoning improve long-range sequence dependencies?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q66] Are improvements stable across random seeds?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q67] Does the system perform better on curated subsets of DisProt?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q68] How does performance change when excluding uncertain regions?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q69] Does neurosymbolic reasoning improve classification of rare IDRs?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q70] Are prediction gains dependent on dataset size?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q71] Does the system improve classification under imbalanced data?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q72] How does it perform on noisy annotations?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q73] Does symbolic reasoning reduce prediction drift?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q74] How does performance compare before and after normalization?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q75] Does neurosymbolic reasoning improve stability across runs?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q76] Are improvements larger for specific protein lengths?
+  K-Pass Result : FAILED 3/5
+  Weighted score: 0.3336
+  Mean score    : 0.4711
+  Passed        : 2/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [..........] 0.0000  FAIL
+           Detail : Missing/wrong: [13.0, 396.0, 0.378]
+           Issues : 13.0, 396.0, 0.378
+    Pass 2 [Completeness Pass ] [##........] 0.2500  FAIL
+           Detail : 2/8 GT concepts covered
+           Issues : 13, 378, 396
+    Pass 3 [Semantic Pass     ] [#.........] 0.1054  FAIL
+           Detail : Cosine=0.1054 | Top shared: disprot, mean
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q77] Does the system better align predictions with biological function?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q78] How does it handle missing sequence information?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q79] Does retrieval diversity impact performance?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q80] Are prediction improvements explainable through symbolic rules?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q81] Does neurosymbolic reasoning improve threshold selection?
+  K-Pass Result : PASSED 4/5
+  Weighted score: 0.6733
+  Mean score    : 0.7254
+  Passed        : 4/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [######....] 0.6667  PASS
+           Detail : Matched: [13.0, 396.0] | Missing/wrong: [0.378]
+           Issues : 0.378
+    Pass 2 [Completeness Pass ] [######....] 0.6250  PASS
+           Detail : 5/8 GT concepts covered
+           Issues : 378, mean, summary
+    Pass 3 [Semantic Pass     ] [###.......] 0.3354  FAIL
+           Detail : Cosine=0.3354 | Top shared: proteins, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q82] How does the system perform on synthetic datasets?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q83] Does calibration improve ranking of disorder scores?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.8223
+  Mean score    : 0.8496
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [########..] 0.8889  PASS
+           Detail : Matched: [13.0, 396.0, 29.1, 0.5] | Missing/wrong: [0.378]
+           Issues : 0.378
+    Pass 2 [Completeness Pass ] [######....] 0.6774  PASS
+           Detail : 21/31 GT concepts covered
+           Issues : 378, content, entirely
+    Pass 3 [Semantic Pass     ] [######....] 0.6816  PASS
+           Detail : Cosine=0.6816 | Top shared: cutoff, proteins, exceed, 29, many, above
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 6/6 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q84] Are prediction errors reduced uniformly?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q85] Does neurosymbolic reasoning improve classification confidence intervals?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q86] How does performance change with different retrieval strategies?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q87] Does the system improve detection of transient disorder?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.8223
+  Mean score    : 0.8496
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [########..] 0.8889  PASS
+           Detail : Matched: [13.0, 396.0, 29.1, 0.5] | Missing/wrong: [0.378]
+           Issues : 0.378
+    Pass 2 [Completeness Pass ] [######....] 0.6774  PASS
+           Detail : 21/31 GT concepts covered
+           Issues : 378, content, entirely
+    Pass 3 [Semantic Pass     ] [######....] 0.6816  PASS
+           Detail : Cosine=0.6816 | Top shared: cutoff, proteins, exceed, 29, many, above
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 6/6 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q88] Are gains consistent across evaluation metrics?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q89] Does neurosymbolic reasoning reduce model uncertainty?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q90] How does it perform under adversarial perturbations?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q91] Does the system improve robustness to sequence mutations?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q92] Are prediction improvements correlated with structural flexibility?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q93] Does neurosymbolic reasoning improve functional annotation alignment?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q94] How does performance compare across different datasets?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q95] Does the system improve classification of partially disordered regions?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 0.8223
+  Mean score    : 0.8496
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [########..] 0.8889  PASS
+           Detail : Matched: [13.0, 396.0, 29.1, 0.5] | Missing/wrong: [0.378]
+           Issues : 0.378
+    Pass 2 [Completeness Pass ] [######....] 0.6774  PASS
+           Detail : 21/31 GT concepts covered
+           Issues : 378, content, entirely
+    Pass 3 [Semantic Pass     ] [######....] 0.6816  PASS
+           Detail : Cosine=0.6816 | Top shared: cutoff, proteins, exceed, 29, many, above
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 6/6 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q96] Are gains consistent across evaluation folds?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q97] Does neurosymbolic reasoning improve model calibration slope?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q98] How does the system perform on edge-case proteins?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q99] Does neurosymbolic reasoning reduce prediction bias?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+[Q100] Are overall improvements sufficient to justify added system complexity?
+  K-Pass Result : PASSED ALL 5
+  Weighted score: 1.0000
+  Mean score    : 1.0000
+  Passed        : 5/5 passes
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  PASS BREAKDOWN:
+    Pass 1 [Factual Pass      ] [##########] 1.0000  PASS
+           Detail : Matched: [13.0, 396.0, 0.378]
+    Pass 2 [Completeness Pass ] [##########] 1.0000  PASS
+           Detail : 8/8 GT concepts covered
+    Pass 3 [Semantic Pass     ] [##########] 1.0000  PASS
+           Detail : Cosine=1.0000 | Top shared: summary, mean, 13, disprot, disorder, 396
+    Pass 4 [Terminology Pass  ] [##########] 1.0000  PASS
+           Detail : 2/2 domain terms present
+    Pass 5 [Consistency Pass  ] [##########] 1.0000  PASS
+           Detail : No internal inconsistencies found
+----------------------------------------------------------------------
+
+======================================================================
+  END OF K-PASS TEST (K=5) -- LLM Judge 1
+  Overall pass rate: 98.6% (493/500)
+  Mean weighted K-score: 0.9460 (std=0.1137)
+  All 5 passes passed: 97 questions | Majority failed: 2 questions
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
