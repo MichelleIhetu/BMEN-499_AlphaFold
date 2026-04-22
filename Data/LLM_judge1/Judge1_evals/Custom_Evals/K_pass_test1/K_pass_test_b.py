@@ -34,14 +34,14 @@ What is a K-Pass Test?
                 self-contradictions within the answer itself)?
 
     K-Pass Score = mean score across all 5 passes
-    A question PASSES a pass if it scores >= 0.5 on that pass.
+    A question PASSES a pass if it scores >= 0.60 on that pass.
     Overall pass rate = passes passed / (questions x K)
 
-Output: k_pass_results.txt (saved to same folder as this script)
+Output: k_pass_results_b.txt (saved to same folder as this script)
 
 Usage:
-    python K_pass_test_a.py --disprot Data/DisProt_ProteinData.json --qa Data/QA_Dataset.json
-    python K_pass_test_a.py --demo
+    python K_pass_test_b.py --disprot Data/DisProt_ProteinData.json --qa Data/QA_Dataset.json
+    python K_pass_test_b.py --demo
 """
 
 import json
@@ -395,7 +395,7 @@ def run_k_passes(pred, gt, stats):
     sc, det, issues = pass1_factual(pred, gt, stats)
     pass_results.append({
         "pass_id": 1, "name": "Factual Pass",
-        "score": sc, "passed": sc >= 0.5,
+        "score": sc, "passed": sc >= 0.60,
         "detail": det, "issues": issues,
         "weight": 0.30,
     })
@@ -404,7 +404,7 @@ def run_k_passes(pred, gt, stats):
     sc, det, issues = pass2_completeness(pred, gt)
     pass_results.append({
         "pass_id": 2, "name": "Completeness Pass",
-        "score": sc, "passed": sc >= 0.5,
+        "score": sc, "passed": sc >= 0.60,
         "detail": det, "issues": issues,
         "weight": 0.25,
     })
@@ -413,7 +413,7 @@ def run_k_passes(pred, gt, stats):
     sc, det, issues = pass3_semantic(pred, gt)
     pass_results.append({
         "pass_id": 3, "name": "Semantic Pass",
-        "score": sc, "passed": sc >= 0.5,
+        "score": sc, "passed": sc >= 0.60,
         "detail": det, "issues": issues,
         "weight": 0.20,
     })
@@ -422,7 +422,7 @@ def run_k_passes(pred, gt, stats):
     sc, det, issues = pass4_terminology(pred, gt)
     pass_results.append({
         "pass_id": 4, "name": "Terminology Pass",
-        "score": sc, "passed": sc >= 0.5,
+        "score": sc, "passed": sc >= 0.60,
         "detail": det, "issues": issues,
         "weight": 0.15,
     })
@@ -431,7 +431,7 @@ def run_k_passes(pred, gt, stats):
     sc, det, issues = pass5_consistency(pred)
     pass_results.append({
         "pass_id": 5, "name": "Consistency Pass",
-        "score": sc, "passed": sc >= 0.5,
+        "score": sc, "passed": sc >= 0.60,
         "detail": det, "issues": issues,
         "weight": 0.10,
     })
@@ -487,7 +487,7 @@ def evaluate(questions, stats):
 
 
 # =============================================================
-# 7. WRITE k_pass_results.txt
+# 7. WRITE k_pass_results_b.txt
 # =============================================================
 
 def write_results(results, stats):
@@ -520,7 +520,7 @@ def write_results(results, stats):
 
     lines = []
     lines.append("=" * 70)
-    lines.append(f"  BMEN-499 AlphaFold -- K-Pass Test (K={K}): LLM Judge 1")
+    lines.append(f"  BMEN-499 AlphaFold -- K-Pass Test B (K={K}, Threshold=0.60 Moderate): LLM Judge 1")
     lines.append("  Model   : BiomedBERT + Calibrated Symbolic Rules (LLM Judge 1)")
     lines.append(f"  K       : {K} evaluation passes per question")
     lines.append(f"  Dataset : {stats['total_proteins']:,} DisProt proteins")
@@ -534,7 +534,7 @@ def write_results(results, stats):
     lines.append("  a different evaluative perspective. An answer must hold up")
     lines.append("  under ALL K passes to be considered truly reliable.")
     lines.append("")
-    lines.append("  Pass threshold: score >= 0.5 to PASS a pass.")
+    lines.append("  Pass threshold: score >= 0.60 to PASS a pass.")
     lines.append("  Weighted K-pass score = weighted mean across all passes.")
     lines.append("")
     for p in PASSES:
@@ -565,7 +565,7 @@ def write_results(results, stats):
         pid    = p["id"]
         pscores = pass_stats[pid]
         pmean  = sum(pscores) / len(pscores)
-        prate  = sum(1 for s in pscores if s >= 0.5) / len(pscores)
+        prate  = sum(1 for s in pscores if s >= 0.60) / len(pscores)
         pass_means[pid] = pmean
         bar    = "#" * int(pmean * 10) + "." * (10 - int(pmean * 10))
         lines.append(f"    {p['name']:<25} [{bar}] {pmean:.4f}  {prate:.1%}")
@@ -636,7 +636,7 @@ def write_results(results, stats):
     output = "\n".join(lines)
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    out_path   = os.path.join(script_dir, "k_pass_results.txt")
+    out_path   = os.path.join(script_dir, "k_pass_results_b.txt")
 
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(output)
@@ -676,7 +676,7 @@ DEMO_QUESTIONS = [
 
 def main():
     parser = argparse.ArgumentParser(
-        description=f"K-Pass Test (K={K}): LLM Judge 1 predictions vs ground truth"
+        description=f"K-Pass Test B (K={K}, Threshold=0.60 Moderate): LLM Judge 1 predictions vs ground truth"
     )
     parser.add_argument("--disprot", type=str)
     parser.add_argument("--qa",      type=str)
