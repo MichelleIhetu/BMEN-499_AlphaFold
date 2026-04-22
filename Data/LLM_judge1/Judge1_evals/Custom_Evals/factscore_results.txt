@@ -1,0 +1,2183 @@
+======================================================================
+  BMEN-499 AlphaFold -- FactScore Evaluation: LLM Judge 1
+  Model   : BiomedBERT + Calibrated Symbolic Rules (LLM Judge 1)
+  Metric  : FactScore (Min et al., EMNLP 2023)
+  Dataset : 13,396 DisProt proteins
+  Questions evaluated: 100
+======================================================================
+
+WHAT IS FACTSCORE?
+----------------------------------------------------------------------
+  FactScore evaluates factual precision by decomposing each answer
+  into atomic facts and verifying each one against ground truth.
+
+  Atomic fact types:
+    NUMERIC     -- number or percentage claim
+    COMPARATIVE -- above/below/higher/lower claim
+    CAUSAL      -- causes/promotes/disrupts claim
+    EXISTENCE   -- contains/has/found claim
+    PROPERTY    -- is/are/called claim
+
+  Verification:
+    SUPPORTED    -- fact confirmed in GT       (full credit)
+    PARTIAL      -- fact partially confirmed   (half credit)
+    UNSUPPORTED  -- fact contradicts or absent (no credit)
+    UNVERIFIABLE -- cannot check from GT alone (no credit)
+
+  FactScore = (supported + 0.5 x partial) / total_facts
+  Score: 0.0 (all wrong) to 1.0 (all correct)
+
+  References:
+    Min et al. (2023) FActScore: Fine-grained Atomic Evaluation
+    of Factual Precision. EMNLP 2023.
+    Maynez et al. (2020) On Faithfulness and Factuality in
+    Abstractive Summarization. ACL 2020.
+
+OVERALL FACTSCORE RESULTS
+----------------------------------------------------------------------
+  Mean FactScore        : 0.8497  (std=0.2655)
+  Mean facts per answer : 3.0
+  Mean supported facts  : 1.4
+  Mean unsupported facts: 0.5
+  Total atomic facts    : 300
+  Total supported       : 140
+  Total unsupported     : 47
+  Best  : Q10 = 1.0000 (EXCELLENT)
+  Worst : Q29 = 0.0000 (VERY POOR)
+
+  Quality breakdown:
+    EXCELLENT  (>=0.90) :  71 questions
+    GOOD       (>=0.75) :   7 questions
+    ACCEPTABLE (>=0.50) :   3 questions
+    POOR       (>=0.25) :  16 questions
+    VERY POOR  (< 0.25) :   3 questions
+
+  FactScore Distribution:
+    <0.25 VERY POOR  | ###................. | 3 questions
+    <0.50 POOR       | ################.... | 16 questions
+    <0.75 ACCEPTABLE | ###................. | 3 questions
+    <0.90 GOOD       | #######............. | 7 questions
+    >=0.90 EXCELLENT | ####################################################################### | 71 questions
+
+  FACTSCORE BY ATOMIC FACT TYPE:
+    NUMERIC         [#####.....] 0.5995  221 facts  Moderate
+    COMPARATIVE     N/A              0 facts
+    CAUSAL          N/A              0 facts
+    EXISTENCE       N/A              0 facts
+    PROPERTY        [#####.....] 0.5063  79 facts  Moderate
+
+======================================================================
+  QUESTION-BY-QUESTION FACTSCORE REPORT
+======================================================================
+
+[Q1] Is a disorder score above 0.5 a reliable cutoff for calling a region disordered?
+  FactScore : 0.4000  --  POOR
+  Facts     : 10 total | Supported=2 | Partial=4 | Unsupported=2 | Unverifiable=2
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] based on 13,396 disprot proteins a disorder score above 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+     2. [~~] [NUMERIC     ] 5 is a commonly used cutoff
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     3. [OK] [PROPERTY    ] it is conservative
+         Verdict: SUPPORTED -- 100% keywords in GT
+     4. [~~] [NUMERIC     ] 1% of proteins exceed 0
+         Verdict: PARTIAL -- Numbers [1.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     5. [~~] [NUMERIC     ] 2% exceed 0
+         Verdict: PARTIAL -- Numbers [2.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     6. [??] [NUMERIC     ] many true idrs fall in the 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     7. [??] [NUMERIC     ] would be missed by a strict 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     8. [~~] [NUMERIC     ] 5 threshold
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     9. [XX] [PROPERTY    ] the cutoff is a useful starting point
+         Verdict: UNSUPPORTED -- Only 25% overlap. Missing: point, starting, useful
+    10. [XX] [PROPERTY    ] not fully reliable
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: fully, reliable
+----------------------------------------------------------------------
+
+[Q2] Do confidence scores drop for IDRs shorter than 10 residues?
+  FactScore : 0.8000  --  GOOD
+  Facts     : 5 total | Supported=4 | Partial=0 | Unsupported=0 | Unverifiable=1
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disordered regions shorter than 10 amino acids are difficult
+         Verdict: SUPPORTED -- All 1 numbers verified
+     2. [??] [NUMERIC     ] of 0 annotated disordered regions in disprot 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     3. [OK] [NUMERIC     ] 0% are shorter than 10 residues with mean region length 0
+         Verdict: SUPPORTED -- All 1 numbers verified
+     4. [OK] [PROPERTY    ] short idrs are underrepresented
+         Verdict: SUPPORTED -- 100% keywords in GT
+     5. [OK] [PROPERTY    ] prediction tools lack sufficient sequence context for short 
+         Verdict: SUPPORTED -- 62% keywords in GT
+----------------------------------------------------------------------
+
+[Q3] Do proline and glycine-rich regions consistently score higher disorder confidence than average?
+  FactScore : 0.4000  --  POOR
+  Facts     : 10 total | Supported=2 | Partial=4 | Unsupported=2 | Unverifiable=2
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] based on 13,396 disprot proteins a disorder score above 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+     2. [~~] [NUMERIC     ] 5 is a commonly used cutoff
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     3. [OK] [PROPERTY    ] it is conservative
+         Verdict: SUPPORTED -- 100% keywords in GT
+     4. [~~] [NUMERIC     ] 1% of proteins exceed 0
+         Verdict: PARTIAL -- Numbers [1.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     5. [~~] [NUMERIC     ] 2% exceed 0
+         Verdict: PARTIAL -- Numbers [2.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     6. [??] [NUMERIC     ] many true idrs fall in the 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     7. [??] [NUMERIC     ] would be missed by a strict 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     8. [~~] [NUMERIC     ] 5 threshold
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     9. [XX] [PROPERTY    ] the cutoff is a useful starting point
+         Verdict: UNSUPPORTED -- Only 25% overlap. Missing: point, starting, useful
+    10. [XX] [PROPERTY    ] not fully reliable
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: fully, reliable
+----------------------------------------------------------------------
+
+[Q4] Does applying a sliding window smooth out confidence scores without losing true IDR signal?
+  FactScore : 0.6000  --  ACCEPTABLE
+  Facts     : 5 total | Supported=3 | Partial=0 | Unsupported=0 | Unverifiable=2
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust balance noise reduction against signal preservation.
+
+  ATOMIC FACTS:
+     1. [OK] [PROPERTY    ] sliding window averaging smooths per-residue disorder scores
+         Verdict: SUPPORTED -- 100% keywords in GT
+     2. [??] [NUMERIC     ] the mean disordered region length in disprot is 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     3. [??] [NUMERIC     ] 0 amino acids
+         Verdict: UNVERIFIABLE -- Only zeros
+     4. [OK] [PROPERTY    ] if the sliding window size exceeds this mean short disordere
+         Verdict: SUPPORTED -- 62% keywords in GT
+     5. [OK] [PROPERTY    ] window size must balance noise reduction against signal pres
+         Verdict: SUPPORTED -- 100% keywords in GT
+----------------------------------------------------------------------
+
+[Q5] How far off are raw confidence scores from the true disorder rate in DisProt?
+  FactScore : 0.4000  --  POOR
+  Facts     : 10 total | Supported=2 | Partial=4 | Unsupported=2 | Unverifiable=2
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] based on 13,396 disprot proteins a disorder score above 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+     2. [~~] [NUMERIC     ] 5 is a commonly used cutoff
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     3. [OK] [PROPERTY    ] it is conservative
+         Verdict: SUPPORTED -- 100% keywords in GT
+     4. [~~] [NUMERIC     ] 1% of proteins exceed 0
+         Verdict: PARTIAL -- Numbers [1.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     5. [~~] [NUMERIC     ] 2% exceed 0
+         Verdict: PARTIAL -- Numbers [2.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     6. [??] [NUMERIC     ] many true idrs fall in the 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     7. [??] [NUMERIC     ] would be missed by a strict 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     8. [~~] [NUMERIC     ] 5 threshold
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     9. [XX] [PROPERTY    ] the cutoff is a useful starting point
+         Verdict: UNSUPPORTED -- Only 25% overlap. Missing: point, starting, useful
+    10. [XX] [PROPERTY    ] not fully reliable
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: fully, reliable
+----------------------------------------------------------------------
+
+[Q6] When a confidence score falls in the uncertain range (0.4–0.6), does applying a sliding window smooth it toward the correct label, and what window size does the literature support?
+  FactScore : 0.6000  --  ACCEPTABLE
+  Facts     : 5 total | Supported=3 | Partial=0 | Unsupported=0 | Unverifiable=2
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust balance noise reduction against signal preservation.
+
+  ATOMIC FACTS:
+     1. [OK] [PROPERTY    ] sliding window averaging smooths per-residue disorder scores
+         Verdict: SUPPORTED -- 100% keywords in GT
+     2. [??] [NUMERIC     ] the mean disordered region length in disprot is 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     3. [??] [NUMERIC     ] 0 amino acids
+         Verdict: UNVERIFIABLE -- Only zeros
+     4. [OK] [PROPERTY    ] if the sliding window size exceeds this mean short disordere
+         Verdict: SUPPORTED -- 62% keywords in GT
+     5. [OK] [PROPERTY    ] window size must balance noise reduction against signal pres
+         Verdict: SUPPORTED -- 100% keywords in GT
+----------------------------------------------------------------------
+
+[Q7] How much do raw confidence scores overestimate or underestimate true disorder rates across DisProt?
+  FactScore : 0.4000  --  POOR
+  Facts     : 10 total | Supported=2 | Partial=4 | Unsupported=2 | Unverifiable=2
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] based on 13,396 disprot proteins a disorder score above 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+     2. [~~] [NUMERIC     ] 5 is a commonly used cutoff
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     3. [OK] [PROPERTY    ] it is conservative
+         Verdict: SUPPORTED -- 100% keywords in GT
+     4. [~~] [NUMERIC     ] 1% of proteins exceed 0
+         Verdict: PARTIAL -- Numbers [1.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     5. [~~] [NUMERIC     ] 2% exceed 0
+         Verdict: PARTIAL -- Numbers [2.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     6. [??] [NUMERIC     ] many true idrs fall in the 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     7. [??] [NUMERIC     ] would be missed by a strict 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     8. [~~] [NUMERIC     ] 5 threshold
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     9. [XX] [PROPERTY    ] the cutoff is a useful starting point
+         Verdict: UNSUPPORTED -- Only 25% overlap. Missing: point, starting, useful
+    10. [XX] [PROPERTY    ] not fully reliable
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: fully, reliable
+----------------------------------------------------------------------
+
+[Q8] After applying symbolic smoothing and isotonic calibration together, by how much does residue level F1 improve over raw scores, and is this improvement consistent with gains reported for similar post processing pipelines in the literature?
+  FactScore : 0.8000  --  GOOD
+  Facts     : 5 total | Supported=4 | Partial=0 | Unsupported=0 | Unverifiable=1
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disordered regions shorter than 10 amino acids are difficult
+         Verdict: SUPPORTED -- All 1 numbers verified
+     2. [??] [NUMERIC     ] of 0 annotated disordered regions in disprot 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     3. [OK] [NUMERIC     ] 0% are shorter than 10 residues with mean region length 0
+         Verdict: SUPPORTED -- All 1 numbers verified
+     4. [OK] [PROPERTY    ] short idrs are underrepresented
+         Verdict: SUPPORTED -- 100% keywords in GT
+     5. [OK] [PROPERTY    ] prediction tools lack sufficient sequence context for short 
+         Verdict: SUPPORTED -- 62% keywords in GT
+----------------------------------------------------------------------
+
+[Q9] What is the MAE between raw disorder confidence scores and DisProt ground truth labels, and how many standard deviations (Z-score) away from the mean prediction is each incorrectly labeled residue?
+  FactScore : 0.4000  --  POOR
+  Facts     : 10 total | Supported=2 | Partial=4 | Unsupported=2 | Unverifiable=2
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] based on 13,396 disprot proteins a disorder score above 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+     2. [~~] [NUMERIC     ] 5 is a commonly used cutoff
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     3. [OK] [PROPERTY    ] it is conservative
+         Verdict: SUPPORTED -- 100% keywords in GT
+     4. [~~] [NUMERIC     ] 1% of proteins exceed 0
+         Verdict: PARTIAL -- Numbers [1.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     5. [~~] [NUMERIC     ] 2% exceed 0
+         Verdict: PARTIAL -- Numbers [2.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     6. [??] [NUMERIC     ] many true idrs fall in the 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     7. [??] [NUMERIC     ] would be missed by a strict 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     8. [~~] [NUMERIC     ] 5 threshold
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     9. [XX] [PROPERTY    ] the cutoff is a useful starting point
+         Verdict: UNSUPPORTED -- Only 25% overlap. Missing: point, starting, useful
+    10. [XX] [PROPERTY    ] not fully reliable
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: fully, reliable
+----------------------------------------------------------------------
+
+[Q10] Do N-terminal, C-terminal, and internal IDRs show different MAE profiles, and are the Z-scores of prediction errors normally distributed within each positional group or skewed in a way that suggests a systematic bias?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q11] Does a neurosymbolic RAG system reduce variance in disorder confidence predictions compared to raw model outputs?
+  FactScore : 0.4000  --  POOR
+  Facts     : 10 total | Supported=2 | Partial=4 | Unsupported=2 | Unverifiable=2
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] based on 13,396 disprot proteins a disorder score above 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+     2. [~~] [NUMERIC     ] 5 is a commonly used cutoff
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     3. [OK] [PROPERTY    ] it is conservative
+         Verdict: SUPPORTED -- 100% keywords in GT
+     4. [~~] [NUMERIC     ] 1% of proteins exceed 0
+         Verdict: PARTIAL -- Numbers [1.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     5. [~~] [NUMERIC     ] 2% exceed 0
+         Verdict: PARTIAL -- Numbers [2.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     6. [??] [NUMERIC     ] many true idrs fall in the 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     7. [??] [NUMERIC     ] would be missed by a strict 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     8. [~~] [NUMERIC     ] 5 threshold
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     9. [XX] [PROPERTY    ] the cutoff is a useful starting point
+         Verdict: UNSUPPORTED -- Only 25% overlap. Missing: point, starting, useful
+    10. [XX] [PROPERTY    ] not fully reliable
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: fully, reliable
+----------------------------------------------------------------------
+
+[Q12] How does the precision-recall curve change after applying neurosymbolic reasoning?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q13] Does incorporating symbolic rules improve classification accuracy for borderline disorder regions?
+  FactScore : 0.4000  --  POOR
+  Facts     : 10 total | Supported=2 | Partial=4 | Unsupported=2 | Unverifiable=2
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] based on 13,396 disprot proteins a disorder score above 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+     2. [~~] [NUMERIC     ] 5 is a commonly used cutoff
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     3. [OK] [PROPERTY    ] it is conservative
+         Verdict: SUPPORTED -- 100% keywords in GT
+     4. [~~] [NUMERIC     ] 1% of proteins exceed 0
+         Verdict: PARTIAL -- Numbers [1.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     5. [~~] [NUMERIC     ] 2% exceed 0
+         Verdict: PARTIAL -- Numbers [2.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     6. [??] [NUMERIC     ] many true idrs fall in the 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     7. [??] [NUMERIC     ] would be missed by a strict 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     8. [~~] [NUMERIC     ] 5 threshold
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     9. [XX] [PROPERTY    ] the cutoff is a useful starting point
+         Verdict: UNSUPPORTED -- Only 25% overlap. Missing: point, starting, useful
+    10. [XX] [PROPERTY    ] not fully reliable
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: fully, reliable
+----------------------------------------------------------------------
+
+[Q14] What is the impact of neurosymbolic calibration on false positive rates in ordered regions?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q15] Does the neurosymbolic approach improve prediction consistency across homologous proteins?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q16] How sensitive are disorder predictions to the choice of retrieval documents in the RAG system?
+  FactScore : 0.4000  --  POOR
+  Facts     : 10 total | Supported=2 | Partial=4 | Unsupported=2 | Unverifiable=2
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] based on 13,396 disprot proteins a disorder score above 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+     2. [~~] [NUMERIC     ] 5 is a commonly used cutoff
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     3. [OK] [PROPERTY    ] it is conservative
+         Verdict: SUPPORTED -- 100% keywords in GT
+     4. [~~] [NUMERIC     ] 1% of proteins exceed 0
+         Verdict: PARTIAL -- Numbers [1.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     5. [~~] [NUMERIC     ] 2% exceed 0
+         Verdict: PARTIAL -- Numbers [2.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     6. [??] [NUMERIC     ] many true idrs fall in the 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     7. [??] [NUMERIC     ] would be missed by a strict 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     8. [~~] [NUMERIC     ] 5 threshold
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     9. [XX] [PROPERTY    ] the cutoff is a useful starting point
+         Verdict: UNSUPPORTED -- Only 25% overlap. Missing: point, starting, useful
+    10. [XX] [PROPERTY    ] not fully reliable
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: fully, reliable
+----------------------------------------------------------------------
+
+[Q17] Does contextual biological knowledge retrieved via RAG improve long IDR detection accuracy?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q18] How does performance differ between short and long IDRs after neurosymbolic processing?
+  FactScore : 0.8000  --  GOOD
+  Facts     : 5 total | Supported=4 | Partial=0 | Unsupported=0 | Unverifiable=1
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disordered regions shorter than 10 amino acids are difficult
+         Verdict: SUPPORTED -- All 1 numbers verified
+     2. [??] [NUMERIC     ] of 0 annotated disordered regions in disprot 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     3. [OK] [NUMERIC     ] 0% are shorter than 10 residues with mean region length 0
+         Verdict: SUPPORTED -- All 1 numbers verified
+     4. [OK] [PROPERTY    ] short idrs are underrepresented
+         Verdict: SUPPORTED -- 100% keywords in GT
+     5. [OK] [PROPERTY    ] prediction tools lack sufficient sequence context for short 
+         Verdict: SUPPORTED -- 62% keywords in GT
+----------------------------------------------------------------------
+
+[Q19] Are certain amino acid compositions more responsive to symbolic correction rules?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q20] Does neurosymbolic reasoning reduce prediction noise in low-confidence regions?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q21] How does calibration affect AUROC compared to raw predictions?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q22] Does symbolic smoothing introduce bias toward overprediction of disorder?
+  FactScore : 0.4000  --  POOR
+  Facts     : 10 total | Supported=2 | Partial=4 | Unsupported=2 | Unverifiable=2
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] based on 13,396 disprot proteins a disorder score above 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+     2. [~~] [NUMERIC     ] 5 is a commonly used cutoff
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     3. [OK] [PROPERTY    ] it is conservative
+         Verdict: SUPPORTED -- 100% keywords in GT
+     4. [~~] [NUMERIC     ] 1% of proteins exceed 0
+         Verdict: PARTIAL -- Numbers [1.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     5. [~~] [NUMERIC     ] 2% exceed 0
+         Verdict: PARTIAL -- Numbers [2.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     6. [??] [NUMERIC     ] many true idrs fall in the 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     7. [??] [NUMERIC     ] would be missed by a strict 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     8. [~~] [NUMERIC     ] 5 threshold
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     9. [XX] [PROPERTY    ] the cutoff is a useful starting point
+         Verdict: UNSUPPORTED -- Only 25% overlap. Missing: point, starting, useful
+    10. [XX] [PROPERTY    ] not fully reliable
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: fully, reliable
+----------------------------------------------------------------------
+
+[Q23] What is the distribution of confidence score corrections applied by the neurosymbolic system?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q24] Does the system improve recall without sacrificing precision?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q25] How does performance vary across different protein families?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q26] Are improvements consistent across species in the DisProt dataset?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q27] Does the neurosymbolic model perform better on experimentally validated long IDRs?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q28] How does retrieval quality impact final prediction confidence?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q29] Are confidence score corrections correlated with sequence length?
+  FactScore : 0.0000  --  VERY POOR
+  Facts     : 5 total | Supported=0 | Partial=0 | Unsupported=4 | Unverifiable=1
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  ATOMIC FACTS:
+     1. [XX] [NUMERIC     ] disordered regions shorter than 10 amino acids are difficult
+         Verdict: UNSUPPORTED -- Numbers [10.0] not found in GT [13.0, 396.0, 0.378]
+     2. [??] [NUMERIC     ] of 0 annotated disordered regions in disprot 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     3. [XX] [NUMERIC     ] 0% are shorter than 10 residues with mean region length 0
+         Verdict: UNSUPPORTED -- Numbers [0.0, 10.0, 0.0] not found in GT [13.0, 396.0, 0.378]
+     4. [XX] [PROPERTY    ] short idrs are underrepresented
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: idrs, short, underrepresented
+     5. [XX] [PROPERTY    ] prediction tools lack sufficient sequence context for short 
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: context, lack, prediction, sequence
+----------------------------------------------------------------------
+
+[Q30] Does neurosymbolic reasoning improve predictions for low-complexity regions?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q31] How does entropy of predictions change after symbolic reasoning?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q32] Does the system reduce systematic bias in terminal regions?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q33] Are gains from neurosymbolic processing statistically significant?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q34] How does performance compare against baseline machine learning models?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q35] Does adding domain knowledge improve classification boundaries?
+  FactScore : 0.8750  --  GOOD
+  Facts     : 4 total | Supported=3 | Partial=1 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    92.6% of DisProt proteins contain at least one Pfam structured do
+    main alongside disordered regions. Structured domains and IDRs fr
+    equently co-occur in the same protein. Each region must be evalua
+    ted independently rather than labeling the whole protein as order
+    ed or disordered.
+
+  LLM1 PREDICTION:
+    92.6% of DisProt proteins contain at least one Pfam structured do
+    main alongside their disordered regions. Structured domains and I
+    DRs frequently co-occur. Each region must be evaluated independen
+    tly rather than classifying the whole protein as ordered or disor
+    dered.
+
+  ATOMIC FACTS:
+     1. [~~] [NUMERIC     ] 6% of disprot proteins contain at least one pfam structured 
+         Verdict: PARTIAL -- Numbers [6.0] not found in GT [92.6] (keywords match)
+     2. [OK] [PROPERTY    ] structured domains
+         Verdict: SUPPORTED -- 100% keywords in GT
+     3. [OK] [PROPERTY    ] idrs frequently co-occur
+         Verdict: SUPPORTED -- 100% keywords in GT
+     4. [OK] [PROPERTY    ] each region must be evaluated independently rather than clas
+         Verdict: SUPPORTED -- 92% keywords in GT
+----------------------------------------------------------------------
+
+[Q36] How robust is the model to noisy or incomplete retrieval data?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q37] Does the neurosymbolic system improve calibration curves?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q38] How does Brier score change after calibration?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q39] Are prediction improvements uniform across all confidence intervals?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q40] Does neurosymbolic reasoning improve interpretability of predictions?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q41] How does performance change when removing symbolic rules?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q42] Does the system better detect disordered binding regions?
+  FactScore : 0.4000  --  POOR
+  Facts     : 10 total | Supported=2 | Partial=4 | Unsupported=2 | Unverifiable=2
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] based on 13,396 disprot proteins a disorder score above 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+     2. [~~] [NUMERIC     ] 5 is a commonly used cutoff
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     3. [OK] [PROPERTY    ] it is conservative
+         Verdict: SUPPORTED -- 100% keywords in GT
+     4. [~~] [NUMERIC     ] 1% of proteins exceed 0
+         Verdict: PARTIAL -- Numbers [1.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     5. [~~] [NUMERIC     ] 2% exceed 0
+         Verdict: PARTIAL -- Numbers [2.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     6. [??] [NUMERIC     ] many true idrs fall in the 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     7. [??] [NUMERIC     ] would be missed by a strict 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     8. [~~] [NUMERIC     ] 5 threshold
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     9. [XX] [PROPERTY    ] the cutoff is a useful starting point
+         Verdict: UNSUPPORTED -- Only 25% overlap. Missing: point, starting, useful
+    10. [XX] [PROPERTY    ] not fully reliable
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: fully, reliable
+----------------------------------------------------------------------
+
+[Q43] Are certain motifs better recognized after symbolic processing?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q44] How does the system handle conflicting retrieved evidence?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q45] Does neurosymbolic reasoning reduce overfitting?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q46] What is the effect on Matthews Correlation Coefficient (MCC)?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q47] Does performance degrade on unseen protein structures?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q48] How does retrieval latency affect prediction quality?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q49] Does symbolic reasoning improve alignment with experimental annotations?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q50] Are prediction improvements localized or global across sequences?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q51] Does neurosymbolic RAG help identify disorder-to-order transitions?
+  FactScore : 0.4000  --  POOR
+  Facts     : 10 total | Supported=2 | Partial=4 | Unsupported=2 | Unverifiable=2
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] based on 13,396 disprot proteins a disorder score above 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+     2. [~~] [NUMERIC     ] 5 is a commonly used cutoff
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     3. [OK] [PROPERTY    ] it is conservative
+         Verdict: SUPPORTED -- 100% keywords in GT
+     4. [~~] [NUMERIC     ] 1% of proteins exceed 0
+         Verdict: PARTIAL -- Numbers [1.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     5. [~~] [NUMERIC     ] 2% exceed 0
+         Verdict: PARTIAL -- Numbers [2.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     6. [??] [NUMERIC     ] many true idrs fall in the 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     7. [??] [NUMERIC     ] would be missed by a strict 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     8. [~~] [NUMERIC     ] 5 threshold
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     9. [XX] [PROPERTY    ] the cutoff is a useful starting point
+         Verdict: UNSUPPORTED -- Only 25% overlap. Missing: point, starting, useful
+    10. [XX] [PROPERTY    ] not fully reliable
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: fully, reliable
+----------------------------------------------------------------------
+
+[Q52] How does the system perform on proteins with multiple IDRs?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q53] Does calibration reduce prediction skewness?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q54] Are confidence intervals narrower after processing?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q55] Does neurosymbolic reasoning improve classification of ambiguous residues?
+  FactScore : 0.8000  --  GOOD
+  Facts     : 5 total | Supported=4 | Partial=0 | Unsupported=0 | Unverifiable=1
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disordered regions shorter than 10 amino acids are difficult
+         Verdict: SUPPORTED -- All 1 numbers verified
+     2. [??] [NUMERIC     ] of 0 annotated disordered regions in disprot 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     3. [OK] [NUMERIC     ] 0% are shorter than 10 residues with mean region length 0
+         Verdict: SUPPORTED -- All 1 numbers verified
+     4. [OK] [PROPERTY    ] short idrs are underrepresented
+         Verdict: SUPPORTED -- 100% keywords in GT
+     5. [OK] [PROPERTY    ] prediction tools lack sufficient sequence context for short 
+         Verdict: SUPPORTED -- 62% keywords in GT
+----------------------------------------------------------------------
+
+[Q56] How does the system perform under cross-validation?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q57] Does it generalize across different disorder prediction tools?
+  FactScore : 0.4000  --  POOR
+  Facts     : 10 total | Supported=2 | Partial=4 | Unsupported=2 | Unverifiable=2
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] based on 13,396 disprot proteins a disorder score above 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+     2. [~~] [NUMERIC     ] 5 is a commonly used cutoff
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     3. [OK] [PROPERTY    ] it is conservative
+         Verdict: SUPPORTED -- 100% keywords in GT
+     4. [~~] [NUMERIC     ] 1% of proteins exceed 0
+         Verdict: PARTIAL -- Numbers [1.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     5. [~~] [NUMERIC     ] 2% exceed 0
+         Verdict: PARTIAL -- Numbers [2.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     6. [??] [NUMERIC     ] many true idrs fall in the 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     7. [??] [NUMERIC     ] would be missed by a strict 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     8. [~~] [NUMERIC     ] 5 threshold
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     9. [XX] [PROPERTY    ] the cutoff is a useful starting point
+         Verdict: UNSUPPORTED -- Only 25% overlap. Missing: point, starting, useful
+    10. [XX] [PROPERTY    ] not fully reliable
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: fully, reliable
+----------------------------------------------------------------------
+
+[Q58] Are improvements correlated with sequence conservation?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q59] Does retrieval of structural data improve predictions?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q60] How does performance change with different window sizes?
+  FactScore : 0.6000  --  ACCEPTABLE
+  Facts     : 5 total | Supported=3 | Partial=0 | Unsupported=0 | Unverifiable=2
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust balance noise reduction against signal preservation.
+
+  ATOMIC FACTS:
+     1. [OK] [PROPERTY    ] sliding window averaging smooths per-residue disorder scores
+         Verdict: SUPPORTED -- 100% keywords in GT
+     2. [??] [NUMERIC     ] the mean disordered region length in disprot is 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     3. [??] [NUMERIC     ] 0 amino acids
+         Verdict: UNVERIFIABLE -- Only zeros
+     4. [OK] [PROPERTY    ] if the sliding window size exceeds this mean short disordere
+         Verdict: SUPPORTED -- 62% keywords in GT
+     5. [OK] [PROPERTY    ] window size must balance noise reduction against signal pres
+         Verdict: SUPPORTED -- 100% keywords in GT
+----------------------------------------------------------------------
+
+[Q61] Does neurosymbolic reasoning help detect functional disorder regions?
+  FactScore : 0.4000  --  POOR
+  Facts     : 10 total | Supported=2 | Partial=4 | Unsupported=2 | Unverifiable=2
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] based on 13,396 disprot proteins a disorder score above 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+     2. [~~] [NUMERIC     ] 5 is a commonly used cutoff
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     3. [OK] [PROPERTY    ] it is conservative
+         Verdict: SUPPORTED -- 100% keywords in GT
+     4. [~~] [NUMERIC     ] 1% of proteins exceed 0
+         Verdict: PARTIAL -- Numbers [1.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     5. [~~] [NUMERIC     ] 2% exceed 0
+         Verdict: PARTIAL -- Numbers [2.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     6. [??] [NUMERIC     ] many true idrs fall in the 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     7. [??] [NUMERIC     ] would be missed by a strict 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     8. [~~] [NUMERIC     ] 5 threshold
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     9. [XX] [PROPERTY    ] the cutoff is a useful starting point
+         Verdict: UNSUPPORTED -- Only 25% overlap. Missing: point, starting, useful
+    10. [XX] [PROPERTY    ] not fully reliable
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: fully, reliable
+----------------------------------------------------------------------
+
+[Q62] Are gains higher in specific residue compositions?
+  FactScore : 0.8000  --  GOOD
+  Facts     : 5 total | Supported=4 | Partial=0 | Unsupported=0 | Unverifiable=1
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disordered regions shorter than 10 amino acids are difficult
+         Verdict: SUPPORTED -- All 1 numbers verified
+     2. [??] [NUMERIC     ] of 0 annotated disordered regions in disprot 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     3. [OK] [NUMERIC     ] 0% are shorter than 10 residues with mean region length 0
+         Verdict: SUPPORTED -- All 1 numbers verified
+     4. [OK] [PROPERTY    ] short idrs are underrepresented
+         Verdict: SUPPORTED -- 100% keywords in GT
+     5. [OK] [PROPERTY    ] prediction tools lack sufficient sequence context for short 
+         Verdict: SUPPORTED -- 62% keywords in GT
+----------------------------------------------------------------------
+
+[Q63] Does the system improve classification of edge residues in IDRs?
+  FactScore : 0.8000  --  GOOD
+  Facts     : 5 total | Supported=4 | Partial=0 | Unsupported=0 | Unverifiable=1
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disordered regions shorter than 10 amino acids are difficult
+         Verdict: SUPPORTED -- All 1 numbers verified
+     2. [??] [NUMERIC     ] of 0 annotated disordered regions in disprot 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     3. [OK] [NUMERIC     ] 0% are shorter than 10 residues with mean region length 0
+         Verdict: SUPPORTED -- All 1 numbers verified
+     4. [OK] [PROPERTY    ] short idrs are underrepresented
+         Verdict: SUPPORTED -- 100% keywords in GT
+     5. [OK] [PROPERTY    ] prediction tools lack sufficient sequence context for short 
+         Verdict: SUPPORTED -- 62% keywords in GT
+----------------------------------------------------------------------
+
+[Q64] How does prediction confidence correlate with experimental uncertainty?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q65] Does neurosymbolic reasoning improve long-range sequence dependencies?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q66] Are improvements stable across random seeds?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q67] Does the system perform better on curated subsets of DisProt?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q68] How does performance change when excluding uncertain regions?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q69] Does neurosymbolic reasoning improve classification of rare IDRs?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q70] Are prediction gains dependent on dataset size?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q71] Does the system improve classification under imbalanced data?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q72] How does it perform on noisy annotations?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q73] Does symbolic reasoning reduce prediction drift?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q74] How does performance compare before and after normalization?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q75] Does neurosymbolic reasoning improve stability across runs?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q76] Are improvements larger for specific protein lengths?
+  FactScore : 0.0000  --  VERY POOR
+  Facts     : 5 total | Supported=0 | Partial=0 | Unsupported=4 | Unverifiable=1
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  ATOMIC FACTS:
+     1. [XX] [NUMERIC     ] disordered regions shorter than 10 amino acids are difficult
+         Verdict: UNSUPPORTED -- Numbers [10.0] not found in GT [13.0, 396.0, 0.378]
+     2. [??] [NUMERIC     ] of 0 annotated disordered regions in disprot 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     3. [XX] [NUMERIC     ] 0% are shorter than 10 residues with mean region length 0
+         Verdict: UNSUPPORTED -- Numbers [0.0, 10.0, 0.0] not found in GT [13.0, 396.0, 0.378]
+     4. [XX] [PROPERTY    ] short idrs are underrepresented
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: idrs, short, underrepresented
+     5. [XX] [PROPERTY    ] prediction tools lack sufficient sequence context for short 
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: context, lack, prediction, sequence
+----------------------------------------------------------------------
+
+[Q77] Does the system better align predictions with biological function?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q78] How does it handle missing sequence information?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q79] Does retrieval diversity impact performance?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q80] Are prediction improvements explainable through symbolic rules?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q81] Does neurosymbolic reasoning improve threshold selection?
+  FactScore : 0.1000  --  VERY POOR
+  Facts     : 10 total | Supported=1 | Partial=0 | Unsupported=7 | Unverifiable=2
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] based on 13,396 disprot proteins a disorder score above 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+     2. [XX] [NUMERIC     ] 5 is a commonly used cutoff
+         Verdict: UNSUPPORTED -- Numbers [5.0] not found in GT [13.0, 396.0, 0.378]
+     3. [XX] [PROPERTY    ] it is conservative
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: conservative
+     4. [XX] [NUMERIC     ] 1% of proteins exceed 0
+         Verdict: UNSUPPORTED -- Numbers [1.0, 0.0] not found in GT [13.0, 396.0, 0.378]
+     5. [XX] [NUMERIC     ] 2% exceed 0
+         Verdict: UNSUPPORTED -- Numbers [2.0, 0.0] not found in GT [13.0, 396.0, 0.378]
+     6. [??] [NUMERIC     ] many true idrs fall in the 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     7. [??] [NUMERIC     ] would be missed by a strict 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     8. [XX] [NUMERIC     ] 5 threshold
+         Verdict: UNSUPPORTED -- Numbers [5.0] not found in GT [13.0, 396.0, 0.378]
+     9. [XX] [PROPERTY    ] the cutoff is a useful starting point
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: cutoff, point, starting, useful
+    10. [XX] [PROPERTY    ] not fully reliable
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: fully, reliable
+----------------------------------------------------------------------
+
+[Q82] How does the system perform on synthetic datasets?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q83] Does calibration improve ranking of disorder scores?
+  FactScore : 0.4000  --  POOR
+  Facts     : 10 total | Supported=2 | Partial=4 | Unsupported=2 | Unverifiable=2
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] based on 13,396 disprot proteins a disorder score above 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+     2. [~~] [NUMERIC     ] 5 is a commonly used cutoff
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     3. [OK] [PROPERTY    ] it is conservative
+         Verdict: SUPPORTED -- 100% keywords in GT
+     4. [~~] [NUMERIC     ] 1% of proteins exceed 0
+         Verdict: PARTIAL -- Numbers [1.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     5. [~~] [NUMERIC     ] 2% exceed 0
+         Verdict: PARTIAL -- Numbers [2.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     6. [??] [NUMERIC     ] many true idrs fall in the 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     7. [??] [NUMERIC     ] would be missed by a strict 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     8. [~~] [NUMERIC     ] 5 threshold
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     9. [XX] [PROPERTY    ] the cutoff is a useful starting point
+         Verdict: UNSUPPORTED -- Only 25% overlap. Missing: point, starting, useful
+    10. [XX] [PROPERTY    ] not fully reliable
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: fully, reliable
+----------------------------------------------------------------------
+
+[Q84] Are prediction errors reduced uniformly?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q85] Does neurosymbolic reasoning improve classification confidence intervals?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q86] How does performance change with different retrieval strategies?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q87] Does the system improve detection of transient disorder?
+  FactScore : 0.4000  --  POOR
+  Facts     : 10 total | Supported=2 | Partial=4 | Unsupported=2 | Unverifiable=2
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] based on 13,396 disprot proteins a disorder score above 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+     2. [~~] [NUMERIC     ] 5 is a commonly used cutoff
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     3. [OK] [PROPERTY    ] it is conservative
+         Verdict: SUPPORTED -- 100% keywords in GT
+     4. [~~] [NUMERIC     ] 1% of proteins exceed 0
+         Verdict: PARTIAL -- Numbers [1.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     5. [~~] [NUMERIC     ] 2% exceed 0
+         Verdict: PARTIAL -- Numbers [2.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     6. [??] [NUMERIC     ] many true idrs fall in the 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     7. [??] [NUMERIC     ] would be missed by a strict 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     8. [~~] [NUMERIC     ] 5 threshold
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     9. [XX] [PROPERTY    ] the cutoff is a useful starting point
+         Verdict: UNSUPPORTED -- Only 25% overlap. Missing: point, starting, useful
+    10. [XX] [PROPERTY    ] not fully reliable
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: fully, reliable
+----------------------------------------------------------------------
+
+[Q88] Are gains consistent across evaluation metrics?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q89] Does neurosymbolic reasoning reduce model uncertainty?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q90] How does it perform under adversarial perturbations?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q91] Does the system improve robustness to sequence mutations?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q92] Are prediction improvements correlated with structural flexibility?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q93] Does neurosymbolic reasoning improve functional annotation alignment?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q94] How does performance compare across different datasets?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q95] Does the system improve classification of partially disordered regions?
+  FactScore : 0.4000  --  POOR
+  Facts     : 10 total | Supported=2 | Partial=4 | Unsupported=2 | Unverifiable=2
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] based on 13,396 disprot proteins a disorder score above 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+     2. [~~] [NUMERIC     ] 5 is a commonly used cutoff
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     3. [OK] [PROPERTY    ] it is conservative
+         Verdict: SUPPORTED -- 100% keywords in GT
+     4. [~~] [NUMERIC     ] 1% of proteins exceed 0
+         Verdict: PARTIAL -- Numbers [1.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     5. [~~] [NUMERIC     ] 2% exceed 0
+         Verdict: PARTIAL -- Numbers [2.0, 0.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     6. [??] [NUMERIC     ] many true idrs fall in the 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     7. [??] [NUMERIC     ] would be missed by a strict 0
+         Verdict: UNVERIFIABLE -- Only zeros
+     8. [~~] [NUMERIC     ] 5 threshold
+         Verdict: PARTIAL -- Numbers [5.0] not found in GT [13.0, 396.0, 29.1] (keywords match)
+     9. [XX] [PROPERTY    ] the cutoff is a useful starting point
+         Verdict: UNSUPPORTED -- Only 25% overlap. Missing: point, starting, useful
+    10. [XX] [PROPERTY    ] not fully reliable
+         Verdict: UNSUPPORTED -- Only 0% overlap. Missing: fully, reliable
+----------------------------------------------------------------------
+
+[Q96] Are gains consistent across evaluation folds?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q97] Does neurosymbolic reasoning improve model calibration slope?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q98] How does the system perform on edge-case proteins?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q99] Does neurosymbolic reasoning reduce prediction bias?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+[Q100] Are overall improvements sufficient to justify added system complexity?
+  FactScore : 1.0000  --  EXCELLENT
+  Facts     : 1 total | Supported=1 | Partial=0 | Unsupported=0 | Unverifiable=0
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  ATOMIC FACTS:
+     1. [OK] [NUMERIC     ] disprot summary 13,396 proteins mean disorder 0
+         Verdict: SUPPORTED -- All 2 numbers verified
+----------------------------------------------------------------------
+
+======================================================================
+  END OF FACTSCORE EVALUATION -- LLM Judge 1
+  Mean FactScore: 0.8497 | Excellent: 71 | Good: 7 | Acceptable: 3 | Poor: 16 | Very Poor: 3
+  Total atomic facts: 300 (140 supported, 47 unsupported)
+  Reference: Min et al. (2023) FActScore. EMNLP 2023.
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
