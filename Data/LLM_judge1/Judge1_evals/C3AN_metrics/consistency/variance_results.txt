@@ -1,0 +1,2096 @@
+======================================================================
+  BMEN-499 AlphaFold -- Output Variance: LLM Judge 1 vs Ground Truth
+  Model   : BiomedBERT + Calibrated Symbolic Rules (LLM Judge 1)
+  Metric  : Multi-dimensional Output Variance Analysis
+  Dataset : 13,396 DisProt proteins
+  Questions evaluated: 100
+======================================================================
+
+WHAT IS OUTPUT VARIANCE?
+----------------------------------------------------------------------
+  Output variance measures how much LLM1 predictions DEVIATE
+  from the ground truth across six dimensions.
+  Low variance = model stays close to ground truth.
+  High variance = model drifts significantly from ground truth.
+
+  METRIC 1 -- LENGTH VARIANCE (weight=20%)
+    Difference in word count between prediction and GT.
+    A prediction much longer or shorter than GT loses points.
+
+  METRIC 2 -- VOCABULARY VARIANCE (weight=15%)
+    Difference in unique word counts.
+    High vocabulary variance means different terminology used.
+
+  METRIC 3 -- NUMERIC DRIFT (weight=30%)
+    How far off predicted numbers are from GT numbers.
+    e.g. GT says 29.1% but prediction uses very different numbers.
+    Most heavily weighted -- numeric accuracy is critical in science.
+
+  METRIC 4 -- LEXICAL DIVERSITY (weight=15%)
+    Difference in type-token ratio (unique words / total words).
+    Measures whether pred and GT have similar writing complexity.
+
+  METRIC 5 -- SENTENCE COUNT VARIANCE (weight=10%)
+    Difference in number of sentences.
+    Measures structural similarity of the two answers.
+
+  METRIC 6 -- INFORMATION DENSITY (weight=10%)
+    Difference in content word ratio.
+    High density = information-packed. Low = more filler words.
+
+  Overall variance score: 0.0 (no variance) to 1.0 (maximum variance)
+    < 0.10 : VERY LOW VARIANCE
+    < 0.25 : LOW VARIANCE
+    < 0.50 : MODERATE VARIANCE
+    < 0.75 : HIGH VARIANCE
+    >= 0.75 : VERY HIGH VARIANCE
+
+OVERALL VARIANCE SUMMARY
+----------------------------------------------------------------------
+  Mean overall variance score  : 0.0801  (std=0.1679)
+  Mean length difference       : 4.3 words
+  Mean vocabulary difference   : 1.7 unique words
+  Mean numeric drift           : 1.91%
+  Mean lexical diversity gap   : 0.0348 TTR units
+  Mean sentence count gap      : 0.8 sentences
+  Mean information density gap : 0.0227
+
+  Lowest variance  : Q10 = 0.0000 (VERY LOW VARIANCE)
+  Highest variance : Q29 = 0.8806 (VERY HIGH VARIANCE)
+
+  Variance breakdown:
+    VERY LOW  (<0.10) :  75 questions
+    LOW       (<0.25) :   6 questions
+    MODERATE  (<0.50) :  16 questions
+    HIGH      (<0.75) :   1 questions
+    VERY HIGH (>=0.75):   2 questions
+
+  Variance Score Distribution:
+    <0.10 VERY LOW  | ########################################################################### | 75 questions
+    <0.25 LOW       | ######.............. | 6 questions
+    <0.50 MODERATE  | ################.... | 16 questions
+    <0.75 HIGH      | #................... | 1 questions
+    >=0.75 VERY HIGH | ##.................. | 2 questions
+
+  PER-METRIC VARIANCE SUMMARY:
+    Length diff (words)       mean=4.260  std=9.177  min=0.000  max=59.000
+    Vocab diff (words)        mean=1.690  std=5.423  min=0.000  max=40.000
+    Numeric drift (%)         mean=1.906  std=10.285  min=0.000  max=73.520
+    TTR difference            mean=0.035  std=0.063  min=0.000  max=0.279
+    Sentence diff             mean=0.800  std=1.761  min=0.000  max=10.000
+    Density diff              mean=0.023  std=0.055  min=0.000  max=0.404
+
+======================================================================
+  QUESTION-BY-QUESTION VARIANCE REPORT
+======================================================================
+
+[Q1] Is a disorder score above 0.5 a reliable cutoff for calling a region disordered?
+  Overall variance : 0.2841  --  MODERATE VARIANCE
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=53 words, Pred=68 words, diff=+15 (28.3%)
+    Vocabulary       : GT=45 unique, Pred=49 unique, diff=+4 (8.9%)
+    Numeric drift    : GT=[13.0, 396.0, 29.1, 0.5, 0.378, 0.5, 44.2, 0.3, 0.5], Pred=[13.0, 396.0, 0.5, 29.1, 0.5, 44.2, 0.3, 0.3, 0.5, 0.5], mean drift=2.29%
+    Lexical diversity: GT TTR=0.8491, Pred TTR=0.7206, diff=0.1285
+    Sentence count   : GT=7, Pred=11, diff=4
+    Info density     : GT=0.5472, Pred=0.4853, diff=0.0619
+----------------------------------------------------------------------
+
+[Q2] Do confidence scores drop for IDRs shorter than 10 residues?
+  Overall variance : 0.1090  --  LOW VARIANCE
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=42 words, Pred=47 words, diff=+5 (11.9%)
+    Vocabulary       : GT=34 unique, Pred=35 unique, diff=+1 (2.9%)
+    Numeric drift    : GT=[0.0, 0.0, 10.0, 0.0], Pred=[10.0, 0.0, 0.0, 10.0, 0.0], mean drift=0.00%
+    Lexical diversity: GT TTR=0.8095, Pred TTR=0.7447, diff=0.0648
+    Sentence count   : GT=4, Pred=4, diff=0
+    Info density     : GT=0.5952, Pred=0.6596, diff=0.0643
+----------------------------------------------------------------------
+
+[Q3] Do proline and glycine-rich regions consistently score higher disorder confidence than average?
+  Overall variance : 0.2841  --  MODERATE VARIANCE
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=53 words, Pred=68 words, diff=+15 (28.3%)
+    Vocabulary       : GT=45 unique, Pred=49 unique, diff=+4 (8.9%)
+    Numeric drift    : GT=[13.0, 396.0, 29.1, 0.5, 0.378, 0.5, 44.2, 0.3, 0.5], Pred=[13.0, 396.0, 0.5, 29.1, 0.5, 44.2, 0.3, 0.3, 0.5, 0.5], mean drift=2.29%
+    Lexical diversity: GT TTR=0.8491, Pred TTR=0.7206, diff=0.1285
+    Sentence count   : GT=7, Pred=11, diff=4
+    Info density     : GT=0.5472, Pred=0.4853, diff=0.0619
+----------------------------------------------------------------------
+
+[Q4] Does applying a sliding window smooth out confidence scores without losing true IDR signal?
+  Overall variance : 0.0875  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust balance noise reduction against signal preservation.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=43 words, Pred=49 words, diff=+6 (13.9%)
+    Vocabulary       : GT=38 unique, Pred=40 unique, diff=+2 (5.3%)
+    Numeric drift    : GT=[0.0], Pred=[0.0], mean drift=0.00%
+    Lexical diversity: GT TTR=0.8837, Pred TTR=0.8163, diff=0.0674
+    Sentence count   : GT=5, Pred=5, diff=0
+    Info density     : GT=0.8140, Pred=0.8163, diff=0.0024
+----------------------------------------------------------------------
+
+[Q5] How far off are raw confidence scores from the true disorder rate in DisProt?
+  Overall variance : 0.2841  --  MODERATE VARIANCE
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=53 words, Pred=68 words, diff=+15 (28.3%)
+    Vocabulary       : GT=45 unique, Pred=49 unique, diff=+4 (8.9%)
+    Numeric drift    : GT=[13.0, 396.0, 29.1, 0.5, 0.378, 0.5, 44.2, 0.3, 0.5], Pred=[13.0, 396.0, 0.5, 29.1, 0.5, 44.2, 0.3, 0.3, 0.5, 0.5], mean drift=2.29%
+    Lexical diversity: GT TTR=0.8491, Pred TTR=0.7206, diff=0.1285
+    Sentence count   : GT=7, Pred=11, diff=4
+    Info density     : GT=0.5472, Pred=0.4853, diff=0.0619
+----------------------------------------------------------------------
+
+[Q6] When a confidence score falls in the uncertain range (0.4–0.6), does applying a sliding window smooth it toward the correct label, and what window size does the literature support?
+  Overall variance : 0.0875  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust balance noise reduction against signal preservation.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=43 words, Pred=49 words, diff=+6 (13.9%)
+    Vocabulary       : GT=38 unique, Pred=40 unique, diff=+2 (5.3%)
+    Numeric drift    : GT=[0.0], Pred=[0.0], mean drift=0.00%
+    Lexical diversity: GT TTR=0.8837, Pred TTR=0.8163, diff=0.0674
+    Sentence count   : GT=5, Pred=5, diff=0
+    Info density     : GT=0.8140, Pred=0.8163, diff=0.0024
+----------------------------------------------------------------------
+
+[Q7] How much do raw confidence scores overestimate or underestimate true disorder rates across DisProt?
+  Overall variance : 0.2841  --  MODERATE VARIANCE
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=53 words, Pred=68 words, diff=+15 (28.3%)
+    Vocabulary       : GT=45 unique, Pred=49 unique, diff=+4 (8.9%)
+    Numeric drift    : GT=[13.0, 396.0, 29.1, 0.5, 0.378, 0.5, 44.2, 0.3, 0.5], Pred=[13.0, 396.0, 0.5, 29.1, 0.5, 44.2, 0.3, 0.3, 0.5, 0.5], mean drift=2.29%
+    Lexical diversity: GT TTR=0.8491, Pred TTR=0.7206, diff=0.1285
+    Sentence count   : GT=7, Pred=11, diff=4
+    Info density     : GT=0.5472, Pred=0.4853, diff=0.0619
+----------------------------------------------------------------------
+
+[Q8] After applying symbolic smoothing and isotonic calibration together, by how much does residue level F1 improve over raw scores, and is this improvement consistent with gains reported for similar post processing pipelines in the literature?
+  Overall variance : 0.1090  --  LOW VARIANCE
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=42 words, Pred=47 words, diff=+5 (11.9%)
+    Vocabulary       : GT=34 unique, Pred=35 unique, diff=+1 (2.9%)
+    Numeric drift    : GT=[0.0, 0.0, 10.0, 0.0], Pred=[10.0, 0.0, 0.0, 10.0, 0.0], mean drift=0.00%
+    Lexical diversity: GT TTR=0.8095, Pred TTR=0.7447, diff=0.0648
+    Sentence count   : GT=4, Pred=4, diff=0
+    Info density     : GT=0.5952, Pred=0.6596, diff=0.0643
+----------------------------------------------------------------------
+
+[Q9] What is the MAE between raw disorder confidence scores and DisProt ground truth labels, and how many standard deviations (Z-score) away from the mean prediction is each incorrectly labeled residue?
+  Overall variance : 0.2841  --  MODERATE VARIANCE
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=53 words, Pred=68 words, diff=+15 (28.3%)
+    Vocabulary       : GT=45 unique, Pred=49 unique, diff=+4 (8.9%)
+    Numeric drift    : GT=[13.0, 396.0, 29.1, 0.5, 0.378, 0.5, 44.2, 0.3, 0.5], Pred=[13.0, 396.0, 0.5, 29.1, 0.5, 44.2, 0.3, 0.3, 0.5, 0.5], mean drift=2.29%
+    Lexical diversity: GT TTR=0.8491, Pred TTR=0.7206, diff=0.1285
+    Sentence count   : GT=7, Pred=11, diff=4
+    Info density     : GT=0.5472, Pred=0.4853, diff=0.0619
+----------------------------------------------------------------------
+
+[Q10] Do N-terminal, C-terminal, and internal IDRs show different MAE profiles, and are the Z-scores of prediction errors normally distributed within each positional group or skewed in a way that suggests a systematic bias?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q11] Does a neurosymbolic RAG system reduce variance in disorder confidence predictions compared to raw model outputs?
+  Overall variance : 0.2841  --  MODERATE VARIANCE
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=53 words, Pred=68 words, diff=+15 (28.3%)
+    Vocabulary       : GT=45 unique, Pred=49 unique, diff=+4 (8.9%)
+    Numeric drift    : GT=[13.0, 396.0, 29.1, 0.5, 0.378, 0.5, 44.2, 0.3, 0.5], Pred=[13.0, 396.0, 0.5, 29.1, 0.5, 44.2, 0.3, 0.3, 0.5, 0.5], mean drift=2.29%
+    Lexical diversity: GT TTR=0.8491, Pred TTR=0.7206, diff=0.1285
+    Sentence count   : GT=7, Pred=11, diff=4
+    Info density     : GT=0.5472, Pred=0.4853, diff=0.0619
+----------------------------------------------------------------------
+
+[Q12] How does the precision-recall curve change after applying neurosymbolic reasoning?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q13] Does incorporating symbolic rules improve classification accuracy for borderline disorder regions?
+  Overall variance : 0.2841  --  MODERATE VARIANCE
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=53 words, Pred=68 words, diff=+15 (28.3%)
+    Vocabulary       : GT=45 unique, Pred=49 unique, diff=+4 (8.9%)
+    Numeric drift    : GT=[13.0, 396.0, 29.1, 0.5, 0.378, 0.5, 44.2, 0.3, 0.5], Pred=[13.0, 396.0, 0.5, 29.1, 0.5, 44.2, 0.3, 0.3, 0.5, 0.5], mean drift=2.29%
+    Lexical diversity: GT TTR=0.8491, Pred TTR=0.7206, diff=0.1285
+    Sentence count   : GT=7, Pred=11, diff=4
+    Info density     : GT=0.5472, Pred=0.4853, diff=0.0619
+----------------------------------------------------------------------
+
+[Q14] What is the impact of neurosymbolic calibration on false positive rates in ordered regions?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q15] Does the neurosymbolic approach improve prediction consistency across homologous proteins?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q16] How sensitive are disorder predictions to the choice of retrieval documents in the RAG system?
+  Overall variance : 0.2841  --  MODERATE VARIANCE
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=53 words, Pred=68 words, diff=+15 (28.3%)
+    Vocabulary       : GT=45 unique, Pred=49 unique, diff=+4 (8.9%)
+    Numeric drift    : GT=[13.0, 396.0, 29.1, 0.5, 0.378, 0.5, 44.2, 0.3, 0.5], Pred=[13.0, 396.0, 0.5, 29.1, 0.5, 44.2, 0.3, 0.3, 0.5, 0.5], mean drift=2.29%
+    Lexical diversity: GT TTR=0.8491, Pred TTR=0.7206, diff=0.1285
+    Sentence count   : GT=7, Pred=11, diff=4
+    Info density     : GT=0.5472, Pred=0.4853, diff=0.0619
+----------------------------------------------------------------------
+
+[Q17] Does contextual biological knowledge retrieved via RAG improve long IDR detection accuracy?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q18] How does performance differ between short and long IDRs after neurosymbolic processing?
+  Overall variance : 0.1090  --  LOW VARIANCE
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=42 words, Pred=47 words, diff=+5 (11.9%)
+    Vocabulary       : GT=34 unique, Pred=35 unique, diff=+1 (2.9%)
+    Numeric drift    : GT=[0.0, 0.0, 10.0, 0.0], Pred=[10.0, 0.0, 0.0, 10.0, 0.0], mean drift=0.00%
+    Lexical diversity: GT TTR=0.8095, Pred TTR=0.7447, diff=0.0648
+    Sentence count   : GT=4, Pred=4, diff=0
+    Info density     : GT=0.5952, Pred=0.6596, diff=0.0643
+----------------------------------------------------------------------
+
+[Q19] Are certain amino acid compositions more responsive to symbolic correction rules?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q20] Does neurosymbolic reasoning reduce prediction noise in low-confidence regions?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q21] How does calibration affect AUROC compared to raw predictions?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q22] Does symbolic smoothing introduce bias toward overprediction of disorder?
+  Overall variance : 0.2841  --  MODERATE VARIANCE
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=53 words, Pred=68 words, diff=+15 (28.3%)
+    Vocabulary       : GT=45 unique, Pred=49 unique, diff=+4 (8.9%)
+    Numeric drift    : GT=[13.0, 396.0, 29.1, 0.5, 0.378, 0.5, 44.2, 0.3, 0.5], Pred=[13.0, 396.0, 0.5, 29.1, 0.5, 44.2, 0.3, 0.3, 0.5, 0.5], mean drift=2.29%
+    Lexical diversity: GT TTR=0.8491, Pred TTR=0.7206, diff=0.1285
+    Sentence count   : GT=7, Pred=11, diff=4
+    Info density     : GT=0.5472, Pred=0.4853, diff=0.0619
+----------------------------------------------------------------------
+
+[Q23] What is the distribution of confidence score corrections applied by the neurosymbolic system?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q24] Does the system improve recall without sacrificing precision?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q25] How does performance vary across different protein families?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q26] Are improvements consistent across species in the DisProt dataset?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q27] Does the neurosymbolic model perform better on experimentally validated long IDRs?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q28] How does retrieval quality impact final prediction confidence?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q29] Are confidence score corrections correlated with sequence length?
+  Overall variance : 0.8806  --  VERY HIGH VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=47 words, diff=+38 (422.2%)
+    Vocabulary       : GT=9 unique, Pred=35 unique, diff=+26 (288.9%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[10.0, 0.0, 0.0, 10.0, 0.0], mean drift=73.52%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=0.7447, diff=0.2553
+    Sentence count   : GT=1, Pred=4, diff=3
+    Info density     : GT=0.8889, Pred=0.6596, diff=0.2293
+----------------------------------------------------------------------
+
+[Q30] Does neurosymbolic reasoning improve predictions for low-complexity regions?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q31] How does entropy of predictions change after symbolic reasoning?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q32] Does the system reduce systematic bias in terminal regions?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q33] Are gains from neurosymbolic processing statistically significant?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q34] How does performance compare against baseline machine learning models?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q35] Does adding domain knowledge improve classification boundaries?
+  Overall variance : 0.0659  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    92.6% of DisProt proteins contain at least one Pfam structured do
+    main alongside disordered regions. Structured domains and IDRs fr
+    equently co-occur in the same protein. Each region must be evalua
+    ted independently rather than labeling the whole protein as order
+    ed or disordered.
+
+  LLM1 PREDICTION:
+    92.6% of DisProt proteins contain at least one Pfam structured do
+    main alongside their disordered regions. Structured domains and I
+    DRs frequently co-occur. Each region must be evaluated independen
+    tly rather than classifying the whole protein as ordered or disor
+    dered.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=42 words, Pred=39 words, diff=-3 (7.1%)
+    Vocabulary       : GT=38 unique, Pred=37 unique, diff=-1 (2.6%)
+    Numeric drift    : GT=[92.6], Pred=[92.6], mean drift=0.00%
+    Lexical diversity: GT TTR=0.9048, Pred TTR=0.9487, diff=0.0440
+    Sentence count   : GT=3, Pred=3, diff=0
+    Info density     : GT=0.7143, Pred=0.7436, diff=0.0293
+----------------------------------------------------------------------
+
+[Q36] How robust is the model to noisy or incomplete retrieval data?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q37] Does the neurosymbolic system improve calibration curves?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q38] How does Brier score change after calibration?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q39] Are prediction improvements uniform across all confidence intervals?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q40] Does neurosymbolic reasoning improve interpretability of predictions?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q41] How does performance change when removing symbolic rules?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q42] Does the system better detect disordered binding regions?
+  Overall variance : 0.2841  --  MODERATE VARIANCE
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=53 words, Pred=68 words, diff=+15 (28.3%)
+    Vocabulary       : GT=45 unique, Pred=49 unique, diff=+4 (8.9%)
+    Numeric drift    : GT=[13.0, 396.0, 29.1, 0.5, 0.378, 0.5, 44.2, 0.3, 0.5], Pred=[13.0, 396.0, 0.5, 29.1, 0.5, 44.2, 0.3, 0.3, 0.5, 0.5], mean drift=2.29%
+    Lexical diversity: GT TTR=0.8491, Pred TTR=0.7206, diff=0.1285
+    Sentence count   : GT=7, Pred=11, diff=4
+    Info density     : GT=0.5472, Pred=0.4853, diff=0.0619
+----------------------------------------------------------------------
+
+[Q43] Are certain motifs better recognized after symbolic processing?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q44] How does the system handle conflicting retrieved evidence?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q45] Does neurosymbolic reasoning reduce overfitting?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q46] What is the effect on Matthews Correlation Coefficient (MCC)?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q47] Does performance degrade on unseen protein structures?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q48] How does retrieval latency affect prediction quality?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q49] Does symbolic reasoning improve alignment with experimental annotations?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q50] Are prediction improvements localized or global across sequences?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q51] Does neurosymbolic RAG help identify disorder-to-order transitions?
+  Overall variance : 0.2841  --  MODERATE VARIANCE
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=53 words, Pred=68 words, diff=+15 (28.3%)
+    Vocabulary       : GT=45 unique, Pred=49 unique, diff=+4 (8.9%)
+    Numeric drift    : GT=[13.0, 396.0, 29.1, 0.5, 0.378, 0.5, 44.2, 0.3, 0.5], Pred=[13.0, 396.0, 0.5, 29.1, 0.5, 44.2, 0.3, 0.3, 0.5, 0.5], mean drift=2.29%
+    Lexical diversity: GT TTR=0.8491, Pred TTR=0.7206, diff=0.1285
+    Sentence count   : GT=7, Pred=11, diff=4
+    Info density     : GT=0.5472, Pred=0.4853, diff=0.0619
+----------------------------------------------------------------------
+
+[Q52] How does the system perform on proteins with multiple IDRs?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q53] Does calibration reduce prediction skewness?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q54] Are confidence intervals narrower after processing?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q55] Does neurosymbolic reasoning improve classification of ambiguous residues?
+  Overall variance : 0.1090  --  LOW VARIANCE
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=42 words, Pred=47 words, diff=+5 (11.9%)
+    Vocabulary       : GT=34 unique, Pred=35 unique, diff=+1 (2.9%)
+    Numeric drift    : GT=[0.0, 0.0, 10.0, 0.0], Pred=[10.0, 0.0, 0.0, 10.0, 0.0], mean drift=0.00%
+    Lexical diversity: GT TTR=0.8095, Pred TTR=0.7447, diff=0.0648
+    Sentence count   : GT=4, Pred=4, diff=0
+    Info density     : GT=0.5952, Pred=0.6596, diff=0.0643
+----------------------------------------------------------------------
+
+[Q56] How does the system perform under cross-validation?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q57] Does it generalize across different disorder prediction tools?
+  Overall variance : 0.2841  --  MODERATE VARIANCE
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=53 words, Pred=68 words, diff=+15 (28.3%)
+    Vocabulary       : GT=45 unique, Pred=49 unique, diff=+4 (8.9%)
+    Numeric drift    : GT=[13.0, 396.0, 29.1, 0.5, 0.378, 0.5, 44.2, 0.3, 0.5], Pred=[13.0, 396.0, 0.5, 29.1, 0.5, 44.2, 0.3, 0.3, 0.5, 0.5], mean drift=2.29%
+    Lexical diversity: GT TTR=0.8491, Pred TTR=0.7206, diff=0.1285
+    Sentence count   : GT=7, Pred=11, diff=4
+    Info density     : GT=0.5472, Pred=0.4853, diff=0.0619
+----------------------------------------------------------------------
+
+[Q58] Are improvements correlated with sequence conservation?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q59] Does retrieval of structural data improve predictions?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q60] How does performance change with different window sizes?
+  Overall variance : 0.0875  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust balance noise reduction against signal preservation.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=43 words, Pred=49 words, diff=+6 (13.9%)
+    Vocabulary       : GT=38 unique, Pred=40 unique, diff=+2 (5.3%)
+    Numeric drift    : GT=[0.0], Pred=[0.0], mean drift=0.00%
+    Lexical diversity: GT TTR=0.8837, Pred TTR=0.8163, diff=0.0674
+    Sentence count   : GT=5, Pred=5, diff=0
+    Info density     : GT=0.8140, Pred=0.8163, diff=0.0024
+----------------------------------------------------------------------
+
+[Q61] Does neurosymbolic reasoning help detect functional disorder regions?
+  Overall variance : 0.2841  --  MODERATE VARIANCE
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=53 words, Pred=68 words, diff=+15 (28.3%)
+    Vocabulary       : GT=45 unique, Pred=49 unique, diff=+4 (8.9%)
+    Numeric drift    : GT=[13.0, 396.0, 29.1, 0.5, 0.378, 0.5, 44.2, 0.3, 0.5], Pred=[13.0, 396.0, 0.5, 29.1, 0.5, 44.2, 0.3, 0.3, 0.5, 0.5], mean drift=2.29%
+    Lexical diversity: GT TTR=0.8491, Pred TTR=0.7206, diff=0.1285
+    Sentence count   : GT=7, Pred=11, diff=4
+    Info density     : GT=0.5472, Pred=0.4853, diff=0.0619
+----------------------------------------------------------------------
+
+[Q62] Are gains higher in specific residue compositions?
+  Overall variance : 0.1090  --  LOW VARIANCE
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=42 words, Pred=47 words, diff=+5 (11.9%)
+    Vocabulary       : GT=34 unique, Pred=35 unique, diff=+1 (2.9%)
+    Numeric drift    : GT=[0.0, 0.0, 10.0, 0.0], Pred=[10.0, 0.0, 0.0, 10.0, 0.0], mean drift=0.00%
+    Lexical diversity: GT TTR=0.8095, Pred TTR=0.7447, diff=0.0648
+    Sentence count   : GT=4, Pred=4, diff=0
+    Info density     : GT=0.5952, Pred=0.6596, diff=0.0643
+----------------------------------------------------------------------
+
+[Q63] Does the system improve classification of edge residues in IDRs?
+  Overall variance : 0.1090  --  LOW VARIANCE
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=42 words, Pred=47 words, diff=+5 (11.9%)
+    Vocabulary       : GT=34 unique, Pred=35 unique, diff=+1 (2.9%)
+    Numeric drift    : GT=[0.0, 0.0, 10.0, 0.0], Pred=[10.0, 0.0, 0.0, 10.0, 0.0], mean drift=0.00%
+    Lexical diversity: GT TTR=0.8095, Pred TTR=0.7447, diff=0.0648
+    Sentence count   : GT=4, Pred=4, diff=0
+    Info density     : GT=0.5952, Pred=0.6596, diff=0.0643
+----------------------------------------------------------------------
+
+[Q64] How does prediction confidence correlate with experimental uncertainty?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q65] Does neurosymbolic reasoning improve long-range sequence dependencies?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q66] Are improvements stable across random seeds?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q67] Does the system perform better on curated subsets of DisProt?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q68] How does performance change when excluding uncertain regions?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q69] Does neurosymbolic reasoning improve classification of rare IDRs?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q70] Are prediction gains dependent on dataset size?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q71] Does the system improve classification under imbalanced data?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q72] How does it perform on noisy annotations?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q73] Does symbolic reasoning reduce prediction drift?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q74] How does performance compare before and after normalization?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q75] Does neurosymbolic reasoning improve stability across runs?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q76] Are improvements larger for specific protein lengths?
+  Overall variance : 0.8806  --  VERY HIGH VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=47 words, diff=+38 (422.2%)
+    Vocabulary       : GT=9 unique, Pred=35 unique, diff=+26 (288.9%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[10.0, 0.0, 0.0, 10.0, 0.0], mean drift=73.52%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=0.7447, diff=0.2553
+    Sentence count   : GT=1, Pred=4, diff=3
+    Info density     : GT=0.8889, Pred=0.6596, diff=0.2293
+----------------------------------------------------------------------
+
+[Q77] Does the system better align predictions with biological function?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q78] How does it handle missing sequence information?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q79] Does retrieval diversity impact performance?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q80] Are prediction improvements explainable through symbolic rules?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q81] Does neurosymbolic reasoning improve threshold selection?
+  Overall variance : 0.7206  --  HIGH VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=68 words, diff=+59 (655.6%)
+    Vocabulary       : GT=9 unique, Pred=49 unique, diff=+40 (444.4%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.5, 29.1, 0.5, 44.2, 0.3, 0.3, 0.5, 0.5], mean drift=6.88%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=0.7206, diff=0.2794
+    Sentence count   : GT=1, Pred=11, diff=10
+    Info density     : GT=0.8889, Pred=0.4853, diff=0.4036
+----------------------------------------------------------------------
+
+[Q82] How does the system perform on synthetic datasets?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q83] Does calibration improve ranking of disorder scores?
+  Overall variance : 0.2841  --  MODERATE VARIANCE
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=53 words, Pred=68 words, diff=+15 (28.3%)
+    Vocabulary       : GT=45 unique, Pred=49 unique, diff=+4 (8.9%)
+    Numeric drift    : GT=[13.0, 396.0, 29.1, 0.5, 0.378, 0.5, 44.2, 0.3, 0.5], Pred=[13.0, 396.0, 0.5, 29.1, 0.5, 44.2, 0.3, 0.3, 0.5, 0.5], mean drift=2.29%
+    Lexical diversity: GT TTR=0.8491, Pred TTR=0.7206, diff=0.1285
+    Sentence count   : GT=7, Pred=11, diff=4
+    Info density     : GT=0.5472, Pred=0.4853, diff=0.0619
+----------------------------------------------------------------------
+
+[Q84] Are prediction errors reduced uniformly?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q85] Does neurosymbolic reasoning improve classification confidence intervals?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q86] How does performance change with different retrieval strategies?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q87] Does the system improve detection of transient disorder?
+  Overall variance : 0.2841  --  MODERATE VARIANCE
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=53 words, Pred=68 words, diff=+15 (28.3%)
+    Vocabulary       : GT=45 unique, Pred=49 unique, diff=+4 (8.9%)
+    Numeric drift    : GT=[13.0, 396.0, 29.1, 0.5, 0.378, 0.5, 44.2, 0.3, 0.5], Pred=[13.0, 396.0, 0.5, 29.1, 0.5, 44.2, 0.3, 0.3, 0.5, 0.5], mean drift=2.29%
+    Lexical diversity: GT TTR=0.8491, Pred TTR=0.7206, diff=0.1285
+    Sentence count   : GT=7, Pred=11, diff=4
+    Info density     : GT=0.5472, Pred=0.4853, diff=0.0619
+----------------------------------------------------------------------
+
+[Q88] Are gains consistent across evaluation metrics?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q89] Does neurosymbolic reasoning reduce model uncertainty?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q90] How does it perform under adversarial perturbations?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q91] Does the system improve robustness to sequence mutations?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q92] Are prediction improvements correlated with structural flexibility?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q93] Does neurosymbolic reasoning improve functional annotation alignment?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q94] How does performance compare across different datasets?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q95] Does the system improve classification of partially disordered regions?
+  Overall variance : 0.2841  --  MODERATE VARIANCE
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=53 words, Pred=68 words, diff=+15 (28.3%)
+    Vocabulary       : GT=45 unique, Pred=49 unique, diff=+4 (8.9%)
+    Numeric drift    : GT=[13.0, 396.0, 29.1, 0.5, 0.378, 0.5, 44.2, 0.3, 0.5], Pred=[13.0, 396.0, 0.5, 29.1, 0.5, 44.2, 0.3, 0.3, 0.5, 0.5], mean drift=2.29%
+    Lexical diversity: GT TTR=0.8491, Pred TTR=0.7206, diff=0.1285
+    Sentence count   : GT=7, Pred=11, diff=4
+    Info density     : GT=0.5472, Pred=0.4853, diff=0.0619
+----------------------------------------------------------------------
+
+[Q96] Are gains consistent across evaluation folds?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q97] Does neurosymbolic reasoning improve model calibration slope?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q98] How does the system perform on edge-case proteins?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q99] Does neurosymbolic reasoning reduce prediction bias?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+[Q100] Are overall improvements sufficient to justify added system complexity?
+  Overall variance : 0.0000  --  VERY LOW VARIANCE
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  VARIANCE BREAKDOWN:
+    Length           : GT=9 words, Pred=9 words, diff=+0 (0.0%)
+    Vocabulary       : GT=9 unique, Pred=9 unique, diff=+0 (0.0%)
+    Numeric drift    : GT=[13.0, 396.0, 0.378], Pred=[13.0, 396.0, 0.378], mean drift=0.00%
+    Lexical diversity: GT TTR=1.0000, Pred TTR=1.0000, diff=0.0000
+    Sentence count   : GT=1, Pred=1, diff=0
+    Info density     : GT=0.8889, Pred=0.8889, diff=0.0000
+----------------------------------------------------------------------
+
+======================================================================
+  END OF OUTPUT VARIANCE -- LLM Judge 1
+  Mean variance: 0.0801 (std=0.1679)
+  Very Low: 75 | Low: 6 | Moderate: 16 | High: 1 | Very High: 2
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
