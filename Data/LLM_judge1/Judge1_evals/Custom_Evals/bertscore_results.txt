@@ -1,0 +1,1696 @@
+======================================================================
+  BMEN-499 AlphaFold -- BERTScore Evaluation: LLM Judge 1
+  Model   : BiomedBERT + Calibrated Symbolic Rules (LLM Judge 1)
+  Metric  : BERTScore (Zhang et al., ICLR 2020)
+  Embeddings: BiomedBERT contextual embeddings
+  Dataset : 13,396 DisProt proteins
+  Questions evaluated: 100
+======================================================================
+
+WHAT IS BERTSCORE?
+----------------------------------------------------------------------
+  BERTScore measures semantic similarity between two texts using
+  contextual token embeddings from a BERT model.
+
+  Why BERTScore over NAUR or cosine TF-IDF?
+    NAUR and TF-IDF only match EXACT words. BERTScore captures
+    MEANING even when different words express the same concept.
+    Example:
+      'protein backbone flexibility'
+      'conformational freedom of the chain'
+    These score near 0 on NAUR but high on BERTScore.
+
+  Why BiomedBERT specifically?
+    Generic BERT is trained on Wikipedia and books.
+    BiomedBERT is trained on PubMed abstracts, so it understands
+    biomedical terms like IDR, pLDDT, Pfam, intrinsically
+    disordered proteins accurately.
+    (Gu et al. 2021, ACM CHIL -- Domain-specific LM pretraining)
+
+  How it works:
+    1. EMBED   -- BiomedBERT encodes each token contextually
+    2. MATCH   -- Each pred token matched to most similar GT token
+    3. PRECISION = mean(max similarity of pred->GT matches)
+    4. RECALL    = mean(max similarity of GT->pred matches)
+    5. F1        = harmonic mean of precision and recall
+
+  Reference: Zhang et al. (2020) BERTScore: Evaluating Text
+  Generation with BERT. ICLR 2020.
+
+  Score interpretation:
+    0.90 - 1.0 : VERY HIGH -- semantically near-identical
+    0.80 - 0.90 : HIGH      -- strong semantic match
+    0.70 - 0.80 : MODERATE  -- good semantic overlap
+    0.60 - 0.70 : LOW       -- partial semantic match
+    < 0.60      : VERY LOW  -- weak semantic similarity
+
+OVERALL BERTSCORE RESULTS
+----------------------------------------------------------------------
+  Mean BERTScore F1        : 0.9850  (std=0.0272)
+  Mean Precision           : 0.9835
+  Mean Recall              : 0.9866
+  Best  : Q10 = 1.0000 (VERY HIGH)
+  Worst : Q29 = 0.8719 (HIGH)
+
+  Score breakdown:
+    VERY HIGH (>=0.90) :  97 questions
+    HIGH      (>=0.80) :   3 questions
+    MODERATE  (>=0.70) :   0 questions
+    LOW       (>=0.60) :   0 questions
+    VERY LOW  (< 0.60) :   0 questions
+
+  BERTScore F1 Distribution:
+    <0.60 VERY LOW  | .................... | 0 questions
+    <0.70 LOW       | .................... | 0 questions
+    <0.80 MODERATE  | .................... | 0 questions
+    <0.90 HIGH      | ###................. | 3 questions
+    >=0.90 VERY HIGH | ################################################################################################# | 97 questions
+
+  PRECISION vs RECALL ANALYSIS:
+  (Precision > Recall = pred covers more ground than GT)
+  (Recall > Precision = GT covers more ground than pred)
+
+    Q 1 | P=0.9442  R=0.9531  diff=-0.0089  (balanced)
+    Q 2 | P=0.9622  R=0.9656  diff=-0.0034  (balanced)
+    Q 3 | P=0.9442  R=0.9531  diff=-0.0089  (balanced)
+    Q 4 | P=0.9695  R=0.9721  diff=-0.0026  (balanced)
+    Q 5 | P=0.9442  R=0.9531  diff=-0.0089  (balanced)
+    Q 6 | P=0.9695  R=0.9721  diff=-0.0026  (balanced)
+    Q 7 | P=0.9442  R=0.9531  diff=-0.0089  (balanced)
+    Q 8 | P=0.9622  R=0.9656  diff=-0.0034  (balanced)
+    Q 9 | P=0.9442  R=0.9531  diff=-0.0089  (balanced)
+    Q10 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q11 | P=0.9442  R=0.9531  diff=-0.0089  (balanced)
+    Q12 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q13 | P=0.9442  R=0.9531  diff=-0.0089  (balanced)
+    Q14 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q15 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q16 | P=0.9442  R=0.9531  diff=-0.0089  (balanced)
+    Q17 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q18 | P=0.9622  R=0.9656  diff=-0.0034  (balanced)
+    Q19 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q20 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q21 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q22 | P=0.9442  R=0.9531  diff=-0.0089  (balanced)
+    Q23 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q24 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q25 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q26 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q27 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q28 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q29 | P=0.8538  R=0.8909  diff=-0.0371  (GT wider than pred)
+    Q30 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q31 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q32 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q33 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q34 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q35 | P=0.9920  R=0.9835  diff=+0.0085  (balanced)
+    Q36 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q37 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q38 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q39 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q40 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q41 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q42 | P=0.9442  R=0.9531  diff=-0.0089  (balanced)
+    Q43 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q44 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q45 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q46 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q47 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q48 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q49 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q50 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q51 | P=0.9442  R=0.9531  diff=-0.0089  (balanced)
+    Q52 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q53 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q54 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q55 | P=0.9622  R=0.9656  diff=-0.0034  (balanced)
+    Q56 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q57 | P=0.9442  R=0.9531  diff=-0.0089  (balanced)
+    Q58 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q59 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q60 | P=0.9695  R=0.9721  diff=-0.0026  (balanced)
+    Q61 | P=0.9442  R=0.9531  diff=-0.0089  (balanced)
+    Q62 | P=0.9622  R=0.9656  diff=-0.0034  (balanced)
+    Q63 | P=0.9622  R=0.9656  diff=-0.0034  (balanced)
+    Q64 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q65 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q66 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q67 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q68 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q69 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q70 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q71 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q72 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q73 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q74 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q75 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q76 | P=0.8538  R=0.8909  diff=-0.0371  (GT wider than pred)
+    Q77 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q78 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q79 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q80 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q81 | P=0.8623  R=0.9321  diff=-0.0698  (GT wider than pred)
+    Q82 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q83 | P=0.9442  R=0.9531  diff=-0.0089  (balanced)
+    Q84 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q85 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q86 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q87 | P=0.9442  R=0.9531  diff=-0.0089  (balanced)
+    Q88 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q89 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q90 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q91 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q92 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q93 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q94 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q95 | P=0.9442  R=0.9531  diff=-0.0089  (balanced)
+    Q96 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q97 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q98 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q99 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+    Q100 | P=1.0000  R=1.0000  diff=+0.0000  (balanced)
+
+======================================================================
+  QUESTION-BY-QUESTION BERTSCORE REPORT
+======================================================================
+
+[Q1] Is a disorder score above 0.5 a reliable cutoff for calling a region disordered?
+  BERTScore F1  : 0.9487  --  VERY HIGH
+  Precision     : 0.9442  (how much of pred is semantically in GT)
+  Recall        : 0.9531  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q2] Do confidence scores drop for IDRs shorter than 10 residues?
+  BERTScore F1  : 0.9639  --  VERY HIGH
+  Precision     : 0.9622  (how much of pred is semantically in GT)
+  Recall        : 0.9656  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+----------------------------------------------------------------------
+
+[Q3] Do proline and glycine-rich regions consistently score higher disorder confidence than average?
+  BERTScore F1  : 0.9487  --  VERY HIGH
+  Precision     : 0.9442  (how much of pred is semantically in GT)
+  Recall        : 0.9531  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q4] Does applying a sliding window smooth out confidence scores without losing true IDR signal?
+  BERTScore F1  : 0.9708  --  VERY HIGH
+  Precision     : 0.9695  (how much of pred is semantically in GT)
+  Recall        : 0.9721  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust balance noise reduction against signal preservation.
+----------------------------------------------------------------------
+
+[Q5] How far off are raw confidence scores from the true disorder rate in DisProt?
+  BERTScore F1  : 0.9487  --  VERY HIGH
+  Precision     : 0.9442  (how much of pred is semantically in GT)
+  Recall        : 0.9531  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q6] When a confidence score falls in the uncertain range (0.4–0.6), does applying a sliding window smooth it toward the correct label, and what window size does the literature support?
+  BERTScore F1  : 0.9708  --  VERY HIGH
+  Precision     : 0.9695  (how much of pred is semantically in GT)
+  Recall        : 0.9721  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust balance noise reduction against signal preservation.
+----------------------------------------------------------------------
+
+[Q7] How much do raw confidence scores overestimate or underestimate true disorder rates across DisProt?
+  BERTScore F1  : 0.9487  --  VERY HIGH
+  Precision     : 0.9442  (how much of pred is semantically in GT)
+  Recall        : 0.9531  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q8] After applying symbolic smoothing and isotonic calibration together, by how much does residue level F1 improve over raw scores, and is this improvement consistent with gains reported for similar post processing pipelines in the literature?
+  BERTScore F1  : 0.9639  --  VERY HIGH
+  Precision     : 0.9622  (how much of pred is semantically in GT)
+  Recall        : 0.9656  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+----------------------------------------------------------------------
+
+[Q9] What is the MAE between raw disorder confidence scores and DisProt ground truth labels, and how many standard deviations (Z-score) away from the mean prediction is each incorrectly labeled residue?
+  BERTScore F1  : 0.9487  --  VERY HIGH
+  Precision     : 0.9442  (how much of pred is semantically in GT)
+  Recall        : 0.9531  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q10] Do N-terminal, C-terminal, and internal IDRs show different MAE profiles, and are the Z-scores of prediction errors normally distributed within each positional group or skewed in a way that suggests a systematic bias?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q11] Does a neurosymbolic RAG system reduce variance in disorder confidence predictions compared to raw model outputs?
+  BERTScore F1  : 0.9487  --  VERY HIGH
+  Precision     : 0.9442  (how much of pred is semantically in GT)
+  Recall        : 0.9531  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q12] How does the precision-recall curve change after applying neurosymbolic reasoning?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q13] Does incorporating symbolic rules improve classification accuracy for borderline disorder regions?
+  BERTScore F1  : 0.9487  --  VERY HIGH
+  Precision     : 0.9442  (how much of pred is semantically in GT)
+  Recall        : 0.9531  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q14] What is the impact of neurosymbolic calibration on false positive rates in ordered regions?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q15] Does the neurosymbolic approach improve prediction consistency across homologous proteins?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q16] How sensitive are disorder predictions to the choice of retrieval documents in the RAG system?
+  BERTScore F1  : 0.9487  --  VERY HIGH
+  Precision     : 0.9442  (how much of pred is semantically in GT)
+  Recall        : 0.9531  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q17] Does contextual biological knowledge retrieved via RAG improve long IDR detection accuracy?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q18] How does performance differ between short and long IDRs after neurosymbolic processing?
+  BERTScore F1  : 0.9639  --  VERY HIGH
+  Precision     : 0.9622  (how much of pred is semantically in GT)
+  Recall        : 0.9656  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+----------------------------------------------------------------------
+
+[Q19] Are certain amino acid compositions more responsive to symbolic correction rules?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q20] Does neurosymbolic reasoning reduce prediction noise in low-confidence regions?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q21] How does calibration affect AUROC compared to raw predictions?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q22] Does symbolic smoothing introduce bias toward overprediction of disorder?
+  BERTScore F1  : 0.9487  --  VERY HIGH
+  Precision     : 0.9442  (how much of pred is semantically in GT)
+  Recall        : 0.9531  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q23] What is the distribution of confidence score corrections applied by the neurosymbolic system?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q24] Does the system improve recall without sacrificing precision?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q25] How does performance vary across different protein families?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q26] Are improvements consistent across species in the DisProt dataset?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q27] Does the neurosymbolic model perform better on experimentally validated long IDRs?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q28] How does retrieval quality impact final prediction confidence?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q29] Are confidence score corrections correlated with sequence length?
+  BERTScore F1  : 0.8719  --  HIGH
+  Precision     : 0.8538  (how much of pred is semantically in GT)
+  Recall        : 0.8909  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+----------------------------------------------------------------------
+
+[Q30] Does neurosymbolic reasoning improve predictions for low-complexity regions?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q31] How does entropy of predictions change after symbolic reasoning?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q32] Does the system reduce systematic bias in terminal regions?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q33] Are gains from neurosymbolic processing statistically significant?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q34] How does performance compare against baseline machine learning models?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q35] Does adding domain knowledge improve classification boundaries?
+  BERTScore F1  : 0.9877  --  VERY HIGH
+  Precision     : 0.9920  (how much of pred is semantically in GT)
+  Recall        : 0.9835  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    92.6% of DisProt proteins contain at least one Pfam structured do
+    main alongside disordered regions. Structured domains and IDRs fr
+    equently co-occur in the same protein. Each region must be evalua
+    ted independently rather than labeling the whole protein as order
+    ed or disordered.
+
+  LLM1 PREDICTION:
+    92.6% of DisProt proteins contain at least one Pfam structured do
+    main alongside their disordered regions. Structured domains and I
+    DRs frequently co-occur. Each region must be evaluated independen
+    tly rather than classifying the whole protein as ordered or disor
+    dered.
+----------------------------------------------------------------------
+
+[Q36] How robust is the model to noisy or incomplete retrieval data?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q37] Does the neurosymbolic system improve calibration curves?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q38] How does Brier score change after calibration?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q39] Are prediction improvements uniform across all confidence intervals?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q40] Does neurosymbolic reasoning improve interpretability of predictions?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q41] How does performance change when removing symbolic rules?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q42] Does the system better detect disordered binding regions?
+  BERTScore F1  : 0.9487  --  VERY HIGH
+  Precision     : 0.9442  (how much of pred is semantically in GT)
+  Recall        : 0.9531  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q43] Are certain motifs better recognized after symbolic processing?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q44] How does the system handle conflicting retrieved evidence?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q45] Does neurosymbolic reasoning reduce overfitting?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q46] What is the effect on Matthews Correlation Coefficient (MCC)?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q47] Does performance degrade on unseen protein structures?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q48] How does retrieval latency affect prediction quality?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q49] Does symbolic reasoning improve alignment with experimental annotations?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q50] Are prediction improvements localized or global across sequences?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q51] Does neurosymbolic RAG help identify disorder-to-order transitions?
+  BERTScore F1  : 0.9487  --  VERY HIGH
+  Precision     : 0.9442  (how much of pred is semantically in GT)
+  Recall        : 0.9531  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q52] How does the system perform on proteins with multiple IDRs?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q53] Does calibration reduce prediction skewness?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q54] Are confidence intervals narrower after processing?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q55] Does neurosymbolic reasoning improve classification of ambiguous residues?
+  BERTScore F1  : 0.9639  --  VERY HIGH
+  Precision     : 0.9622  (how much of pred is semantically in GT)
+  Recall        : 0.9656  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+----------------------------------------------------------------------
+
+[Q56] How does the system perform under cross-validation?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q57] Does it generalize across different disorder prediction tools?
+  BERTScore F1  : 0.9487  --  VERY HIGH
+  Precision     : 0.9442  (how much of pred is semantically in GT)
+  Recall        : 0.9531  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q58] Are improvements correlated with sequence conservation?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q59] Does retrieval of structural data improve predictions?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q60] How does performance change with different window sizes?
+  BERTScore F1  : 0.9708  --  VERY HIGH
+  Precision     : 0.9695  (how much of pred is semantically in GT)
+  Recall        : 0.9721  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust balance noise reduction against signal preservation.
+----------------------------------------------------------------------
+
+[Q61] Does neurosymbolic reasoning help detect functional disorder regions?
+  BERTScore F1  : 0.9487  --  VERY HIGH
+  Precision     : 0.9442  (how much of pred is semantically in GT)
+  Recall        : 0.9531  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q62] Are gains higher in specific residue compositions?
+  BERTScore F1  : 0.9639  --  VERY HIGH
+  Precision     : 0.9622  (how much of pred is semantically in GT)
+  Recall        : 0.9656  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+----------------------------------------------------------------------
+
+[Q63] Does the system improve classification of edge residues in IDRs?
+  BERTScore F1  : 0.9639  --  VERY HIGH
+  Precision     : 0.9622  (how much of pred is semantically in GT)
+  Recall        : 0.9656  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+----------------------------------------------------------------------
+
+[Q64] How does prediction confidence correlate with experimental uncertainty?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q65] Does neurosymbolic reasoning improve long-range sequence dependencies?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q66] Are improvements stable across random seeds?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q67] Does the system perform better on curated subsets of DisProt?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q68] How does performance change when excluding uncertain regions?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q69] Does neurosymbolic reasoning improve classification of rare IDRs?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q70] Are prediction gains dependent on dataset size?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q71] Does the system improve classification under imbalanced data?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q72] How does it perform on noisy annotations?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q73] Does symbolic reasoning reduce prediction drift?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q74] How does performance compare before and after normalization?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q75] Does neurosymbolic reasoning improve stability across runs?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q76] Are improvements larger for specific protein lengths?
+  BERTScore F1  : 0.8719  --  HIGH
+  Precision     : 0.8538  (how much of pred is semantically in GT)
+  Recall        : 0.8909  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+----------------------------------------------------------------------
+
+[Q77] Does the system better align predictions with biological function?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q78] How does it handle missing sequence information?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q79] Does retrieval diversity impact performance?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q80] Are prediction improvements explainable through symbolic rules?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q81] Does neurosymbolic reasoning improve threshold selection?
+  BERTScore F1  : 0.8958  --  HIGH
+  Precision     : 0.8623  (how much of pred is semantically in GT)
+  Recall        : 0.9321  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q82] How does the system perform on synthetic datasets?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q83] Does calibration improve ranking of disorder scores?
+  BERTScore F1  : 0.9487  --  VERY HIGH
+  Precision     : 0.9442  (how much of pred is semantically in GT)
+  Recall        : 0.9531  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q84] Are prediction errors reduced uniformly?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q85] Does neurosymbolic reasoning improve classification confidence intervals?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q86] How does performance change with different retrieval strategies?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q87] Does the system improve detection of transient disorder?
+  BERTScore F1  : 0.9487  --  VERY HIGH
+  Precision     : 0.9442  (how much of pred is semantically in GT)
+  Recall        : 0.9531  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q88] Are gains consistent across evaluation metrics?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q89] Does neurosymbolic reasoning reduce model uncertainty?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q90] How does it perform under adversarial perturbations?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q91] Does the system improve robustness to sequence mutations?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q92] Are prediction improvements correlated with structural flexibility?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q93] Does neurosymbolic reasoning improve functional annotation alignment?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q94] How does performance compare across different datasets?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q95] Does the system improve classification of partially disordered regions?
+  BERTScore F1  : 0.9487  --  VERY HIGH
+  Precision     : 0.9442  (how much of pred is semantically in GT)
+  Recall        : 0.9531  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+----------------------------------------------------------------------
+
+[Q96] Are gains consistent across evaluation folds?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q97] Does neurosymbolic reasoning improve model calibration slope?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q98] How does the system perform on edge-case proteins?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q99] Does neurosymbolic reasoning reduce prediction bias?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q100] Are overall improvements sufficient to justify added system complexity?
+  BERTScore F1  : 1.0000  --  VERY HIGH
+  Precision     : 1.0000  (how much of pred is semantically in GT)
+  Recall        : 1.0000  (how much of GT is semantically in pred)
+  Method        : BiomedBERT contextual embeddings
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+  COMPARISON: BERTScore vs NAUR vs Cosine TF-IDF
+----------------------------------------------------------------------
+  BERTScore captures paraphrase similarity that NAUR misses.
+  If BERTScore >> NAUR, the model is paraphrasing correctly.
+  If BERTScore ~ NAUR, the model uses similar exact wording.
+  If BERTScore << NAUR, there may be vocabulary overlap without
+  true semantic alignment (surface matching without meaning).
+
+======================================================================
+  END OF BERTSCORE EVALUATION -- LLM Judge 1
+  Mean F1: 0.9850 | P: 0.9835 | R: 0.9866
+  Very High: 97 | High: 3 | Moderate: 0 | Low: 0 | Very Low: 0
+  Reference: Zhang et al. (2020) BERTScore. ICLR 2020.
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
