@@ -1,0 +1,2756 @@
+======================================================================
+  BMEN-499 AlphaFold -- LLM Judge 3: BioMistral RAG Predictions
+  Retriever : BiomedBERT (microsoft/BiomedNLP-BiomedBERT)
+  Generator : BioMistral-7B (BioMistral/BioMistral-7B)
+  Method    : RAG -- BiomedBERT retrieves, BioMistral generates
+  Dataset   : 13,396 DisProt proteins
+  Questions : 100
+======================================================================
+
+WHAT IS BIOMISTRAL RAG?
+----------------------------------------------------------------------
+  BioMistral is a large language model fine-tuned on PubMed
+  Central biomedical literature. In this pipeline:
+  1. RETRIEVE -- BiomedBERT finds the most relevant DisProt facts
+  2. GENERATE -- BioMistral reads those facts and writes a fluent,
+                 detailed biomedical answer
+
+  This is the most powerful of the 3 judges:
+  Judge 1 = BiomedBERT + symbolic rules + calibration
+  Judge 2 = BiomedBERT + vanilla RAG (no rules)
+  Judge 3 = BiomedBERT + BioMistral generation (full RAG)
+
+  Prediction quality summary:
+    HIGH   : 100  (retrieval score > 0.7)
+    MEDIUM : 0  (retrieval score 0.3-0.7)
+    LOW    : 0  (retrieval score < 0.3)
+
+======================================================================
+[Q1] Is a disorder score above 0.5 a reliable cutoff for calling a region disordered?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Disorder scores between 0.3 and 0.5 define an ambiguous gray 
+  zone. These regions cannot be confidently classified without 
+  secondary validation using sequence composition or experimental 
+  methods. The 0.5 disorder score threshold classifies protein 
+  regions as intrinsically disordered. Of 13,396 DisProt proteins, 
+  29.1% exceed this threshold (mean=0.378). However, 44.2% exceed 
+  0.3, meaning many true IDRs fall below 0.5 and are missed. 
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9770
+    [2] KB-001 -- disorder score cutoff threshold            score=0.9764
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9747
+
+  Top retrieved doc  : KB-002
+  Top retrieval score: 0.9770
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q2] Do confidence scores drop for IDRs shorter than 10 residues?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Of 0 DisProt regions, 0.0% are shorter than 10 residues 
+  (mean=0.0 aa). Short IDRs are hard to predict reliably due to 
+  limited sequence context. AlphaFold pLDDT below 50 strongly 
+  indicates intrinsic disorder. DisProt-annotated disordered 
+  regions in 13,396 proteins consistently show pLDDT below 50 -- 
+  the most reliable single computational disorder signal. Disorder 
+  scores between 0.3 and 0.5 define an ambiguous gray zone. These 
+  regions cannot be confidently classified without secondary 
+  validation using sequence composition or experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-007 -- short IDR region length confidence residues score=0.9752
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9690
+    [3] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9670
+
+  Top retrieved doc  : KB-007
+  Top retrieval score: 0.9752
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q3] Do proline and glycine-rich regions consistently score higher disorder confidence than average?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Proline content (DisProt 
+  mean=6.0%) strongly predicts intrinsic disorder. Proline's rigid 
+  pyrrolidine ring disrupts alpha-helices and beta-sheets, 
+  preventing regular secondary structure. Glycine (DisProt 
+  mean=7.0%) adds backbone conformational freedom. It is a weaker 
+  independent disorder predictor than proline and should be 
+  combined with other signals. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9789
+    [2] KB-004 -- proline amino acid disorder prediction composition score=0.9728
+    [3] KB-005 -- glycine amino acid flexible backbone composition score=0.9727
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9789
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q4] Does applying a sliding window smooth out confidence scores without losing true IDR signal?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Sliding window averaging smooths per-residue disorder scores. 
+  Windows larger than the mean region length (0.0 aa) risk 
+  smoothing out short IDRs entirely. Disorder scores above 0.7 
+  represent high confidence intrinsic disorder, consistently 
+  matching experimentally validated IDRs in DisProt and 
+  correlating with AlphaFold pLDDT scores below 50. AlphaFold 
+  pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-008 -- sliding window smoothing noise IDR signal  score=0.9786
+    [2] KB-003 -- high confidence disorder strong signal 0.7 score=0.9713
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9684
+
+  Top retrieved doc  : KB-008
+  Top retrieval score: 0.9786
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q5] How far off are raw confidence scores from the true disorder rate in DisProt?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Disorder scores above 0.7 represent high confidence intrinsic 
+  disorder, consistently matching experimentally validated IDRs in 
+  DisProt and correlating with AlphaFold pLDDT scores below 50. 
+  pLDDT >= 70 indicates confident AlphaFold structure prediction. 
+  These regions are likely ordered. DisProt experimental 
+  annotations take precedence over computational predictions. 
+  Sliding window averaging smooths per-residue disorder scores. 
+  Windows larger than the mean region length (0.0 aa) risk 
+  smoothing out short IDRs entirely. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-003 -- high confidence disorder strong signal 0.7 score=0.9747
+    [2] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9724
+    [3] KB-008 -- sliding window smoothing noise IDR signal  score=0.9723
+
+  Top retrieved doc  : KB-003
+  Top retrieval score: 0.9747
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q6] When a confidence score falls in the uncertain range (0.4–0.6), does applying a sliding window smooth it toward the correct label, and what window size does the literature support?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Disorder scores between 0.3 and 0.5 define an ambiguous gray 
+  zone. These regions cannot be confidently classified without 
+  secondary validation using sequence composition or experimental 
+  methods. Sliding window averaging smooths per-residue disorder 
+  scores. Windows larger than the mean region length (0.0 aa) risk 
+  smoothing out short IDRs entirely. Disorder scores above 0.7 
+  represent high confidence intrinsic disorder, consistently 
+  matching experimentally validated IDRs in DisProt and 
+  correlating with AlphaFold pLDDT scores below 50. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9771
+    [2] KB-008 -- sliding window smoothing noise IDR signal  score=0.9761
+    [3] KB-003 -- high confidence disorder strong signal 0.7 score=0.9754
+
+  Top retrieved doc  : KB-002
+  Top retrieval score: 0.9771
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q7] How much do raw confidence scores overestimate or underestimate true disorder rates across DisProt?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Disorder scores above 0.7 
+  represent high confidence intrinsic disorder, consistently 
+  matching experimentally validated IDRs in DisProt and 
+  correlating with AlphaFold pLDDT scores below 50. The 0.5 
+  disorder score threshold classifies protein regions as 
+  intrinsically disordered. Of 13,396 DisProt proteins, 29.1% 
+  exceed this threshold (mean=0.378). However, 44.2% exceed 0.3, 
+  meaning many true IDRs fall below 0.5 and are missed. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9705
+    [2] KB-003 -- high confidence disorder strong signal 0.7 score=0.9663
+    [3] KB-001 -- disorder score cutoff threshold            score=0.9658
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9705
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q8] After applying symbolic smoothing and isotonic calibration together, by how much does residue level F1 improve over raw scores, and is this improvement consistent with gains reported for similar post processing pipelines in the literature?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Sliding window averaging smooths per-residue disorder scores. 
+  Windows larger than the mean region length (0.0 aa) risk 
+  smoothing out short IDRs entirely. Disorder scores above 0.7 
+  represent high confidence intrinsic disorder, consistently 
+  matching experimentally validated IDRs in DisProt and 
+  correlating with AlphaFold pLDDT scores below 50. AlphaFold 
+  pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-008 -- sliding window smoothing noise IDR signal  score=0.9767
+    [2] KB-003 -- high confidence disorder strong signal 0.7 score=0.9762
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9740
+
+  Top retrieved doc  : KB-008
+  Top retrieval score: 0.9767
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q9] What is the MAE between raw disorder confidence scores and DisProt ground truth labels, and how many standard deviations (Z-score) away from the mean prediction is each incorrectly labeled residue?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Sliding window averaging smooths per-residue disorder scores. 
+  Windows larger than the mean region length (0.0 aa) risk 
+  smoothing out short IDRs entirely. Disorder scores above 0.7 
+  represent high confidence intrinsic disorder, consistently 
+  matching experimentally validated IDRs in DisProt and 
+  correlating with AlphaFold pLDDT scores below 50. AlphaFold 
+  pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-008 -- sliding window smoothing noise IDR signal  score=0.9784
+    [2] KB-003 -- high confidence disorder strong signal 0.7 score=0.9775
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9760
+
+  Top retrieved doc  : KB-008
+  Top retrieval score: 0.9784
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q10] Do N-terminal, C-terminal, and internal IDRs show different MAE profiles, and are the Z-scores of prediction errors normally distributed within each positional group or skewed in a way that suggests a systematic bias?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  The 0.5 disorder score threshold classifies protein regions as 
+  intrinsically disordered. Of 13,396 DisProt proteins, 29.1% 
+  exceed this threshold (mean=0.378). However, 44.2% exceed 0.3, 
+  meaning many true IDRs fall below 0.5 and are missed. AlphaFold 
+  pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Of 0 DisProt regions, 0.0% are 
+  shorter than 10 residues (mean=0.0 aa). Short IDRs are hard to 
+  predict reliably due to limited sequence context. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-001 -- disorder score cutoff threshold            score=0.9788
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9779
+    [3] KB-007 -- short IDR region length confidence residues score=0.9779
+
+  Top retrieved doc  : KB-001
+  Top retrieval score: 0.9788
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q11] Does a neurosymbolic RAG system reduce variance in disorder confidence predictions compared to raw model outputs?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Disorder scores between 0.3 and 
+  0.5 define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. pLDDT >= 70 
+  indicates confident AlphaFold structure prediction. These 
+  regions are likely ordered. DisProt experimental annotations 
+  take precedence over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9710
+    [2] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9679
+    [3] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9676
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9710
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q12] How does the precision-recall curve change after applying neurosymbolic reasoning?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Disorder scores between 0.3 and 
+  0.5 define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. pLDDT scores of 
+  50-70 indicate ambiguous structure. Regions may be conditionally 
+  disordered (Molecular Recognition Features, MoRFs) -- 
+  unstructured alone but folding upon partner binding. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9650
+    [2] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9618
+    [3] KB-010 -- AlphaFold pLDDT moderate 50 70 MoRF conditional score=0.9598
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9650
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q13] Does incorporating symbolic rules improve classification accuracy for borderline disorder regions?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Disorder scores between 0.3 and 0.5 define an ambiguous gray 
+  zone. These regions cannot be confidently classified without 
+  secondary validation using sequence composition or experimental 
+  methods. AlphaFold pLDDT below 50 strongly indicates intrinsic 
+  disorder. DisProt-annotated disordered regions in 13,396 
+  proteins consistently show pLDDT below 50 -- the most reliable 
+  single computational disorder signal. pLDDT >= 70 indicates 
+  confident AlphaFold structure prediction. These regions are 
+  likely ordered. DisProt experimental annotations take precedence 
+  over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9697
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9685
+    [3] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9676
+
+  Top retrieved doc  : KB-002
+  Top retrieval score: 0.9697
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q14] What is the impact of neurosymbolic calibration on false positive rates in ordered regions?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Disorder scores between 0.3 and 
+  0.5 define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. pLDDT >= 70 
+  indicates confident AlphaFold structure prediction. These 
+  regions are likely ordered. DisProt experimental annotations 
+  take precedence over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9716
+    [2] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9701
+    [3] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9687
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9716
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q15] Does the neurosymbolic approach improve prediction consistency across homologous proteins?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain Pfam domains alongside 
+  disordered regions, confirming IDRs and structured domains 
+  frequently co-occur. Each region must be evaluated 
+  independently. AlphaFold pLDDT below 50 strongly indicates 
+  intrinsic disorder. DisProt-annotated disordered regions in 
+  13,396 proteins consistently show pLDDT below 50 -- the most 
+  reliable single computational disorder signal. Proteins with no 
+  Pfam domains and disorder content > 0.5 are classified as 
+  Intrinsically Disordered Proteins (IDPs). These are common in 
+  signaling, transcription, and hub protein networks. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-012 -- Pfam domain structured mixed protein disorder score=0.9644
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9641
+    [3] KB-013 -- fully disordered IDP no Pfam domain        score=0.9635
+
+  Top retrieved doc  : KB-012
+  Top retrieval score: 0.9644
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q16] How sensitive are disorder predictions to the choice of retrieval documents in the RAG system?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  pLDDT >= 70 indicates confident AlphaFold structure prediction. 
+  These regions are likely ordered. DisProt experimental 
+  annotations take precedence over computational predictions. 
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Sliding window averaging smooths 
+  per-residue disorder scores. Windows larger than the mean region 
+  length (0.0 aa) risk smoothing out short IDRs entirely. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9670
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9640
+    [3] KB-008 -- sliding window smoothing noise IDR signal  score=0.9633
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9670
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q17] Does contextual biological knowledge retrieved via RAG improve long IDR detection accuracy?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. pLDDT >= 70 indicates confident 
+  AlphaFold structure prediction. These regions are likely 
+  ordered. DisProt experimental annotations take precedence over 
+  computational predictions. Disorder scores between 0.3 and 0.5 
+  define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9715
+    [2] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9684
+    [3] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9672
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9715
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q18] How does performance differ between short and long IDRs after neurosymbolic processing?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Of 0 DisProt regions, 0.0% are 
+  shorter than 10 residues (mean=0.0 aa). Short IDRs are hard to 
+  predict reliably due to limited sequence context. 92.6% of 
+  DisProt proteins contain Pfam domains alongside disordered 
+  regions, confirming IDRs and structured domains frequently 
+  co-occur. Each region must be evaluated independently. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9547
+    [2] KB-007 -- short IDR region length confidence residues score=0.9536
+    [3] KB-012 -- Pfam domain structured mixed protein disorder score=0.9535
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9547
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q19] Are certain amino acid compositions more responsive to symbolic correction rules?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Of 0 DisProt regions, 0.0% are shorter than 10 residues 
+  (mean=0.0 aa). Short IDRs are hard to predict reliably due to 
+  limited sequence context. Disorder scores between 0.3 and 0.5 
+  define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. AlphaFold pLDDT 
+  below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-007 -- short IDR region length confidence residues score=0.9667
+    [2] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9654
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9640
+
+  Top retrieved doc  : KB-007
+  Top retrieval score: 0.9667
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q20] Does neurosymbolic reasoning reduce prediction noise in low-confidence regions?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Disorder scores between 0.3 and 
+  0.5 define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. pLDDT >= 70 
+  indicates confident AlphaFold structure prediction. These 
+  regions are likely ordered. DisProt experimental annotations 
+  take precedence over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9667
+    [2] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9622
+    [3] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9608
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9667
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q21] How does calibration affect AUROC compared to raw predictions?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Disorder scores between 0.3 and 0.5 define an ambiguous gray 
+  zone. These regions cannot be confidently classified without 
+  secondary validation using sequence composition or experimental 
+  methods. Of 0 DisProt regions, 0.0% are shorter than 10 residues 
+  (mean=0.0 aa). Short IDRs are hard to predict reliably due to 
+  limited sequence context. AlphaFold pLDDT below 50 strongly 
+  indicates intrinsic disorder. DisProt-annotated disordered 
+  regions in 13,396 proteins consistently show pLDDT below 50 -- 
+  the most reliable single computational disorder signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9554
+    [2] KB-007 -- short IDR region length confidence residues score=0.9546
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9544
+
+  Top retrieved doc  : KB-002
+  Top retrieval score: 0.9554
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q22] Does symbolic smoothing introduce bias toward overprediction of disorder?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Disorder scores between 0.3 and 
+  0.5 define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. The 0.5 disorder 
+  score threshold classifies protein regions as intrinsically 
+  disordered. Of 13,396 DisProt proteins, 29.1% exceed this 
+  threshold (mean=0.378). However, 44.2% exceed 0.3, meaning many 
+  true IDRs fall below 0.5 and are missed. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9659
+    [2] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9626
+    [3] KB-001 -- disorder score cutoff threshold            score=0.9620
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9659
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q23] What is the distribution of confidence score corrections applied by the neurosymbolic system?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Of 0 DisProt regions, 0.0% are 
+  shorter than 10 residues (mean=0.0 aa). Short IDRs are hard to 
+  predict reliably due to limited sequence context. The 0.5 
+  disorder score threshold classifies protein regions as 
+  intrinsically disordered. Of 13,396 DisProt proteins, 29.1% 
+  exceed this threshold (mean=0.378). However, 44.2% exceed 0.3, 
+  meaning many true IDRs fall below 0.5 and are missed. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9661
+    [2] KB-007 -- short IDR region length confidence residues score=0.9629
+    [3] KB-001 -- disorder score cutoff threshold            score=0.9615
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9661
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q24] Does the system improve recall without sacrificing precision?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  The 0.5 disorder score threshold classifies protein regions as 
+  intrinsically disordered. Of 13,396 DisProt proteins, 29.1% 
+  exceed this threshold (mean=0.378). However, 44.2% exceed 0.3, 
+  meaning many true IDRs fall below 0.5 and are missed. Proline 
+  content (DisProt mean=6.0%) strongly predicts intrinsic 
+  disorder. Proline's rigid pyrrolidine ring disrupts 
+  alpha-helices and beta-sheets, preventing regular secondary 
+  structure. Glycine (DisProt mean=7.0%) adds backbone 
+  conformational freedom. It is a weaker independent disorder 
+  predictor than proline and should be combined with other 
+  signals. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-001 -- disorder score cutoff threshold            score=0.9463
+    [2] KB-004 -- proline amino acid disorder prediction composition score=0.9444
+    [3] KB-005 -- glycine amino acid flexible backbone composition score=0.9438
+
+  Top retrieved doc  : KB-001
+  Top retrieval score: 0.9463
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q25] How does performance vary across different protein families?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Proteins with no Pfam domains and disorder content > 0.5 are 
+  classified as Intrinsically Disordered Proteins (IDPs). These 
+  are common in signaling, transcription, and hub protein 
+  networks. 92.6% of DisProt proteins contain Pfam domains 
+  alongside disordered regions, confirming IDRs and structured 
+  domains frequently co-occur. Each region must be evaluated 
+  independently. The 0.5 disorder score threshold classifies 
+  protein regions as intrinsically disordered. Of 13,396 DisProt 
+  proteins, 29.1% exceed this threshold (mean=0.378). However, 
+  44.2% exceed 0.3, meaning many true IDRs fall below 0.5 and are 
+  missed. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-013 -- fully disordered IDP no Pfam domain        score=0.9115
+    [2] KB-012 -- Pfam domain structured mixed protein disorder score=0.9066
+    [3] KB-001 -- disorder score cutoff threshold            score=0.9038
+
+  Top retrieved doc  : KB-013
+  Top retrieval score: 0.9115
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q26] Are improvements consistent across species in the DisProt dataset?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. pLDDT >= 70 indicates confident 
+  AlphaFold structure prediction. These regions are likely 
+  ordered. DisProt experimental annotations take precedence over 
+  computational predictions. Disorder scores between 0.3 and 0.5 
+  define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9671
+    [2] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9632
+    [3] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9630
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9671
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q27] Does the neurosymbolic model perform better on experimentally validated long IDRs?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. pLDDT >= 70 indicates confident 
+  AlphaFold structure prediction. These regions are likely 
+  ordered. DisProt experimental annotations take precedence over 
+  computational predictions. Of 0 DisProt regions, 0.0% are 
+  shorter than 10 residues (mean=0.0 aa). Short IDRs are hard to 
+  predict reliably due to limited sequence context. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9699
+    [2] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9669
+    [3] KB-007 -- short IDR region length confidence residues score=0.9644
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9699
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q28] How does retrieval quality impact final prediction confidence?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. pLDDT >= 70 indicates confident 
+  AlphaFold structure prediction. These regions are likely 
+  ordered. DisProt experimental annotations take precedence over 
+  computational predictions. Disorder scores between 0.3 and 0.5 
+  define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9600
+    [2] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9581
+    [3] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9576
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9600
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q29] Are confidence score corrections correlated with sequence length?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Disorder scores between 0.3 and 0.5 define an ambiguous gray 
+  zone. These regions cannot be confidently classified without 
+  secondary validation using sequence composition or experimental 
+  methods. AlphaFold pLDDT below 50 strongly indicates intrinsic 
+  disorder. DisProt-annotated disordered regions in 13,396 
+  proteins consistently show pLDDT below 50 -- the most reliable 
+  single computational disorder signal. Of 0 DisProt regions, 0.0% 
+  are shorter than 10 residues (mean=0.0 aa). Short IDRs are hard 
+  to predict reliably due to limited sequence context. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9684
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9680
+    [3] KB-007 -- short IDR region length confidence residues score=0.9680
+
+  Top retrieved doc  : KB-002
+  Top retrieval score: 0.9684
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q30] Does neurosymbolic reasoning improve predictions for low-complexity regions?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. pLDDT >= 70 indicates confident 
+  AlphaFold structure prediction. These regions are likely 
+  ordered. DisProt experimental annotations take precedence over 
+  computational predictions. Proline content (DisProt mean=6.0%) 
+  strongly predicts intrinsic disorder. Proline's rigid 
+  pyrrolidine ring disrupts alpha-helices and beta-sheets, 
+  preventing regular secondary structure. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9565
+    [2] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9534
+    [3] KB-004 -- proline amino acid disorder prediction composition score=0.9531
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9565
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q31] How does entropy of predictions change after symbolic reasoning?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Proteins with no Pfam domains and 
+  disorder content > 0.5 are classified as Intrinsically 
+  Disordered Proteins (IDPs). These are common in signaling, 
+  transcription, and hub protein networks. Glycine (DisProt 
+  mean=7.0%) adds backbone conformational freedom. It is a weaker 
+  independent disorder predictor than proline and should be 
+  combined with other signals. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9524
+    [2] KB-013 -- fully disordered IDP no Pfam domain        score=0.9518
+    [3] KB-005 -- glycine amino acid flexible backbone composition score=0.9496
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9524
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q32] Does the system reduce systematic bias in terminal regions?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Disorder scores between 0.3 and 
+  0.5 define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. Of 0 DisProt 
+  regions, 0.0% are shorter than 10 residues (mean=0.0 aa). Short 
+  IDRs are hard to predict reliably due to limited sequence 
+  context. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9706
+    [2] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9699
+    [3] KB-007 -- short IDR region length confidence residues score=0.9692
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9706
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q33] Are gains from neurosymbolic processing statistically significant?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Proline content (DisProt 
+  mean=6.0%) strongly predicts intrinsic disorder. Proline's rigid 
+  pyrrolidine ring disrupts alpha-helices and beta-sheets, 
+  preventing regular secondary structure. pLDDT >= 70 indicates 
+  confident AlphaFold structure prediction. These regions are 
+  likely ordered. DisProt experimental annotations take precedence 
+  over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9560
+    [2] KB-004 -- proline amino acid disorder prediction composition score=0.9544
+    [3] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9534
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9560
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q34] How does performance compare against baseline machine learning models?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. 92.6% of DisProt proteins contain 
+  Pfam domains alongside disordered regions, confirming IDRs and 
+  structured domains frequently co-occur. Each region must be 
+  evaluated independently. The 0.5 disorder score threshold 
+  classifies protein regions as intrinsically disordered. Of 
+  13,396 DisProt proteins, 29.1% exceed this threshold 
+  (mean=0.378). However, 44.2% exceed 0.3, meaning many true IDRs 
+  fall below 0.5 and are missed. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9410
+    [2] KB-012 -- Pfam domain structured mixed protein disorder score=0.9396
+    [3] KB-001 -- disorder score cutoff threshold            score=0.9392
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9410
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q35] Does adding domain knowledge improve classification boundaries?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Disorder scores between 0.3 and 
+  0.5 define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. 92.6% of DisProt 
+  proteins contain Pfam domains alongside disordered regions, 
+  confirming IDRs and structured domains frequently co-occur. Each 
+  region must be evaluated independently. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9547
+    [2] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9541
+    [3] KB-012 -- Pfam domain structured mixed protein disorder score=0.9539
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9547
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q36] How robust is the model to noisy or incomplete retrieval data?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Glycine (DisProt mean=7.0%) adds 
+  backbone conformational freedom. It is a weaker independent 
+  disorder predictor than proline and should be combined with 
+  other signals. Proline content (DisProt mean=6.0%) strongly 
+  predicts intrinsic disorder. Proline's rigid pyrrolidine ring 
+  disrupts alpha-helices and beta-sheets, preventing regular 
+  secondary structure. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9467
+    [2] KB-005 -- glycine amino acid flexible backbone composition score=0.9460
+    [3] KB-004 -- proline amino acid disorder prediction composition score=0.9455
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9467
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q37] Does the neurosymbolic system improve calibration curves?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Proline content (DisProt mean=6.0%) strongly predicts intrinsic 
+  disorder. Proline's rigid pyrrolidine ring disrupts 
+  alpha-helices and beta-sheets, preventing regular secondary 
+  structure. AlphaFold pLDDT below 50 strongly indicates intrinsic 
+  disorder. DisProt-annotated disordered regions in 13,396 
+  proteins consistently show pLDDT below 50 -- the most reliable 
+  single computational disorder signal. Disorder scores between 
+  0.3 and 0.5 define an ambiguous gray zone. These regions cannot 
+  be confidently classified without secondary validation using 
+  sequence composition or experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-004 -- proline amino acid disorder prediction composition score=0.9558
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9554
+    [3] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9530
+
+  Top retrieved doc  : KB-004
+  Top retrieval score: 0.9558
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q38] How does Brier score change after calibration?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Disorder scores between 0.3 and 
+  0.5 define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. Glycine (DisProt 
+  mean=7.0%) adds backbone conformational freedom. It is a weaker 
+  independent disorder predictor than proline and should be 
+  combined with other signals. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9527
+    [2] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9506
+    [3] KB-005 -- glycine amino acid flexible backbone composition score=0.9497
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9527
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q39] Are prediction improvements uniform across all confidence intervals?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. The 0.5 disorder score threshold 
+  classifies protein regions as intrinsically disordered. Of 
+  13,396 DisProt proteins, 29.1% exceed this threshold 
+  (mean=0.378). However, 44.2% exceed 0.3, meaning many true IDRs 
+  fall below 0.5 and are missed. Of 0 DisProt regions, 0.0% are 
+  shorter than 10 residues (mean=0.0 aa). Short IDRs are hard to 
+  predict reliably due to limited sequence context. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9587
+    [2] KB-001 -- disorder score cutoff threshold            score=0.9580
+    [3] KB-007 -- short IDR region length confidence residues score=0.9571
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9587
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q40] Does neurosymbolic reasoning improve interpretability of predictions?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Proline content (DisProt 
+  mean=6.0%) strongly predicts intrinsic disorder. Proline's rigid 
+  pyrrolidine ring disrupts alpha-helices and beta-sheets, 
+  preventing regular secondary structure. 92.6% of DisProt 
+  proteins contain Pfam domains alongside disordered regions, 
+  confirming IDRs and structured domains frequently co-occur. Each 
+  region must be evaluated independently. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9518
+    [2] KB-004 -- proline amino acid disorder prediction composition score=0.9504
+    [3] KB-012 -- Pfam domain structured mixed protein disorder score=0.9492
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9518
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q41] How does performance change when removing symbolic rules?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  The 0.5 disorder score threshold classifies protein regions as 
+  intrinsically disordered. Of 13,396 DisProt proteins, 29.1% 
+  exceed this threshold (mean=0.378). However, 44.2% exceed 0.3, 
+  meaning many true IDRs fall below 0.5 and are missed. Proline 
+  content (DisProt mean=6.0%) strongly predicts intrinsic 
+  disorder. Proline's rigid pyrrolidine ring disrupts 
+  alpha-helices and beta-sheets, preventing regular secondary 
+  structure. Proteins with no Pfam domains and disorder content > 
+  0.5 are classified as Intrinsically Disordered Proteins (IDPs). 
+  These are common in signaling, transcription, and hub protein 
+  networks. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-001 -- disorder score cutoff threshold            score=0.9380
+    [2] KB-004 -- proline amino acid disorder prediction composition score=0.9378
+    [3] KB-013 -- fully disordered IDP no Pfam domain        score=0.9366
+
+  Top retrieved doc  : KB-001
+  Top retrieval score: 0.9380
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q42] Does the system better detect disordered binding regions?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain Pfam domains alongside 
+  disordered regions, confirming IDRs and structured domains 
+  frequently co-occur. Each region must be evaluated 
+  independently. Proteins with no Pfam domains and disorder 
+  content > 0.5 are classified as Intrinsically Disordered 
+  Proteins (IDPs). These are common in signaling, transcription, 
+  and hub protein networks. AlphaFold pLDDT below 50 strongly 
+  indicates intrinsic disorder. DisProt-annotated disordered 
+  regions in 13,396 proteins consistently show pLDDT below 50 -- 
+  the most reliable single computational disorder signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-012 -- Pfam domain structured mixed protein disorder score=0.9523
+    [2] KB-013 -- fully disordered IDP no Pfam domain        score=0.9499
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9489
+
+  Top retrieved doc  : KB-012
+  Top retrieval score: 0.9523
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q43] Are certain motifs better recognized after symbolic processing?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Disorder scores between 0.3 and 0.5 define an ambiguous gray 
+  zone. These regions cannot be confidently classified without 
+  secondary validation using sequence composition or experimental 
+  methods. pLDDT scores of 50-70 indicate ambiguous structure. 
+  Regions may be conditionally disordered (Molecular Recognition 
+  Features, MoRFs) -- unstructured alone but folding upon partner 
+  binding. AlphaFold pLDDT below 50 strongly indicates intrinsic 
+  disorder. DisProt-annotated disordered regions in 13,396 
+  proteins consistently show pLDDT below 50 -- the most reliable 
+  single computational disorder signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9554
+    [2] KB-010 -- AlphaFold pLDDT moderate 50 70 MoRF conditional score=0.9540
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9533
+
+  Top retrieved doc  : KB-002
+  Top retrieval score: 0.9554
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q44] How does the system handle conflicting retrieved evidence?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain Pfam domains alongside 
+  disordered regions, confirming IDRs and structured domains 
+  frequently co-occur. Each region must be evaluated 
+  independently. AlphaFold pLDDT below 50 strongly indicates 
+  intrinsic disorder. DisProt-annotated disordered regions in 
+  13,396 proteins consistently show pLDDT below 50 -- the most 
+  reliable single computational disorder signal. The 0.5 disorder 
+  score threshold classifies protein regions as intrinsically 
+  disordered. Of 13,396 DisProt proteins, 29.1% exceed this 
+  threshold (mean=0.378). However, 44.2% exceed 0.3, meaning many 
+  true IDRs fall below 0.5 and are missed. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-012 -- Pfam domain structured mixed protein disorder score=0.9371
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9367
+    [3] KB-001 -- disorder score cutoff threshold            score=0.9362
+
+  Top retrieved doc  : KB-012
+  Top retrieval score: 0.9371
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q45] Does neurosymbolic reasoning reduce overfitting?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Proline content (DisProt 
+  mean=6.0%) strongly predicts intrinsic disorder. Proline's rigid 
+  pyrrolidine ring disrupts alpha-helices and beta-sheets, 
+  preventing regular secondary structure. pLDDT >= 70 indicates 
+  confident AlphaFold structure prediction. These regions are 
+  likely ordered. DisProt experimental annotations take precedence 
+  over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9587
+    [2] KB-004 -- proline amino acid disorder prediction composition score=0.9543
+    [3] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9533
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9587
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q46] What is the effect on Matthews Correlation Coefficient (MCC)?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  The 0.5 disorder score threshold classifies protein regions as 
+  intrinsically disordered. Of 13,396 DisProt proteins, 29.1% 
+  exceed this threshold (mean=0.378). However, 44.2% exceed 0.3, 
+  meaning many true IDRs fall below 0.5 and are missed. 92.6% of 
+  DisProt proteins contain Pfam domains alongside disordered 
+  regions, confirming IDRs and structured domains frequently 
+  co-occur. Each region must be evaluated independently. Of 0 
+  DisProt regions, 0.0% are shorter than 10 residues (mean=0.0 
+  aa). Short IDRs are hard to predict reliably due to limited 
+  sequence context. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-001 -- disorder score cutoff threshold            score=0.9516
+    [2] KB-012 -- Pfam domain structured mixed protein disorder score=0.9501
+    [3] KB-007 -- short IDR region length confidence residues score=0.9479
+
+  Top retrieved doc  : KB-001
+  Top retrieval score: 0.9516
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q47] Does performance degrade on unseen protein structures?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. 92.6% of DisProt proteins contain 
+  Pfam domains alongside disordered regions, confirming IDRs and 
+  structured domains frequently co-occur. Each region must be 
+  evaluated independently. Proteins with no Pfam domains and 
+  disorder content > 0.5 are classified as Intrinsically 
+  Disordered Proteins (IDPs). These are common in signaling, 
+  transcription, and hub protein networks. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9465
+    [2] KB-012 -- Pfam domain structured mixed protein disorder score=0.9455
+    [3] KB-013 -- fully disordered IDP no Pfam domain        score=0.9428
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9465
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q48] How does retrieval latency affect prediction quality?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Glycine (DisProt mean=7.0%) adds 
+  backbone conformational freedom. It is a weaker independent 
+  disorder predictor than proline and should be combined with 
+  other signals. The 0.5 disorder score threshold classifies 
+  protein regions as intrinsically disordered. Of 13,396 DisProt 
+  proteins, 29.1% exceed this threshold (mean=0.378). However, 
+  44.2% exceed 0.3, meaning many true IDRs fall below 0.5 and are 
+  missed. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9436
+    [2] KB-005 -- glycine amino acid flexible backbone composition score=0.9434
+    [3] KB-001 -- disorder score cutoff threshold            score=0.9415
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9436
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q49] Does symbolic reasoning improve alignment with experimental annotations?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. pLDDT >= 70 indicates confident 
+  AlphaFold structure prediction. These regions are likely 
+  ordered. DisProt experimental annotations take precedence over 
+  computational predictions. Disorder scores between 0.3 and 0.5 
+  define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9621
+    [2] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9610
+    [3] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9601
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9621
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q50] Are prediction improvements localized or global across sequences?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  pLDDT >= 70 indicates confident AlphaFold structure prediction. 
+  These regions are likely ordered. DisProt experimental 
+  annotations take precedence over computational predictions. 
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Disorder scores between 0.3 and 
+  0.5 define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9698
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9688
+    [3] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9686
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9698
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q51] Does neurosymbolic RAG help identify disorder-to-order transitions?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Proline content (DisProt 
+  mean=6.0%) strongly predicts intrinsic disorder. Proline's rigid 
+  pyrrolidine ring disrupts alpha-helices and beta-sheets, 
+  preventing regular secondary structure. Proteins with no Pfam 
+  domains and disorder content > 0.5 are classified as 
+  Intrinsically Disordered Proteins (IDPs). These are common in 
+  signaling, transcription, and hub protein networks. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9687
+    [2] KB-004 -- proline amino acid disorder prediction composition score=0.9668
+    [3] KB-013 -- fully disordered IDP no Pfam domain        score=0.9638
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9687
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q52] How does the system perform on proteins with multiple IDRs?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Proteins with no Pfam domains and disorder content > 0.5 are 
+  classified as Intrinsically Disordered Proteins (IDPs). These 
+  are common in signaling, transcription, and hub protein 
+  networks. 92.6% of DisProt proteins contain Pfam domains 
+  alongside disordered regions, confirming IDRs and structured 
+  domains frequently co-occur. Each region must be evaluated 
+  independently. The 0.5 disorder score threshold classifies 
+  protein regions as intrinsically disordered. Of 13,396 DisProt 
+  proteins, 29.1% exceed this threshold (mean=0.378). However, 
+  44.2% exceed 0.3, meaning many true IDRs fall below 0.5 and are 
+  missed. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-013 -- fully disordered IDP no Pfam domain        score=0.9563
+    [2] KB-012 -- Pfam domain structured mixed protein disorder score=0.9561
+    [3] KB-001 -- disorder score cutoff threshold            score=0.9499
+
+  Top retrieved doc  : KB-013
+  Top retrieval score: 0.9563
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q53] Does calibration reduce prediction skewness?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Glycine (DisProt mean=7.0%) adds backbone conformational 
+  freedom. It is a weaker independent disorder predictor than 
+  proline and should be combined with other signals. AlphaFold 
+  pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Proline content (DisProt 
+  mean=6.0%) strongly predicts intrinsic disorder. Proline's rigid 
+  pyrrolidine ring disrupts alpha-helices and beta-sheets, 
+  preventing regular secondary structure. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-005 -- glycine amino acid flexible backbone composition score=0.9541
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9530
+    [3] KB-004 -- proline amino acid disorder prediction composition score=0.9512
+
+  Top retrieved doc  : KB-005
+  Top retrieval score: 0.9541
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q54] Are confidence intervals narrower after processing?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain Pfam domains alongside 
+  disordered regions, confirming IDRs and structured domains 
+  frequently co-occur. Each region must be evaluated 
+  independently. Of 0 DisProt regions, 0.0% are shorter than 10 
+  residues (mean=0.0 aa). Short IDRs are hard to predict reliably 
+  due to limited sequence context. Glycine (DisProt mean=7.0%) 
+  adds backbone conformational freedom. It is a weaker independent 
+  disorder predictor than proline and should be combined with 
+  other signals. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-012 -- Pfam domain structured mixed protein disorder score=0.9332
+    [2] KB-007 -- short IDR region length confidence residues score=0.9309
+    [3] KB-005 -- glycine amino acid flexible backbone composition score=0.9306
+
+  Top retrieved doc  : KB-012
+  Top retrieval score: 0.9332
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q55] Does neurosymbolic reasoning improve classification of ambiguous residues?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Disorder scores between 0.3 and 
+  0.5 define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. pLDDT >= 70 
+  indicates confident AlphaFold structure prediction. These 
+  regions are likely ordered. DisProt experimental annotations 
+  take precedence over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9677
+    [2] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9667
+    [3] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9664
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9677
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q56] How does the system perform under cross-validation?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. The 0.5 disorder score threshold 
+  classifies protein regions as intrinsically disordered. Of 
+  13,396 DisProt proteins, 29.1% exceed this threshold 
+  (mean=0.378). However, 44.2% exceed 0.3, meaning many true IDRs 
+  fall below 0.5 and are missed. Disorder scores between 0.3 and 
+  0.5 define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9448
+    [2] KB-001 -- disorder score cutoff threshold            score=0.9429
+    [3] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9422
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9448
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q57] Does it generalize across different disorder prediction tools?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Proteins with no Pfam domains and disorder content > 0.5 are 
+  classified as Intrinsically Disordered Proteins (IDPs). These 
+  are common in signaling, transcription, and hub protein 
+  networks. AlphaFold pLDDT below 50 strongly indicates intrinsic 
+  disorder. DisProt-annotated disordered regions in 13,396 
+  proteins consistently show pLDDT below 50 -- the most reliable 
+  single computational disorder signal. The 0.5 disorder score 
+  threshold classifies protein regions as intrinsically 
+  disordered. Of 13,396 DisProt proteins, 29.1% exceed this 
+  threshold (mean=0.378). However, 44.2% exceed 0.3, meaning many 
+  true IDRs fall below 0.5 and are missed. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-013 -- fully disordered IDP no Pfam domain        score=0.9475
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9471
+    [3] KB-001 -- disorder score cutoff threshold            score=0.9466
+
+  Top retrieved doc  : KB-013
+  Top retrieval score: 0.9475
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q58] Are improvements correlated with sequence conservation?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain Pfam domains alongside 
+  disordered regions, confirming IDRs and structured domains 
+  frequently co-occur. Each region must be evaluated 
+  independently. Disorder scores between 0.3 and 0.5 define an 
+  ambiguous gray zone. These regions cannot be confidently 
+  classified without secondary validation using sequence 
+  composition or experimental methods. pLDDT >= 70 indicates 
+  confident AlphaFold structure prediction. These regions are 
+  likely ordered. DisProt experimental annotations take precedence 
+  over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-012 -- Pfam domain structured mixed protein disorder score=0.9554
+    [2] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9554
+    [3] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9548
+
+  Top retrieved doc  : KB-012
+  Top retrieval score: 0.9554
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q59] Does retrieval of structural data improve predictions?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain Pfam domains alongside 
+  disordered regions, confirming IDRs and structured domains 
+  frequently co-occur. Each region must be evaluated 
+  independently. Glycine (DisProt mean=7.0%) adds backbone 
+  conformational freedom. It is a weaker independent disorder 
+  predictor than proline and should be combined with other 
+  signals. pLDDT >= 70 indicates confident AlphaFold structure 
+  prediction. These regions are likely ordered. DisProt 
+  experimental annotations take precedence over computational 
+  predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-012 -- Pfam domain structured mixed protein disorder score=0.9442
+    [2] KB-005 -- glycine amino acid flexible backbone composition score=0.9396
+    [3] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9384
+
+  Top retrieved doc  : KB-012
+  Top retrieval score: 0.9442
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q60] How does performance change with different window sizes?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  The 0.5 disorder score threshold classifies protein regions as 
+  intrinsically disordered. Of 13,396 DisProt proteins, 29.1% 
+  exceed this threshold (mean=0.378). However, 44.2% exceed 0.3, 
+  meaning many true IDRs fall below 0.5 and are missed. Proteins 
+  with no Pfam domains and disorder content > 0.5 are classified 
+  as Intrinsically Disordered Proteins (IDPs). These are common in 
+  signaling, transcription, and hub protein networks. 92.6% of 
+  DisProt proteins contain Pfam domains alongside disordered 
+  regions, confirming IDRs and structured domains frequently 
+  co-occur. Each region must be evaluated independently. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-001 -- disorder score cutoff threshold            score=0.9215
+    [2] KB-013 -- fully disordered IDP no Pfam domain        score=0.9190
+    [3] KB-012 -- Pfam domain structured mixed protein disorder score=0.9173
+
+  Top retrieved doc  : KB-001
+  Top retrieval score: 0.9215
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q61] Does neurosymbolic reasoning help detect functional disorder regions?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. pLDDT >= 70 indicates confident 
+  AlphaFold structure prediction. These regions are likely 
+  ordered. DisProt experimental annotations take precedence over 
+  computational predictions. Disorder scores between 0.3 and 0.5 
+  define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9696
+    [2] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9657
+    [3] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9650
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9696
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q62] Are gains higher in specific residue compositions?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  pLDDT >= 70 indicates confident AlphaFold structure prediction. 
+  These regions are likely ordered. DisProt experimental 
+  annotations take precedence over computational predictions. 
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Disorder scores between 0.3 and 
+  0.5 define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9621
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9608
+    [3] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9586
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9621
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q63] Does the system improve classification of edge residues in IDRs?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain Pfam domains alongside 
+  disordered regions, confirming IDRs and structured domains 
+  frequently co-occur. Each region must be evaluated 
+  independently. AlphaFold pLDDT below 50 strongly indicates 
+  intrinsic disorder. DisProt-annotated disordered regions in 
+  13,396 proteins consistently show pLDDT below 50 -- the most 
+  reliable single computational disorder signal. pLDDT >= 70 
+  indicates confident AlphaFold structure prediction. These 
+  regions are likely ordered. DisProt experimental annotations 
+  take precedence over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-012 -- Pfam domain structured mixed protein disorder score=0.9749
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9746
+    [3] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9720
+
+  Top retrieved doc  : KB-012
+  Top retrieval score: 0.9749
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q64] How does prediction confidence correlate with experimental uncertainty?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Proline content (DisProt 
+  mean=6.0%) strongly predicts intrinsic disorder. Proline's rigid 
+  pyrrolidine ring disrupts alpha-helices and beta-sheets, 
+  preventing regular secondary structure. Glycine (DisProt 
+  mean=7.0%) adds backbone conformational freedom. It is a weaker 
+  independent disorder predictor than proline and should be 
+  combined with other signals. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9517
+    [2] KB-004 -- proline amino acid disorder prediction composition score=0.9515
+    [3] KB-005 -- glycine amino acid flexible backbone composition score=0.9487
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9517
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q65] Does neurosymbolic reasoning improve long-range sequence dependencies?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. pLDDT >= 70 indicates confident 
+  AlphaFold structure prediction. These regions are likely 
+  ordered. DisProt experimental annotations take precedence over 
+  computational predictions. Proline content (DisProt mean=6.0%) 
+  strongly predicts intrinsic disorder. Proline's rigid 
+  pyrrolidine ring disrupts alpha-helices and beta-sheets, 
+  preventing regular secondary structure. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9646
+    [2] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9620
+    [3] KB-004 -- proline amino acid disorder prediction composition score=0.9594
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9646
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q66] Are improvements stable across random seeds?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. pLDDT >= 70 indicates confident 
+  AlphaFold structure prediction. These regions are likely 
+  ordered. DisProt experimental annotations take precedence over 
+  computational predictions. Sliding window averaging smooths 
+  per-residue disorder scores. Windows larger than the mean region 
+  length (0.0 aa) risk smoothing out short IDRs entirely. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9612
+    [2] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9564
+    [3] KB-008 -- sliding window smoothing noise IDR signal  score=0.9561
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9612
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q67] Does the system perform better on curated subsets of DisProt?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. pLDDT >= 70 indicates confident 
+  AlphaFold structure prediction. These regions are likely 
+  ordered. DisProt experimental annotations take precedence over 
+  computational predictions. Disorder scores between 0.3 and 0.5 
+  define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9625
+    [2] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9615
+    [3] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9603
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9625
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q68] How does performance change when excluding uncertain regions?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain Pfam domains alongside 
+  disordered regions, confirming IDRs and structured domains 
+  frequently co-occur. Each region must be evaluated 
+  independently. The 0.5 disorder score threshold classifies 
+  protein regions as intrinsically disordered. Of 13,396 DisProt 
+  proteins, 29.1% exceed this threshold (mean=0.378). However, 
+  44.2% exceed 0.3, meaning many true IDRs fall below 0.5 and are 
+  missed. Proteins with no Pfam domains and disorder content > 0.5 
+  are classified as Intrinsically Disordered Proteins (IDPs). 
+  These are common in signaling, transcription, and hub protein 
+  networks. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-012 -- Pfam domain structured mixed protein disorder score=0.9456
+    [2] KB-001 -- disorder score cutoff threshold            score=0.9450
+    [3] KB-013 -- fully disordered IDP no Pfam domain        score=0.9439
+
+  Top retrieved doc  : KB-012
+  Top retrieval score: 0.9456
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q69] Does neurosymbolic reasoning improve classification of rare IDRs?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. pLDDT >= 70 indicates confident 
+  AlphaFold structure prediction. These regions are likely 
+  ordered. DisProt experimental annotations take precedence over 
+  computational predictions. 92.6% of DisProt proteins contain 
+  Pfam domains alongside disordered regions, confirming IDRs and 
+  structured domains frequently co-occur. Each region must be 
+  evaluated independently. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9679
+    [2] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9659
+    [3] KB-012 -- Pfam domain structured mixed protein disorder score=0.9650
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9679
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q70] Are prediction gains dependent on dataset size?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Proteins with no Pfam domains and disorder content > 0.5 are 
+  classified as Intrinsically Disordered Proteins (IDPs). These 
+  are common in signaling, transcription, and hub protein 
+  networks. 92.6% of DisProt proteins contain Pfam domains 
+  alongside disordered regions, confirming IDRs and structured 
+  domains frequently co-occur. Each region must be evaluated 
+  independently. The 0.5 disorder score threshold classifies 
+  protein regions as intrinsically disordered. Of 13,396 DisProt 
+  proteins, 29.1% exceed this threshold (mean=0.378). However, 
+  44.2% exceed 0.3, meaning many true IDRs fall below 0.5 and are 
+  missed. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-013 -- fully disordered IDP no Pfam domain        score=0.9418
+    [2] KB-012 -- Pfam domain structured mixed protein disorder score=0.9413
+    [3] KB-001 -- disorder score cutoff threshold            score=0.9407
+
+  Top retrieved doc  : KB-013
+  Top retrieval score: 0.9418
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q71] Does the system improve classification under imbalanced data?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  The 0.5 disorder score threshold classifies protein regions as 
+  intrinsically disordered. Of 13,396 DisProt proteins, 29.1% 
+  exceed this threshold (mean=0.378). However, 44.2% exceed 0.3, 
+  meaning many true IDRs fall below 0.5 and are missed. Proteins 
+  with no Pfam domains and disorder content > 0.5 are classified 
+  as Intrinsically Disordered Proteins (IDPs). These are common in 
+  signaling, transcription, and hub protein networks. AlphaFold 
+  pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-001 -- disorder score cutoff threshold            score=0.9412
+    [2] KB-013 -- fully disordered IDP no Pfam domain        score=0.9399
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9396
+
+  Top retrieved doc  : KB-001
+  Top retrieval score: 0.9412
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q72] How does it perform on noisy annotations?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. 92.6% of DisProt proteins contain 
+  Pfam domains alongside disordered regions, confirming IDRs and 
+  structured domains frequently co-occur. Each region must be 
+  evaluated independently. Proteins with no Pfam domains and 
+  disorder content > 0.5 are classified as Intrinsically 
+  Disordered Proteins (IDPs). These are common in signaling, 
+  transcription, and hub protein networks. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9382
+    [2] KB-012 -- Pfam domain structured mixed protein disorder score=0.9363
+    [3] KB-013 -- fully disordered IDP no Pfam domain        score=0.9363
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9382
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q73] Does symbolic reasoning reduce prediction drift?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. pLDDT >= 70 indicates confident 
+  AlphaFold structure prediction. These regions are likely 
+  ordered. DisProt experimental annotations take precedence over 
+  computational predictions. Glycine (DisProt mean=7.0%) adds 
+  backbone conformational freedom. It is a weaker independent 
+  disorder predictor than proline and should be combined with 
+  other signals. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9532
+    [2] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9509
+    [3] KB-005 -- glycine amino acid flexible backbone composition score=0.9503
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9532
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q74] How does performance compare before and after normalization?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Proteins with no Pfam domains and disorder content > 0.5 are 
+  classified as Intrinsically Disordered Proteins (IDPs). These 
+  are common in signaling, transcription, and hub protein 
+  networks. The 0.5 disorder score threshold classifies protein 
+  regions as intrinsically disordered. Of 13,396 DisProt proteins, 
+  29.1% exceed this threshold (mean=0.378). However, 44.2% exceed 
+  0.3, meaning many true IDRs fall below 0.5 and are missed. 
+  Proline content (DisProt mean=6.0%) strongly predicts intrinsic 
+  disorder. Proline's rigid pyrrolidine ring disrupts 
+  alpha-helices and beta-sheets, preventing regular secondary 
+  structure. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-013 -- fully disordered IDP no Pfam domain        score=0.9257
+    [2] KB-001 -- disorder score cutoff threshold            score=0.9243
+    [3] KB-004 -- proline amino acid disorder prediction composition score=0.9198
+
+  Top retrieved doc  : KB-013
+  Top retrieval score: 0.9257
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q75] Does neurosymbolic reasoning improve stability across runs?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. pLDDT >= 70 indicates confident 
+  AlphaFold structure prediction. These regions are likely 
+  ordered. DisProt experimental annotations take precedence over 
+  computational predictions. Proline content (DisProt mean=6.0%) 
+  strongly predicts intrinsic disorder. Proline's rigid 
+  pyrrolidine ring disrupts alpha-helices and beta-sheets, 
+  preventing regular secondary structure. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9572
+    [2] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9539
+    [3] KB-004 -- proline amino acid disorder prediction composition score=0.9530
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9572
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q76] Are improvements larger for specific protein lengths?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Of 0 DisProt regions, 0.0% are shorter than 10 residues 
+  (mean=0.0 aa). Short IDRs are hard to predict reliably due to 
+  limited sequence context. AlphaFold pLDDT below 50 strongly 
+  indicates intrinsic disorder. DisProt-annotated disordered 
+  regions in 13,396 proteins consistently show pLDDT below 50 -- 
+  the most reliable single computational disorder signal. 92.6% of 
+  DisProt proteins contain Pfam domains alongside disordered 
+  regions, confirming IDRs and structured domains frequently 
+  co-occur. Each region must be evaluated independently. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-007 -- short IDR region length confidence residues score=0.9543
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9534
+    [3] KB-012 -- Pfam domain structured mixed protein disorder score=0.9507
+
+  Top retrieved doc  : KB-007
+  Top retrieval score: 0.9543
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q77] Does the system better align predictions with biological function?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Proteins with no Pfam domains and disorder content > 0.5 are 
+  classified as Intrinsically Disordered Proteins (IDPs). These 
+  are common in signaling, transcription, and hub protein 
+  networks. 92.6% of DisProt proteins contain Pfam domains 
+  alongside disordered regions, confirming IDRs and structured 
+  domains frequently co-occur. Each region must be evaluated 
+  independently. AlphaFold pLDDT below 50 strongly indicates 
+  intrinsic disorder. DisProt-annotated disordered regions in 
+  13,396 proteins consistently show pLDDT below 50 -- the most 
+  reliable single computational disorder signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-013 -- fully disordered IDP no Pfam domain        score=0.9475
+    [2] KB-012 -- Pfam domain structured mixed protein disorder score=0.9470
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9439
+
+  Top retrieved doc  : KB-013
+  Top retrieval score: 0.9475
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q78] How does it handle missing sequence information?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain Pfam domains alongside 
+  disordered regions, confirming IDRs and structured domains 
+  frequently co-occur. Each region must be evaluated 
+  independently. Proteins with no Pfam domains and disorder 
+  content > 0.5 are classified as Intrinsically Disordered 
+  Proteins (IDPs). These are common in signaling, transcription, 
+  and hub protein networks. Proline content (DisProt mean=6.0%) 
+  strongly predicts intrinsic disorder. Proline's rigid 
+  pyrrolidine ring disrupts alpha-helices and beta-sheets, 
+  preventing regular secondary structure. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-012 -- Pfam domain structured mixed protein disorder score=0.9238
+    [2] KB-013 -- fully disordered IDP no Pfam domain        score=0.9217
+    [3] KB-004 -- proline amino acid disorder prediction composition score=0.9181
+
+  Top retrieved doc  : KB-012
+  Top retrieval score: 0.9238
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q79] Does retrieval diversity impact performance?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain Pfam domains alongside 
+  disordered regions, confirming IDRs and structured domains 
+  frequently co-occur. Each region must be evaluated 
+  independently. The 0.5 disorder score threshold classifies 
+  protein regions as intrinsically disordered. Of 13,396 DisProt 
+  proteins, 29.1% exceed this threshold (mean=0.378). However, 
+  44.2% exceed 0.3, meaning many true IDRs fall below 0.5 and are 
+  missed. AlphaFold pLDDT below 50 strongly indicates intrinsic 
+  disorder. DisProt-annotated disordered regions in 13,396 
+  proteins consistently show pLDDT below 50 -- the most reliable 
+  single computational disorder signal. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-012 -- Pfam domain structured mixed protein disorder score=0.9345
+    [2] KB-001 -- disorder score cutoff threshold            score=0.9341
+    [3] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9326
+
+  Top retrieved doc  : KB-012
+  Top retrieval score: 0.9345
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q80] Are prediction improvements explainable through symbolic rules?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  pLDDT >= 70 indicates confident AlphaFold structure prediction. 
+  These regions are likely ordered. DisProt experimental 
+  annotations take precedence over computational predictions. 
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Disorder scores above 0.7 
+  represent high confidence intrinsic disorder, consistently 
+  matching experimentally validated IDRs in DisProt and 
+  correlating with AlphaFold pLDDT scores below 50. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9593
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9573
+    [3] KB-003 -- high confidence disorder strong signal 0.7 score=0.9567
+
+  Top retrieved doc  : KB-011
+  Top retrieval score: 0.9593
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q81] Does neurosymbolic reasoning improve threshold selection?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. pLDDT >= 70 indicates confident 
+  AlphaFold structure prediction. These regions are likely 
+  ordered. DisProt experimental annotations take precedence over 
+  computational predictions. Disorder scores between 0.3 and 0.5 
+  define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9637
+    [2] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9624
+    [3] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9591
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9637
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q82] How does the system perform on synthetic datasets?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. 92.6% of DisProt proteins contain 
+  Pfam domains alongside disordered regions, confirming IDRs and 
+  structured domains frequently co-occur. Each region must be 
+  evaluated independently. The 0.5 disorder score threshold 
+  classifies protein regions as intrinsically disordered. Of 
+  13,396 DisProt proteins, 29.1% exceed this threshold 
+  (mean=0.378). However, 44.2% exceed 0.3, meaning many true IDRs 
+  fall below 0.5 and are missed. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9290
+    [2] KB-012 -- Pfam domain structured mixed protein disorder score=0.9281
+    [3] KB-001 -- disorder score cutoff threshold            score=0.9279
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9290
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q83] Does calibration improve ranking of disorder scores?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. pLDDT >= 70 indicates confident 
+  AlphaFold structure prediction. These regions are likely 
+  ordered. DisProt experimental annotations take precedence over 
+  computational predictions. Disorder scores between 0.3 and 0.5 
+  define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9645
+    [2] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9610
+    [3] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9601
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9645
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q84] Are prediction errors reduced uniformly?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Of 0 DisProt regions, 0.0% are shorter than 10 residues 
+  (mean=0.0 aa). Short IDRs are hard to predict reliably due to 
+  limited sequence context. AlphaFold pLDDT below 50 strongly 
+  indicates intrinsic disorder. DisProt-annotated disordered 
+  regions in 13,396 proteins consistently show pLDDT below 50 -- 
+  the most reliable single computational disorder signal. The 0.5 
+  disorder score threshold classifies protein regions as 
+  intrinsically disordered. Of 13,396 DisProt proteins, 29.1% 
+  exceed this threshold (mean=0.378). However, 44.2% exceed 0.3, 
+  meaning many true IDRs fall below 0.5 and are missed. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-007 -- short IDR region length confidence residues score=0.9545
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9516
+    [3] KB-001 -- disorder score cutoff threshold            score=0.9513
+
+  Top retrieved doc  : KB-007
+  Top retrieval score: 0.9545
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q85] Does neurosymbolic reasoning improve classification confidence intervals?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. pLDDT >= 70 indicates confident 
+  AlphaFold structure prediction. These regions are likely 
+  ordered. DisProt experimental annotations take precedence over 
+  computational predictions. Disorder scores between 0.3 and 0.5 
+  define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9627
+    [2] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9599
+    [3] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9595
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9627
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q86] How does performance change with different retrieval strategies?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Proteins with no Pfam domains and disorder content > 0.5 are 
+  classified as Intrinsically Disordered Proteins (IDPs). These 
+  are common in signaling, transcription, and hub protein 
+  networks. The 0.5 disorder score threshold classifies protein 
+  regions as intrinsically disordered. Of 13,396 DisProt proteins, 
+  29.1% exceed this threshold (mean=0.378). However, 44.2% exceed 
+  0.3, meaning many true IDRs fall below 0.5 and are missed. 92.6% 
+  of DisProt proteins contain Pfam domains alongside disordered 
+  regions, confirming IDRs and structured domains frequently 
+  co-occur. Each region must be evaluated independently. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-013 -- fully disordered IDP no Pfam domain        score=0.9122
+    [2] KB-001 -- disorder score cutoff threshold            score=0.9118
+    [3] KB-012 -- Pfam domain structured mixed protein disorder score=0.9111
+
+  Top retrieved doc  : KB-013
+  Top retrieval score: 0.9122
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q87] Does the system improve detection of transient disorder?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Glycine (DisProt mean=7.0%) adds backbone conformational 
+  freedom. It is a weaker independent disorder predictor than 
+  proline and should be combined with other signals. AlphaFold 
+  pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. The 0.5 disorder score threshold 
+  classifies protein regions as intrinsically disordered. Of 
+  13,396 DisProt proteins, 29.1% exceed this threshold 
+  (mean=0.378). However, 44.2% exceed 0.3, meaning many true IDRs 
+  fall below 0.5 and are missed. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-005 -- glycine amino acid flexible backbone composition score=0.9559
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9558
+    [3] KB-001 -- disorder score cutoff threshold            score=0.9539
+
+  Top retrieved doc  : KB-005
+  Top retrieval score: 0.9559
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q88] Are gains consistent across evaluation metrics?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain Pfam domains alongside 
+  disordered regions, confirming IDRs and structured domains 
+  frequently co-occur. Each region must be evaluated 
+  independently. AlphaFold pLDDT below 50 strongly indicates 
+  intrinsic disorder. DisProt-annotated disordered regions in 
+  13,396 proteins consistently show pLDDT below 50 -- the most 
+  reliable single computational disorder signal. The 0.5 disorder 
+  score threshold classifies protein regions as intrinsically 
+  disordered. Of 13,396 DisProt proteins, 29.1% exceed this 
+  threshold (mean=0.378). However, 44.2% exceed 0.3, meaning many 
+  true IDRs fall below 0.5 and are missed. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-012 -- Pfam domain structured mixed protein disorder score=0.9426
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9422
+    [3] KB-001 -- disorder score cutoff threshold            score=0.9417
+
+  Top retrieved doc  : KB-012
+  Top retrieval score: 0.9426
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q89] Does neurosymbolic reasoning reduce model uncertainty?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  Proline content (DisProt mean=6.0%) strongly predicts intrinsic 
+  disorder. Proline's rigid pyrrolidine ring disrupts 
+  alpha-helices and beta-sheets, preventing regular secondary 
+  structure. AlphaFold pLDDT below 50 strongly indicates intrinsic 
+  disorder. DisProt-annotated disordered regions in 13,396 
+  proteins consistently show pLDDT below 50 -- the most reliable 
+  single computational disorder signal. 92.6% of DisProt proteins 
+  contain Pfam domains alongside disordered regions, confirming 
+  IDRs and structured domains frequently co-occur. Each region 
+  must be evaluated independently. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-004 -- proline amino acid disorder prediction composition score=0.9520
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9518
+    [3] KB-012 -- Pfam domain structured mixed protein disorder score=0.9499
+
+  Top retrieved doc  : KB-004
+  Top retrieval score: 0.9520
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q90] How does it perform under adversarial perturbations?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Proline content (DisProt 
+  mean=6.0%) strongly predicts intrinsic disorder. Proline's rigid 
+  pyrrolidine ring disrupts alpha-helices and beta-sheets, 
+  preventing regular secondary structure. Disorder scores between 
+  0.3 and 0.5 define an ambiguous gray zone. These regions cannot 
+  be confidently classified without secondary validation using 
+  sequence composition or experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9513
+    [2] KB-004 -- proline amino acid disorder prediction composition score=0.9472
+    [3] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9458
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9513
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q91] Does the system improve robustness to sequence mutations?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Proline content (DisProt 
+  mean=6.0%) strongly predicts intrinsic disorder. Proline's rigid 
+  pyrrolidine ring disrupts alpha-helices and beta-sheets, 
+  preventing regular secondary structure. Glycine (DisProt 
+  mean=7.0%) adds backbone conformational freedom. It is a weaker 
+  independent disorder predictor than proline and should be 
+  combined with other signals. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9588
+    [2] KB-004 -- proline amino acid disorder prediction composition score=0.9585
+    [3] KB-005 -- glycine amino acid flexible backbone composition score=0.9569
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9588
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q92] Are prediction improvements correlated with structural flexibility?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. 92.6% of DisProt proteins contain 
+  Pfam domains alongside disordered regions, confirming IDRs and 
+  structured domains frequently co-occur. Each region must be 
+  evaluated independently. pLDDT >= 70 indicates confident 
+  AlphaFold structure prediction. These regions are likely 
+  ordered. DisProt experimental annotations take precedence over 
+  computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9605
+    [2] KB-012 -- Pfam domain structured mixed protein disorder score=0.9600
+    [3] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9586
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9605
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q93] Does neurosymbolic reasoning improve functional annotation alignment?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. pLDDT >= 70 indicates confident 
+  AlphaFold structure prediction. These regions are likely 
+  ordered. DisProt experimental annotations take precedence over 
+  computational predictions. Disorder scores between 0.3 and 0.5 
+  define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9672
+    [2] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9657
+    [3] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9629
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9672
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q94] How does performance compare across different datasets?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain Pfam domains alongside 
+  disordered regions, confirming IDRs and structured domains 
+  frequently co-occur. Each region must be evaluated 
+  independently. Proteins with no Pfam domains and disorder 
+  content > 0.5 are classified as Intrinsically Disordered 
+  Proteins (IDPs). These are common in signaling, transcription, 
+  and hub protein networks. The 0.5 disorder score threshold 
+  classifies protein regions as intrinsically disordered. Of 
+  13,396 DisProt proteins, 29.1% exceed this threshold 
+  (mean=0.378). However, 44.2% exceed 0.3, meaning many true IDRs 
+  fall below 0.5 and are missed. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-012 -- Pfam domain structured mixed protein disorder score=0.9023
+    [2] KB-013 -- fully disordered IDP no Pfam domain        score=0.9021
+    [3] KB-001 -- disorder score cutoff threshold            score=0.9006
+
+  Top retrieved doc  : KB-012
+  Top retrieval score: 0.9023
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q95] Does the system improve classification of partially disordered regions?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  92.6% of DisProt proteins contain Pfam domains alongside 
+  disordered regions, confirming IDRs and structured domains 
+  frequently co-occur. Each region must be evaluated 
+  independently. AlphaFold pLDDT below 50 strongly indicates 
+  intrinsic disorder. DisProt-annotated disordered regions in 
+  13,396 proteins consistently show pLDDT below 50 -- the most 
+  reliable single computational disorder signal. Proteins with no 
+  Pfam domains and disorder content > 0.5 are classified as 
+  Intrinsically Disordered Proteins (IDPs). These are common in 
+  signaling, transcription, and hub protein networks. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-012 -- Pfam domain structured mixed protein disorder score=0.9634
+    [2] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9603
+    [3] KB-013 -- fully disordered IDP no Pfam domain        score=0.9602
+
+  Top retrieved doc  : KB-012
+  Top retrieval score: 0.9634
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q96] Are gains consistent across evaluation folds?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. pLDDT >= 70 indicates confident 
+  AlphaFold structure prediction. These regions are likely 
+  ordered. DisProt experimental annotations take precedence over 
+  computational predictions. 92.6% of DisProt proteins contain 
+  Pfam domains alongside disordered regions, confirming IDRs and 
+  structured domains frequently co-occur. Each region must be 
+  evaluated independently. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9546
+    [2] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9525
+    [3] KB-012 -- Pfam domain structured mixed protein disorder score=0.9518
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9546
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q97] Does neurosymbolic reasoning improve model calibration slope?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. pLDDT >= 70 indicates confident 
+  AlphaFold structure prediction. These regions are likely 
+  ordered. DisProt experimental annotations take precedence over 
+  computational predictions. Disorder scores between 0.3 and 0.5 
+  define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9648
+    [2] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9625
+    [3] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9605
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9648
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q98] How does the system perform on edge-case proteins?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Proline content (DisProt 
+  mean=6.0%) strongly predicts intrinsic disorder. Proline's rigid 
+  pyrrolidine ring disrupts alpha-helices and beta-sheets, 
+  preventing regular secondary structure. pLDDT >= 70 indicates 
+  confident AlphaFold structure prediction. These regions are 
+  likely ordered. DisProt experimental annotations take precedence 
+  over computational predictions. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9563
+    [2] KB-004 -- proline amino acid disorder prediction composition score=0.9504
+    [3] KB-011 -- AlphaFold pLDDT high structured folded above 70 score=0.9499
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9563
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q99] Does neurosymbolic reasoning reduce prediction bias?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Proline content (DisProt 
+  mean=6.0%) strongly predicts intrinsic disorder. Proline's rigid 
+  pyrrolidine ring disrupts alpha-helices and beta-sheets, 
+  preventing regular secondary structure. Of 0 DisProt regions, 
+  0.0% are shorter than 10 residues (mean=0.0 aa). Short IDRs are 
+  hard to predict reliably due to limited sequence context. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9523
+    [2] KB-004 -- proline amino acid disorder prediction composition score=0.9520
+    [3] KB-007 -- short IDR region length confidence residues score=0.9479
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9523
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+[Q100] Are overall improvements sufficient to justify added system complexity?
+
+  GENERATOR: extractive fallback
+
+  PREDICTED ANSWER:
+  AlphaFold pLDDT below 50 strongly indicates intrinsic disorder. 
+  DisProt-annotated disordered regions in 13,396 proteins 
+  consistently show pLDDT below 50 -- the most reliable single 
+  computational disorder signal. Disorder scores between 0.3 and 
+  0.5 define an ambiguous gray zone. These regions cannot be 
+  confidently classified without secondary validation using 
+  sequence composition or experimental methods. The 0.5 disorder 
+  score threshold classifies protein regions as intrinsically 
+  disordered. Of 13,396 DisProt proteins, 29.1% exceed this 
+  threshold (mean=0.378). However, 44.2% exceed 0.3, meaning many 
+  true IDRs fall below 0.5 and are missed. 
+
+  RETRIEVAL DETAILS:
+    [1] KB-009 -- AlphaFold pLDDT low confidence disorder below 50 score=0.9577
+    [2] KB-002 -- gray zone ambiguous disorder 0.3 0.5       score=0.9566
+    [3] KB-001 -- disorder score cutoff threshold            score=0.9557
+
+  Top retrieved doc  : KB-009
+  Top retrieval score: 0.9577
+  Retrieval method   : BiomedBERT semantic
+  Prediction quality : HIGH
+
+======================================================================
+  3-JUDGE COMPARISON SUMMARY
+----------------------------------------------------------------------
+  Judge 1 -- BiomedBERT + Symbolic Rules + Calibration
+    Strengths : interpretable, grounded, calibrated confidence
+    Weakness  : limited to pre-defined rule categories
+
+  Judge 2 -- BiomedBERT + Vanilla RAG
+    Strengths : pure neural, no manual rule design needed
+    Weakness  : no calibration, answers may be unconstrained
+
+  Judge 3 -- BiomedBERT + BioMistral RAG (this file)
+    Strengths : fluent generation, biomedical domain knowledge
+    Weakness  : large model, harder to interpret reasoning
+
+======================================================================
+  END OF PREDICTIONS
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
