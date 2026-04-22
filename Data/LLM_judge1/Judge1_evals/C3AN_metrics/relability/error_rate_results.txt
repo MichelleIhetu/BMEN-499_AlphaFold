@@ -1,0 +1,1651 @@
+======================================================================
+  BMEN-499 AlphaFold -- Error Rate: LLM Judge 1 vs Ground Truth
+  Model   : BiomedBERT + Calibrated Symbolic Rules (LLM Judge 1)
+  Metric  : Multi-type Error Rate Analysis
+  Dataset : 13,396 DisProt proteins
+  Questions evaluated: 100
+======================================================================
+
+WHAT IS ERROR RATE?
+----------------------------------------------------------------------
+  Error rate measures how often the LLM prediction produces
+  incorrect, incomplete, or misleading content compared to GT.
+  Score range: 0.0 (no errors) to 1.0 (maximum errors).
+  Lower is better.
+
+  FIVE ERROR TYPES DETECTED:
+
+  1. FACTUAL ERROR (severity=HIGH)
+     Prediction states a wrong fact compared to ground truth.
+     Example: GT says 13,396 proteins but pred says 5,000.
+
+  2. OMISSION ERROR (severity=MEDIUM)
+     Prediction leaves out key GT information entirely.
+     Example: GT mentions pLDDT scores but pred does not.
+
+  3. HALLUCINATION ERROR (severity=MEDIUM)
+     Prediction adds content not grounded in ground truth.
+     Example: Pred introduces claims GT never makes.
+
+  4. TERMINOLOGY ERROR (severity=LOW to HIGH)
+     Prediction uses wrong or missing biomedical terms.
+     Example: GT uses 'IDR' but pred never mentions it.
+
+  5. NUMERIC ERROR (severity=MEDIUM to HIGH)
+     Prediction states numbers that differ >5% from GT.
+     Example: GT says 29.1% but pred says 45%.
+
+  Error rate = weighted errors / 10 (capped at 1.0)
+  Weights: HIGH=1.0, MEDIUM=0.5, LOW=0.25
+
+  Labels:
+    NO ERRORS            : error rate = 0.0
+    LOW ERROR RATE       : error rate < 0.20
+    MODERATE ERROR RATE  : error rate < 0.50
+    HIGH ERROR RATE      : error rate >= 0.50
+
+OVERALL ERROR RATE SUMMARY
+----------------------------------------------------------------------
+  Mean error rate         : 0.0372
+  Total errors detected   : 56
+    Factual errors        : 19
+    Omission errors       : 2
+    Hallucination errors  : 3
+    Terminology errors    : 9
+    Numeric errors        : 23
+  High severity errors    : 23
+  Medium severity errors  : 24
+  Low severity errors     : 9
+
+  Best question  : Q10 = 0.0000 (NO ERRORS)
+  Worst question : Q29 = 0.4500 (MODERATE ERROR RATE)
+
+  Error rate breakdown:
+    NO ERRORS           :  72 questions
+    LOW ERROR RATE      :  25 questions
+    MODERATE ERROR RATE :   3 questions
+    HIGH ERROR RATE     :   0 questions
+
+  Error Rate Distribution:
+    0.00 NO ERRORS    | ######################################################################## | 72 questions
+    <0.20 LOW         | ########################## | 26 questions
+    <0.50 MODERATE    | ##.................. | 2 questions
+    >=0.50 HIGH       | .................... | 0 questions
+
+  Error Type Frequency:
+    Factual     | ###################. | 19 errors
+    Omission    | ##.................. | 2 errors
+    Hallucination | ###................. | 3 errors
+    Terminology | #########........... | 9 errors
+    Numeric     | ####################### | 23 errors
+
+======================================================================
+  QUESTION-BY-QUESTION ERROR REPORT
+======================================================================
+
+[Q1] Is a disorder score above 0.5 a reliable cutoff for calling a region disordered?
+  Error rate : 0.1500  --  LOW ERROR RATE
+  Total      : 2 errors (High=1, Medium=1, Low=0, Weighted=1.5)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ERRORS FOUND:
+    [FACTUAL | HIGH] Wrong mean disorder score: GT=0.378, Pred has 0.500 instead
+    [NUMERIC | MEDIUM] GT=0.378, Pred=0.5 (off by 32.3%)
+----------------------------------------------------------------------
+
+[Q2] Do confidence scores drop for IDRs shorter than 10 residues?
+  Error rate : 0.0250  --  LOW ERROR RATE
+  Total      : 1 errors (High=0, Medium=0, Low=1, Weighted=0.25)
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  ERRORS FOUND:
+    [TERMINOLOGY | LOW] Missing biomedical terms: confidence
+----------------------------------------------------------------------
+
+[Q3] Do proline and glycine-rich regions consistently score higher disorder confidence than average?
+  Error rate : 0.1500  --  LOW ERROR RATE
+  Total      : 2 errors (High=1, Medium=1, Low=0, Weighted=1.5)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ERRORS FOUND:
+    [FACTUAL | HIGH] Wrong mean disorder score: GT=0.378, Pred has 0.500 instead
+    [NUMERIC | MEDIUM] GT=0.378, Pred=0.5 (off by 32.3%)
+----------------------------------------------------------------------
+
+[Q4] Does applying a sliding window smooth out confidence scores without losing true IDR signal?
+  Error rate : 0.0250  --  LOW ERROR RATE
+  Total      : 1 errors (High=0, Medium=0, Low=1, Weighted=0.25)
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust balance noise reduction against signal preservation.
+
+  ERRORS FOUND:
+    [TERMINOLOGY | LOW] Missing biomedical terms: idr
+----------------------------------------------------------------------
+
+[Q5] How far off are raw confidence scores from the true disorder rate in DisProt?
+  Error rate : 0.1500  --  LOW ERROR RATE
+  Total      : 2 errors (High=1, Medium=1, Low=0, Weighted=1.5)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ERRORS FOUND:
+    [FACTUAL | HIGH] Wrong mean disorder score: GT=0.378, Pred has 0.500 instead
+    [NUMERIC | MEDIUM] GT=0.378, Pred=0.5 (off by 32.3%)
+----------------------------------------------------------------------
+
+[Q6] When a confidence score falls in the uncertain range (0.4–0.6), does applying a sliding window smooth it toward the correct label, and what window size does the literature support?
+  Error rate : 0.0250  --  LOW ERROR RATE
+  Total      : 1 errors (High=0, Medium=0, Low=1, Weighted=0.25)
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust balance noise reduction against signal preservation.
+
+  ERRORS FOUND:
+    [TERMINOLOGY | LOW] Missing biomedical terms: idr
+----------------------------------------------------------------------
+
+[Q7] How much do raw confidence scores overestimate or underestimate true disorder rates across DisProt?
+  Error rate : 0.1500  --  LOW ERROR RATE
+  Total      : 2 errors (High=1, Medium=1, Low=0, Weighted=1.5)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ERRORS FOUND:
+    [FACTUAL | HIGH] Wrong mean disorder score: GT=0.378, Pred has 0.500 instead
+    [NUMERIC | MEDIUM] GT=0.378, Pred=0.5 (off by 32.3%)
+----------------------------------------------------------------------
+
+[Q8] After applying symbolic smoothing and isotonic calibration together, by how much does residue level F1 improve over raw scores, and is this improvement consistent with gains reported for similar post processing pipelines in the literature?
+  Error rate : 0.0250  --  LOW ERROR RATE
+  Total      : 1 errors (High=0, Medium=0, Low=1, Weighted=0.25)
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  ERRORS FOUND:
+    [TERMINOLOGY | LOW] Missing biomedical terms: confidence
+----------------------------------------------------------------------
+
+[Q9] What is the MAE between raw disorder confidence scores and DisProt ground truth labels, and how many standard deviations (Z-score) away from the mean prediction is each incorrectly labeled residue?
+  Error rate : 0.1500  --  LOW ERROR RATE
+  Total      : 2 errors (High=1, Medium=1, Low=0, Weighted=1.5)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ERRORS FOUND:
+    [FACTUAL | HIGH] Wrong mean disorder score: GT=0.378, Pred has 0.500 instead
+    [NUMERIC | MEDIUM] GT=0.378, Pred=0.5 (off by 32.3%)
+----------------------------------------------------------------------
+
+[Q10] Do N-terminal, C-terminal, and internal IDRs show different MAE profiles, and are the Z-scores of prediction errors normally distributed within each positional group or skewed in a way that suggests a systematic bias?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q11] Does a neurosymbolic RAG system reduce variance in disorder confidence predictions compared to raw model outputs?
+  Error rate : 0.1500  --  LOW ERROR RATE
+  Total      : 2 errors (High=1, Medium=1, Low=0, Weighted=1.5)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ERRORS FOUND:
+    [FACTUAL | HIGH] Wrong mean disorder score: GT=0.378, Pred has 0.500 instead
+    [NUMERIC | MEDIUM] GT=0.378, Pred=0.5 (off by 32.3%)
+----------------------------------------------------------------------
+
+[Q12] How does the precision-recall curve change after applying neurosymbolic reasoning?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q13] Does incorporating symbolic rules improve classification accuracy for borderline disorder regions?
+  Error rate : 0.1500  --  LOW ERROR RATE
+  Total      : 2 errors (High=1, Medium=1, Low=0, Weighted=1.5)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ERRORS FOUND:
+    [FACTUAL | HIGH] Wrong mean disorder score: GT=0.378, Pred has 0.500 instead
+    [NUMERIC | MEDIUM] GT=0.378, Pred=0.5 (off by 32.3%)
+----------------------------------------------------------------------
+
+[Q14] What is the impact of neurosymbolic calibration on false positive rates in ordered regions?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q15] Does the neurosymbolic approach improve prediction consistency across homologous proteins?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q16] How sensitive are disorder predictions to the choice of retrieval documents in the RAG system?
+  Error rate : 0.1500  --  LOW ERROR RATE
+  Total      : 2 errors (High=1, Medium=1, Low=0, Weighted=1.5)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ERRORS FOUND:
+    [FACTUAL | HIGH] Wrong mean disorder score: GT=0.378, Pred has 0.500 instead
+    [NUMERIC | MEDIUM] GT=0.378, Pred=0.5 (off by 32.3%)
+----------------------------------------------------------------------
+
+[Q17] Does contextual biological knowledge retrieved via RAG improve long IDR detection accuracy?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q18] How does performance differ between short and long IDRs after neurosymbolic processing?
+  Error rate : 0.0250  --  LOW ERROR RATE
+  Total      : 1 errors (High=0, Medium=0, Low=1, Weighted=0.25)
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  ERRORS FOUND:
+    [TERMINOLOGY | LOW] Missing biomedical terms: confidence
+----------------------------------------------------------------------
+
+[Q19] Are certain amino acid compositions more responsive to symbolic correction rules?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q20] Does neurosymbolic reasoning reduce prediction noise in low-confidence regions?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q21] How does calibration affect AUROC compared to raw predictions?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q22] Does symbolic smoothing introduce bias toward overprediction of disorder?
+  Error rate : 0.1500  --  LOW ERROR RATE
+  Total      : 2 errors (High=1, Medium=1, Low=0, Weighted=1.5)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ERRORS FOUND:
+    [FACTUAL | HIGH] Wrong mean disorder score: GT=0.378, Pred has 0.500 instead
+    [NUMERIC | MEDIUM] GT=0.378, Pred=0.5 (off by 32.3%)
+----------------------------------------------------------------------
+
+[Q23] What is the distribution of confidence score corrections applied by the neurosymbolic system?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q24] Does the system improve recall without sacrificing precision?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q25] How does performance vary across different protein families?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q26] Are improvements consistent across species in the DisProt dataset?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q27] Does the neurosymbolic model perform better on experimentally validated long IDRs?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q28] How does retrieval quality impact final prediction confidence?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q29] Are confidence score corrections correlated with sequence length?
+  Error rate : 0.4500  --  MODERATE ERROR RATE
+  Total      : 6 errors (High=3, Medium=3, Low=0, Weighted=4.5)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  ERRORS FOUND:
+    [FACTUAL | HIGH] Wrong mean disorder score: GT=0.378, Pred has 0.000 instead
+    [OMISSION | MEDIUM] 83.3% of GT content words missing from prediction
+    [HALLUCINATION | MEDIUM] 93.1% of prediction content not in GT. Extra terms: 0.0, 0.0%, 10, aa., acids, amino, annotated, context
+    [NUMERIC | MEDIUM] GT=13.0, Pred=10.0 (off by 23.1%)
+    [NUMERIC | HIGH] GT=396.0, Pred=10.0 (off by 97.5%)
+    [NUMERIC | HIGH] GT=0.378, Pred=0.0 (off by 100.0%)
+----------------------------------------------------------------------
+
+[Q30] Does neurosymbolic reasoning improve predictions for low-complexity regions?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q31] How does entropy of predictions change after symbolic reasoning?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q32] Does the system reduce systematic bias in terminal regions?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q33] Are gains from neurosymbolic processing statistically significant?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q34] How does performance compare against baseline machine learning models?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q35] Does adding domain knowledge improve classification boundaries?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    92.6% of DisProt proteins contain at least one Pfam structured do
+    main alongside disordered regions. Structured domains and IDRs fr
+    equently co-occur in the same protein. Each region must be evalua
+    ted independently rather than labeling the whole protein as order
+    ed or disordered.
+
+  LLM1 PREDICTION:
+    92.6% of DisProt proteins contain at least one Pfam structured do
+    main alongside their disordered regions. Structured domains and I
+    DRs frequently co-occur. Each region must be evaluated independen
+    tly rather than classifying the whole protein as ordered or disor
+    dered.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q36] How robust is the model to noisy or incomplete retrieval data?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q37] Does the neurosymbolic system improve calibration curves?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q38] How does Brier score change after calibration?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q39] Are prediction improvements uniform across all confidence intervals?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q40] Does neurosymbolic reasoning improve interpretability of predictions?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q41] How does performance change when removing symbolic rules?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q42] Does the system better detect disordered binding regions?
+  Error rate : 0.1500  --  LOW ERROR RATE
+  Total      : 2 errors (High=1, Medium=1, Low=0, Weighted=1.5)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ERRORS FOUND:
+    [FACTUAL | HIGH] Wrong mean disorder score: GT=0.378, Pred has 0.500 instead
+    [NUMERIC | MEDIUM] GT=0.378, Pred=0.5 (off by 32.3%)
+----------------------------------------------------------------------
+
+[Q43] Are certain motifs better recognized after symbolic processing?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q44] How does the system handle conflicting retrieved evidence?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q45] Does neurosymbolic reasoning reduce overfitting?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q46] What is the effect on Matthews Correlation Coefficient (MCC)?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q47] Does performance degrade on unseen protein structures?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q48] How does retrieval latency affect prediction quality?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q49] Does symbolic reasoning improve alignment with experimental annotations?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q50] Are prediction improvements localized or global across sequences?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q51] Does neurosymbolic RAG help identify disorder-to-order transitions?
+  Error rate : 0.1500  --  LOW ERROR RATE
+  Total      : 2 errors (High=1, Medium=1, Low=0, Weighted=1.5)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ERRORS FOUND:
+    [FACTUAL | HIGH] Wrong mean disorder score: GT=0.378, Pred has 0.500 instead
+    [NUMERIC | MEDIUM] GT=0.378, Pred=0.5 (off by 32.3%)
+----------------------------------------------------------------------
+
+[Q52] How does the system perform on proteins with multiple IDRs?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q53] Does calibration reduce prediction skewness?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q54] Are confidence intervals narrower after processing?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q55] Does neurosymbolic reasoning improve classification of ambiguous residues?
+  Error rate : 0.0250  --  LOW ERROR RATE
+  Total      : 1 errors (High=0, Medium=0, Low=1, Weighted=0.25)
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  ERRORS FOUND:
+    [TERMINOLOGY | LOW] Missing biomedical terms: confidence
+----------------------------------------------------------------------
+
+[Q56] How does the system perform under cross-validation?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q57] Does it generalize across different disorder prediction tools?
+  Error rate : 0.1500  --  LOW ERROR RATE
+  Total      : 2 errors (High=1, Medium=1, Low=0, Weighted=1.5)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ERRORS FOUND:
+    [FACTUAL | HIGH] Wrong mean disorder score: GT=0.378, Pred has 0.500 instead
+    [NUMERIC | MEDIUM] GT=0.378, Pred=0.5 (off by 32.3%)
+----------------------------------------------------------------------
+
+[Q58] Are improvements correlated with sequence conservation?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q59] Does retrieval of structural data improve predictions?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q60] How does performance change with different window sizes?
+  Error rate : 0.0250  --  LOW ERROR RATE
+  Total      : 1 errors (High=0, Medium=0, Low=1, Weighted=0.25)
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust balance noise reduction against signal preservation.
+
+  ERRORS FOUND:
+    [TERMINOLOGY | LOW] Missing biomedical terms: idr
+----------------------------------------------------------------------
+
+[Q61] Does neurosymbolic reasoning help detect functional disorder regions?
+  Error rate : 0.1500  --  LOW ERROR RATE
+  Total      : 2 errors (High=1, Medium=1, Low=0, Weighted=1.5)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ERRORS FOUND:
+    [FACTUAL | HIGH] Wrong mean disorder score: GT=0.378, Pred has 0.500 instead
+    [NUMERIC | MEDIUM] GT=0.378, Pred=0.5 (off by 32.3%)
+----------------------------------------------------------------------
+
+[Q62] Are gains higher in specific residue compositions?
+  Error rate : 0.0250  --  LOW ERROR RATE
+  Total      : 1 errors (High=0, Medium=0, Low=1, Weighted=0.25)
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  ERRORS FOUND:
+    [TERMINOLOGY | LOW] Missing biomedical terms: confidence
+----------------------------------------------------------------------
+
+[Q63] Does the system improve classification of edge residues in IDRs?
+  Error rate : 0.0250  --  LOW ERROR RATE
+  Total      : 1 errors (High=0, Medium=0, Low=1, Weighted=0.25)
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  ERRORS FOUND:
+    [TERMINOLOGY | LOW] Missing biomedical terms: confidence
+----------------------------------------------------------------------
+
+[Q64] How does prediction confidence correlate with experimental uncertainty?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q65] Does neurosymbolic reasoning improve long-range sequence dependencies?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q66] Are improvements stable across random seeds?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q67] Does the system perform better on curated subsets of DisProt?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q68] How does performance change when excluding uncertain regions?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q69] Does neurosymbolic reasoning improve classification of rare IDRs?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q70] Are prediction gains dependent on dataset size?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q71] Does the system improve classification under imbalanced data?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q72] How does it perform on noisy annotations?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q73] Does symbolic reasoning reduce prediction drift?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q74] How does performance compare before and after normalization?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q75] Does neurosymbolic reasoning improve stability across runs?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q76] Are improvements larger for specific protein lengths?
+  Error rate : 0.4500  --  MODERATE ERROR RATE
+  Total      : 6 errors (High=3, Medium=3, Low=0, Weighted=4.5)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  ERRORS FOUND:
+    [FACTUAL | HIGH] Wrong mean disorder score: GT=0.378, Pred has 0.000 instead
+    [OMISSION | MEDIUM] 83.3% of GT content words missing from prediction
+    [HALLUCINATION | MEDIUM] 93.1% of prediction content not in GT. Extra terms: 0.0, 0.0%, 10, aa., acids, amino, annotated, context
+    [NUMERIC | MEDIUM] GT=13.0, Pred=10.0 (off by 23.1%)
+    [NUMERIC | HIGH] GT=396.0, Pred=10.0 (off by 97.5%)
+    [NUMERIC | HIGH] GT=0.378, Pred=0.0 (off by 100.0%)
+----------------------------------------------------------------------
+
+[Q77] Does the system better align predictions with biological function?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q78] How does it handle missing sequence information?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q79] Does retrieval diversity impact performance?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q80] Are prediction improvements explainable through symbolic rules?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q81] Does neurosymbolic reasoning improve threshold selection?
+  Error rate : 0.2000  --  MODERATE ERROR RATE
+  Total      : 3 errors (High=1, Medium=2, Low=0, Weighted=2.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ERRORS FOUND:
+    [FACTUAL | HIGH] Wrong mean disorder score: GT=0.378, Pred has 0.500 instead
+    [HALLUCINATION | MEDIUM] 85.3% of prediction content not in GT. Extra terms: 0.3, 0.3., 0.5, 29.1%, 44.2%, above, based, commonly
+    [NUMERIC | MEDIUM] GT=0.378, Pred=0.5 (off by 32.3%)
+----------------------------------------------------------------------
+
+[Q82] How does the system perform on synthetic datasets?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q83] Does calibration improve ranking of disorder scores?
+  Error rate : 0.1500  --  LOW ERROR RATE
+  Total      : 2 errors (High=1, Medium=1, Low=0, Weighted=1.5)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ERRORS FOUND:
+    [FACTUAL | HIGH] Wrong mean disorder score: GT=0.378, Pred has 0.500 instead
+    [NUMERIC | MEDIUM] GT=0.378, Pred=0.5 (off by 32.3%)
+----------------------------------------------------------------------
+
+[Q84] Are prediction errors reduced uniformly?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q85] Does neurosymbolic reasoning improve classification confidence intervals?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q86] How does performance change with different retrieval strategies?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q87] Does the system improve detection of transient disorder?
+  Error rate : 0.1500  --  LOW ERROR RATE
+  Total      : 2 errors (High=1, Medium=1, Low=0, Weighted=1.5)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ERRORS FOUND:
+    [FACTUAL | HIGH] Wrong mean disorder score: GT=0.378, Pred has 0.500 instead
+    [NUMERIC | MEDIUM] GT=0.378, Pred=0.5 (off by 32.3%)
+----------------------------------------------------------------------
+
+[Q88] Are gains consistent across evaluation metrics?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q89] Does neurosymbolic reasoning reduce model uncertainty?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q90] How does it perform under adversarial perturbations?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q91] Does the system improve robustness to sequence mutations?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q92] Are prediction improvements correlated with structural flexibility?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q93] Does neurosymbolic reasoning improve functional annotation alignment?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q94] How does performance compare across different datasets?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q95] Does the system improve classification of partially disordered regions?
+  Error rate : 0.1500  --  LOW ERROR RATE
+  Total      : 2 errors (High=1, Medium=1, Low=0, Weighted=1.5)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  ERRORS FOUND:
+    [FACTUAL | HIGH] Wrong mean disorder score: GT=0.378, Pred has 0.500 instead
+    [NUMERIC | MEDIUM] GT=0.378, Pred=0.5 (off by 32.3%)
+----------------------------------------------------------------------
+
+[Q96] Are gains consistent across evaluation folds?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q97] Does neurosymbolic reasoning improve model calibration slope?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q98] How does the system perform on edge-case proteins?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q99] Does neurosymbolic reasoning reduce prediction bias?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+[Q100] Are overall improvements sufficient to justify added system complexity?
+  Error rate : 0.0000  --  NO ERRORS
+  Total      : 0 errors (High=0, Medium=0, Low=0, Weighted=0.0)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  No errors detected.
+----------------------------------------------------------------------
+
+======================================================================
+  END OF ERROR RATE ANALYSIS -- LLM Judge 1
+  Mean error rate: 0.0372 | No errors: 72 | Low: 25 | Moderate: 3 | High: 0
+  Total errors detected: 56
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
