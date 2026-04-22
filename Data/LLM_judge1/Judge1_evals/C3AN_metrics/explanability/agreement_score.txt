@@ -1,0 +1,2423 @@
+======================================================================
+  BMEN-499 AlphaFold -- Agreement Score: LLM Judge 1 vs Ground Truth
+  Model   : BiomedBERT + Calibrated Symbolic Rules (LLM Judge 1)
+  Metric  : Multi-dimensional Agreement + Contradiction Count
+  Dataset : 13,396 DisProt proteins
+  Questions evaluated: 100
+======================================================================
+
+WHAT IS AGREEMENT SCORING?
+----------------------------------------------------------------------
+  Agreement scoring checks whether LLM1 predictions say the
+  same things as the ground truth across five dimensions:
+
+  1. SEMANTIC CONSISTENCY (weight=30%)
+     Do both texts express the same core concepts?
+     Measured by shared content word overlap after removing
+     common stopwords like 'the', 'is', 'and'.
+
+  2. KEYWORD AGREEMENT (weight=25%)
+     Do both use the same biomedical domain terms?
+     Checks for terms like: disorder, pLDDT, IDR, Pfam,
+     proline, glycine, threshold, backbone, etc.
+
+  3. NUMERIC AGREEMENT (weight=25%)
+     Do the numbers match? e.g. if GT says 29.1% does the
+     prediction also say approximately 29.1%? Tolerance: 2%.
+
+  4. DIRECTIONAL AGREEMENT (weight=20%)
+     Do both texts agree on the direction of claims?
+     e.g. both say 'conservative' not one saying 'aggressive'.
+
+  5. CONTRADICTION PENALTY
+     Each detected contradiction reduces the score by 0.05.
+     Max penalty capped at 0.30.
+
+  Score interpretation:
+    0.75 - 1.0  : STRONG AGREEMENT   -- texts express same claims
+    0.50 - 0.75 : MODERATE AGREEMENT -- mostly agree, minor gaps
+    0.25 - 0.50 : WEAK AGREEMENT     -- partial agreement
+    0.00 - 0.25 : DISAGREEMENT       -- significant conflicts
+
+OVERALL RESULTS SUMMARY
+----------------------------------------------------------------------
+  Mean overall agreement score : 0.7569
+  Mean semantic consistency    : 0.9164
+  Mean keyword agreement       : 0.9845
+  Mean numeric agreement       : 0.9622
+  Mean directional agreement   : 0.0340
+  Total contradictions found   : 23
+
+  Agreement quality breakdown:
+    STRONG AGREEMENT   :  72 questions
+    MODERATE AGREEMENT :  25 questions
+    WEAK AGREEMENT     :   3 questions
+    DISAGREEMENT       :   0 questions
+
+  Score Distribution:
+    0.00-0.25 | .................... | 0 questions
+    0.25-0.50 | ###................. | 3 questions
+    0.50-0.75 | ######################### | 25 questions
+    0.75-1.00 | ######################################################################## | 72 questions
+
+======================================================================
+  QUESTION-BY-QUESTION AGREEMENT SCORES
+======================================================================
+
+[Q1] Is a disorder score above 0.5 a reliable cutoff for calling a region disordered?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.6667
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 0.8889
+    Directional agreement : 0.2000
+    Contradiction penalty : -0.0500
+    OVERALL AGREEMENT     : 0.6622  -- MODERATE AGREEMENT
+
+    Matched keywords : disorder, idr, protein, threshold, cutoff, disprot, conservative
+    Numeric issues   : GT states 0.378 but prediction has 0.5
+    All contradictions (1):
+      - GT states 0.378 but prediction has 0.5
+    Concepts in GT not in prediction: content, entirely, gray, indicating, mean, mid, miss, zone
+----------------------------------------------------------------------
+
+[Q2] Do confidence scores drop for IDRs shorter than 10 residues?
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.8182
+    Keyword agreement     : 0.9091
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.7227  -- MODERATE AGREEMENT
+
+    Missing keywords : confidence
+    Matched keywords : disorder, disordered, idr, residue, region, sequence, amino, acid
+    Concepts in GT not in prediction: confidence, drops, due, insufficient
+----------------------------------------------------------------------
+
+[Q3] Do proline and glycine-rich regions consistently score higher disorder confidence than average?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.6667
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 0.8889
+    Directional agreement : 0.2000
+    Contradiction penalty : -0.0500
+    OVERALL AGREEMENT     : 0.6622  -- MODERATE AGREEMENT
+
+    Matched keywords : disorder, idr, protein, threshold, cutoff, disprot, conservative
+    Numeric issues   : GT states 0.378 but prediction has 0.5
+    All contradictions (1):
+      - GT states 0.378 but prediction has 0.5
+    Concepts in GT not in prediction: content, entirely, gray, indicating, mean, mid, miss, zone
+----------------------------------------------------------------------
+
+[Q4] Does applying a sliding window smooth out confidence scores without losing true IDR signal?
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust balance noise reduction against signal preservation.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.8387
+    Keyword agreement     : 0.9167
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.7308  -- MODERATE AGREEMENT
+
+    Missing keywords : idr
+    Matched keywords : disorder, disordered, residue, region, amino, acid, disprot, window
+    Concepts in GT not in prediction: idr, larger, smoothing, true, windows
+----------------------------------------------------------------------
+
+[Q5] How far off are raw confidence scores from the true disorder rate in DisProt?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.6667
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 0.8889
+    Directional agreement : 0.2000
+    Contradiction penalty : -0.0500
+    OVERALL AGREEMENT     : 0.6622  -- MODERATE AGREEMENT
+
+    Matched keywords : disorder, idr, protein, threshold, cutoff, disprot, conservative
+    Numeric issues   : GT states 0.378 but prediction has 0.5
+    All contradictions (1):
+      - GT states 0.378 but prediction has 0.5
+    Concepts in GT not in prediction: content, entirely, gray, indicating, mean, mid, miss, zone
+----------------------------------------------------------------------
+
+[Q6] When a confidence score falls in the uncertain range (0.4–0.6), does applying a sliding window smooth it toward the correct label, and what window size does the literature support?
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust balance noise reduction against signal preservation.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.8387
+    Keyword agreement     : 0.9167
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.7308  -- MODERATE AGREEMENT
+
+    Missing keywords : idr
+    Matched keywords : disorder, disordered, residue, region, amino, acid, disprot, window
+    Concepts in GT not in prediction: idr, larger, smoothing, true, windows
+----------------------------------------------------------------------
+
+[Q7] How much do raw confidence scores overestimate or underestimate true disorder rates across DisProt?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.6667
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 0.8889
+    Directional agreement : 0.2000
+    Contradiction penalty : -0.0500
+    OVERALL AGREEMENT     : 0.6622  -- MODERATE AGREEMENT
+
+    Matched keywords : disorder, idr, protein, threshold, cutoff, disprot, conservative
+    Numeric issues   : GT states 0.378 but prediction has 0.5
+    All contradictions (1):
+      - GT states 0.378 but prediction has 0.5
+    Concepts in GT not in prediction: content, entirely, gray, indicating, mean, mid, miss, zone
+----------------------------------------------------------------------
+
+[Q8] After applying symbolic smoothing and isotonic calibration together, by how much does residue level F1 improve over raw scores, and is this improvement consistent with gains reported for similar post processing pipelines in the literature?
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.8182
+    Keyword agreement     : 0.9091
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.7227  -- MODERATE AGREEMENT
+
+    Missing keywords : confidence
+    Matched keywords : disorder, disordered, idr, residue, region, sequence, amino, acid
+    Concepts in GT not in prediction: confidence, drops, due, insufficient
+----------------------------------------------------------------------
+
+[Q9] What is the MAE between raw disorder confidence scores and DisProt ground truth labels, and how many standard deviations (Z-score) away from the mean prediction is each incorrectly labeled residue?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.6667
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 0.8889
+    Directional agreement : 0.2000
+    Contradiction penalty : -0.0500
+    OVERALL AGREEMENT     : 0.6622  -- MODERATE AGREEMENT
+
+    Matched keywords : disorder, idr, protein, threshold, cutoff, disprot, conservative
+    Numeric issues   : GT states 0.378 but prediction has 0.5
+    All contradictions (1):
+      - GT states 0.378 but prediction has 0.5
+    Concepts in GT not in prediction: content, entirely, gray, indicating, mean, mid, miss, zone
+----------------------------------------------------------------------
+
+[Q10] Do N-terminal, C-terminal, and internal IDRs show different MAE profiles, and are the Z-scores of prediction errors normally distributed within each positional group or skewed in a way that suggests a systematic bias?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q11] Does a neurosymbolic RAG system reduce variance in disorder confidence predictions compared to raw model outputs?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.6667
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 0.8889
+    Directional agreement : 0.2000
+    Contradiction penalty : -0.0500
+    OVERALL AGREEMENT     : 0.6622  -- MODERATE AGREEMENT
+
+    Matched keywords : disorder, idr, protein, threshold, cutoff, disprot, conservative
+    Numeric issues   : GT states 0.378 but prediction has 0.5
+    All contradictions (1):
+      - GT states 0.378 but prediction has 0.5
+    Concepts in GT not in prediction: content, entirely, gray, indicating, mean, mid, miss, zone
+----------------------------------------------------------------------
+
+[Q12] How does the precision-recall curve change after applying neurosymbolic reasoning?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q13] Does incorporating symbolic rules improve classification accuracy for borderline disorder regions?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.6667
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 0.8889
+    Directional agreement : 0.2000
+    Contradiction penalty : -0.0500
+    OVERALL AGREEMENT     : 0.6622  -- MODERATE AGREEMENT
+
+    Matched keywords : disorder, idr, protein, threshold, cutoff, disprot, conservative
+    Numeric issues   : GT states 0.378 but prediction has 0.5
+    All contradictions (1):
+      - GT states 0.378 but prediction has 0.5
+    Concepts in GT not in prediction: content, entirely, gray, indicating, mean, mid, miss, zone
+----------------------------------------------------------------------
+
+[Q14] What is the impact of neurosymbolic calibration on false positive rates in ordered regions?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q15] Does the neurosymbolic approach improve prediction consistency across homologous proteins?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q16] How sensitive are disorder predictions to the choice of retrieval documents in the RAG system?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.6667
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 0.8889
+    Directional agreement : 0.2000
+    Contradiction penalty : -0.0500
+    OVERALL AGREEMENT     : 0.6622  -- MODERATE AGREEMENT
+
+    Matched keywords : disorder, idr, protein, threshold, cutoff, disprot, conservative
+    Numeric issues   : GT states 0.378 but prediction has 0.5
+    All contradictions (1):
+      - GT states 0.378 but prediction has 0.5
+    Concepts in GT not in prediction: content, entirely, gray, indicating, mean, mid, miss, zone
+----------------------------------------------------------------------
+
+[Q17] Does contextual biological knowledge retrieved via RAG improve long IDR detection accuracy?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q18] How does performance differ between short and long IDRs after neurosymbolic processing?
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.8182
+    Keyword agreement     : 0.9091
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.7227  -- MODERATE AGREEMENT
+
+    Missing keywords : confidence
+    Matched keywords : disorder, disordered, idr, residue, region, sequence, amino, acid
+    Concepts in GT not in prediction: confidence, drops, due, insufficient
+----------------------------------------------------------------------
+
+[Q19] Are certain amino acid compositions more responsive to symbolic correction rules?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q20] Does neurosymbolic reasoning reduce prediction noise in low-confidence regions?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q21] How does calibration affect AUROC compared to raw predictions?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q22] Does symbolic smoothing introduce bias toward overprediction of disorder?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.6667
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 0.8889
+    Directional agreement : 0.2000
+    Contradiction penalty : -0.0500
+    OVERALL AGREEMENT     : 0.6622  -- MODERATE AGREEMENT
+
+    Matched keywords : disorder, idr, protein, threshold, cutoff, disprot, conservative
+    Numeric issues   : GT states 0.378 but prediction has 0.5
+    All contradictions (1):
+      - GT states 0.378 but prediction has 0.5
+    Concepts in GT not in prediction: content, entirely, gray, indicating, mean, mid, miss, zone
+----------------------------------------------------------------------
+
+[Q23] What is the distribution of confidence score corrections applied by the neurosymbolic system?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q24] Does the system improve recall without sacrificing precision?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q25] How does performance vary across different protein families?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q26] Are improvements consistent across species in the DisProt dataset?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q27] Does the neurosymbolic model perform better on experimentally validated long IDRs?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q28] How does retrieval quality impact final prediction confidence?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q29] Are confidence score corrections correlated with sequence length?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.6250
+    Keyword agreement     : 0.7500
+    Numeric agreement     : 0.2500
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.1500
+    OVERALL AGREEMENT     : 0.2875  -- WEAK AGREEMENT
+
+    Missing keywords : protein
+    Matched keywords : disorder, region, disprot
+    Numeric issues   : GT states 13.0 but prediction has 10.0; GT states 396.0 but prediction has 10.0; GT states 0.378 but prediction has 0.0
+    All contradictions (3):
+      - GT states 13.0 but prediction has 10.0
+      - GT states 396.0 but prediction has 10.0
+      - GT states 0.378 but prediction has 0.0
+    Concepts in GT not in prediction: disorder, proteins, summary
+----------------------------------------------------------------------
+
+[Q30] Does neurosymbolic reasoning improve predictions for low-complexity regions?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q31] How does entropy of predictions change after symbolic reasoning?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q32] Does the system reduce systematic bias in terminal regions?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q33] Are gains from neurosymbolic processing statistically significant?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q34] How does performance compare against baseline machine learning models?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q35] Does adding domain knowledge improve classification boundaries?
+
+  GROUND TRUTH:
+    92.6% of DisProt proteins contain at least one Pfam structured do
+    main alongside disordered regions. Structured domains and IDRs fr
+    equently co-occur in the same protein. Each region must be evalua
+    ted independently rather than labeling the whole protein as order
+    ed or disordered.
+
+  LLM1 PREDICTION:
+    92.6% of DisProt proteins contain at least one Pfam structured do
+    main alongside their disordered regions. Structured domains and I
+    DRs frequently co-occur. Each region must be evaluated independen
+    tly rather than classifying the whole protein as ordered or disor
+    dered.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.9231
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.2000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8169  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, disordered, idr, protein, pfam, domain, region, disprot
+    Concepts in GT not in prediction: labeling, same
+----------------------------------------------------------------------
+
+[Q36] How robust is the model to noisy or incomplete retrieval data?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q37] Does the neurosymbolic system improve calibration curves?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q38] How does Brier score change after calibration?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q39] Are prediction improvements uniform across all confidence intervals?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q40] Does neurosymbolic reasoning improve interpretability of predictions?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q41] How does performance change when removing symbolic rules?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q42] Does the system better detect disordered binding regions?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.6667
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 0.8889
+    Directional agreement : 0.2000
+    Contradiction penalty : -0.0500
+    OVERALL AGREEMENT     : 0.6622  -- MODERATE AGREEMENT
+
+    Matched keywords : disorder, idr, protein, threshold, cutoff, disprot, conservative
+    Numeric issues   : GT states 0.378 but prediction has 0.5
+    All contradictions (1):
+      - GT states 0.378 but prediction has 0.5
+    Concepts in GT not in prediction: content, entirely, gray, indicating, mean, mid, miss, zone
+----------------------------------------------------------------------
+
+[Q43] Are certain motifs better recognized after symbolic processing?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q44] How does the system handle conflicting retrieved evidence?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q45] Does neurosymbolic reasoning reduce overfitting?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q46] What is the effect on Matthews Correlation Coefficient (MCC)?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q47] Does performance degrade on unseen protein structures?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q48] How does retrieval latency affect prediction quality?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q49] Does symbolic reasoning improve alignment with experimental annotations?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q50] Are prediction improvements localized or global across sequences?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q51] Does neurosymbolic RAG help identify disorder-to-order transitions?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.6667
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 0.8889
+    Directional agreement : 0.2000
+    Contradiction penalty : -0.0500
+    OVERALL AGREEMENT     : 0.6622  -- MODERATE AGREEMENT
+
+    Matched keywords : disorder, idr, protein, threshold, cutoff, disprot, conservative
+    Numeric issues   : GT states 0.378 but prediction has 0.5
+    All contradictions (1):
+      - GT states 0.378 but prediction has 0.5
+    Concepts in GT not in prediction: content, entirely, gray, indicating, mean, mid, miss, zone
+----------------------------------------------------------------------
+
+[Q52] How does the system perform on proteins with multiple IDRs?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q53] Does calibration reduce prediction skewness?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q54] Are confidence intervals narrower after processing?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q55] Does neurosymbolic reasoning improve classification of ambiguous residues?
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.8182
+    Keyword agreement     : 0.9091
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.7227  -- MODERATE AGREEMENT
+
+    Missing keywords : confidence
+    Matched keywords : disorder, disordered, idr, residue, region, sequence, amino, acid
+    Concepts in GT not in prediction: confidence, drops, due, insufficient
+----------------------------------------------------------------------
+
+[Q56] How does the system perform under cross-validation?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q57] Does it generalize across different disorder prediction tools?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.6667
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 0.8889
+    Directional agreement : 0.2000
+    Contradiction penalty : -0.0500
+    OVERALL AGREEMENT     : 0.6622  -- MODERATE AGREEMENT
+
+    Matched keywords : disorder, idr, protein, threshold, cutoff, disprot, conservative
+    Numeric issues   : GT states 0.378 but prediction has 0.5
+    All contradictions (1):
+      - GT states 0.378 but prediction has 0.5
+    Concepts in GT not in prediction: content, entirely, gray, indicating, mean, mid, miss, zone
+----------------------------------------------------------------------
+
+[Q58] Are improvements correlated with sequence conservation?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q59] Does retrieval of structural data improve predictions?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q60] How does performance change with different window sizes?
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust balance noise reduction against signal preservation.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.8387
+    Keyword agreement     : 0.9167
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.7308  -- MODERATE AGREEMENT
+
+    Missing keywords : idr
+    Matched keywords : disorder, disordered, residue, region, amino, acid, disprot, window
+    Concepts in GT not in prediction: idr, larger, smoothing, true, windows
+----------------------------------------------------------------------
+
+[Q61] Does neurosymbolic reasoning help detect functional disorder regions?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.6667
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 0.8889
+    Directional agreement : 0.2000
+    Contradiction penalty : -0.0500
+    OVERALL AGREEMENT     : 0.6622  -- MODERATE AGREEMENT
+
+    Matched keywords : disorder, idr, protein, threshold, cutoff, disprot, conservative
+    Numeric issues   : GT states 0.378 but prediction has 0.5
+    All contradictions (1):
+      - GT states 0.378 but prediction has 0.5
+    Concepts in GT not in prediction: content, entirely, gray, indicating, mean, mid, miss, zone
+----------------------------------------------------------------------
+
+[Q62] Are gains higher in specific residue compositions?
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.8182
+    Keyword agreement     : 0.9091
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.7227  -- MODERATE AGREEMENT
+
+    Missing keywords : confidence
+    Matched keywords : disorder, disordered, idr, residue, region, sequence, amino, acid
+    Concepts in GT not in prediction: confidence, drops, due, insufficient
+----------------------------------------------------------------------
+
+[Q63] Does the system improve classification of edge residues in IDRs?
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.8182
+    Keyword agreement     : 0.9091
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.7227  -- MODERATE AGREEMENT
+
+    Missing keywords : confidence
+    Matched keywords : disorder, disordered, idr, residue, region, sequence, amino, acid
+    Concepts in GT not in prediction: confidence, drops, due, insufficient
+----------------------------------------------------------------------
+
+[Q64] How does prediction confidence correlate with experimental uncertainty?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q65] Does neurosymbolic reasoning improve long-range sequence dependencies?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q66] Are improvements stable across random seeds?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q67] Does the system perform better on curated subsets of DisProt?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q68] How does performance change when excluding uncertain regions?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q69] Does neurosymbolic reasoning improve classification of rare IDRs?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q70] Are prediction gains dependent on dataset size?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q71] Does the system improve classification under imbalanced data?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q72] How does it perform on noisy annotations?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q73] Does symbolic reasoning reduce prediction drift?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q74] How does performance compare before and after normalization?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q75] Does neurosymbolic reasoning improve stability across runs?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q76] Are improvements larger for specific protein lengths?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented and prediction tools lack sufficien
+    t sequence context for short stretches.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.6250
+    Keyword agreement     : 0.7500
+    Numeric agreement     : 0.2500
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.1500
+    OVERALL AGREEMENT     : 0.2875  -- WEAK AGREEMENT
+
+    Missing keywords : protein
+    Matched keywords : disorder, region, disprot
+    Numeric issues   : GT states 13.0 but prediction has 10.0; GT states 396.0 but prediction has 10.0; GT states 0.378 but prediction has 0.0
+    All contradictions (3):
+      - GT states 13.0 but prediction has 10.0
+      - GT states 396.0 but prediction has 10.0
+      - GT states 0.378 but prediction has 0.0
+    Concepts in GT not in prediction: disorder, proteins, summary
+----------------------------------------------------------------------
+
+[Q77] Does the system better align predictions with biological function?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q78] How does it handle missing sequence information?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q79] Does retrieval diversity impact performance?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q80] Are prediction improvements explainable through symbolic rules?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q81] Does neurosymbolic reasoning improve threshold selection?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.3750
+    Keyword agreement     : 0.7500
+    Numeric agreement     : 0.5000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0500
+    OVERALL AGREEMENT     : 0.3750  -- WEAK AGREEMENT
+
+    Missing keywords : region
+    Matched keywords : disorder, protein, disprot
+    Numeric issues   : GT states 0.378 but prediction has 0.5
+    All contradictions (1):
+      - GT states 0.378 but prediction has 0.5
+    Concepts in GT not in prediction: aa, length, mean, region, summary
+----------------------------------------------------------------------
+
+[Q82] How does the system perform on synthetic datasets?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q83] Does calibration improve ranking of disorder scores?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.6667
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 0.8889
+    Directional agreement : 0.2000
+    Contradiction penalty : -0.0500
+    OVERALL AGREEMENT     : 0.6622  -- MODERATE AGREEMENT
+
+    Matched keywords : disorder, idr, protein, threshold, cutoff, disprot, conservative
+    Numeric issues   : GT states 0.378 but prediction has 0.5
+    All contradictions (1):
+      - GT states 0.378 but prediction has 0.5
+    Concepts in GT not in prediction: content, entirely, gray, indicating, mean, mid, miss, zone
+----------------------------------------------------------------------
+
+[Q84] Are prediction errors reduced uniformly?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q85] Does neurosymbolic reasoning improve classification confidence intervals?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q86] How does performance change with different retrieval strategies?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q87] Does the system improve detection of transient disorder?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.6667
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 0.8889
+    Directional agreement : 0.2000
+    Contradiction penalty : -0.0500
+    OVERALL AGREEMENT     : 0.6622  -- MODERATE AGREEMENT
+
+    Matched keywords : disorder, idr, protein, threshold, cutoff, disprot, conservative
+    Numeric issues   : GT states 0.378 but prediction has 0.5
+    All contradictions (1):
+      - GT states 0.378 but prediction has 0.5
+    Concepts in GT not in prediction: content, entirely, gray, indicating, mean, mid, miss, zone
+----------------------------------------------------------------------
+
+[Q88] Are gains consistent across evaluation metrics?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q89] Does neurosymbolic reasoning reduce model uncertainty?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q90] How does it perform under adversarial perturbations?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q91] Does the system improve robustness to sequence mutations?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q92] Are prediction improvements correlated with structural flexibility?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q93] Does neurosymbolic reasoning improve functional annotation alignment?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q94] How does performance compare across different datasets?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q95] Does the system improve classification of partially disordered regions?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 0.6667
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 0.8889
+    Directional agreement : 0.2000
+    Contradiction penalty : -0.0500
+    OVERALL AGREEMENT     : 0.6622  -- MODERATE AGREEMENT
+
+    Matched keywords : disorder, idr, protein, threshold, cutoff, disprot, conservative
+    Numeric issues   : GT states 0.378 but prediction has 0.5
+    All contradictions (1):
+      - GT states 0.378 but prediction has 0.5
+    Concepts in GT not in prediction: content, entirely, gray, indicating, mean, mid, miss, zone
+----------------------------------------------------------------------
+
+[Q96] Are gains consistent across evaluation folds?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q97] Does neurosymbolic reasoning improve model calibration slope?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q98] How does the system perform on edge-case proteins?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q99] Does neurosymbolic reasoning reduce prediction bias?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+[Q100] Are overall improvements sufficient to justify added system complexity?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  AGREEMENT SCORES:
+    Semantic consistency  : 1.0000
+    Keyword agreement     : 1.0000
+    Numeric agreement     : 1.0000
+    Directional agreement : 0.0000
+    Contradiction penalty : -0.0000
+    OVERALL AGREEMENT     : 0.8000  -- STRONG AGREEMENT
+
+    Matched keywords : disorder, protein, region, disprot
+----------------------------------------------------------------------
+
+======================================================================
+  END OF AGREEMENT EVALUATION -- LLM Judge 1
+  Mean Agreement: 0.7569 | Strong: 72 | Moderate: 25 | Weak: 3 | Disagreement: 0
+  Total contradictions: 23
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
