@@ -1,0 +1,2129 @@
+======================================================================
+  BMEN-499 AlphaFold -- NAUR Score Evaluation: LLM Judge 1
+  Model   : BiomedBERT + Calibrated Symbolic Rules
+  Metric  : NAUR (Ngram-Aligned Unigram Recall)
+  Dataset : 13,396 DisProt proteins
+  Questions evaluated: 100
+======================================================================
+
+WHAT IS THE NAUR SCORE?
+----------------------------------------------------------------------
+  NAUR measures how well predicted answers overlap with ground
+  truth using three chunk sizes:
+
+  Unigram  (n=1, weight=50%) -- single word matches
+    Captures key term and vocabulary coverage.
+
+  Bigram   (n=2, weight=30%) -- two-word phrase matches
+    Captures local phrasing similarity.
+
+  Trigram  (n=3, weight=20%) -- three-word chunk matches
+    Captures semantic chunk-level similarity.
+
+  Final NAUR F1 = 0.5 x Unigram + 0.3 x Bigram + 0.2 x Trigram
+
+  Score interpretation:
+    0.7 - 1.0 : STRONG MATCH   -- prediction closely matches truth
+    0.4 - 0.7 : MODERATE MATCH -- good overlap, some gaps
+    0.2 - 0.4 : WEAK MATCH     -- partial overlap
+    0.0 - 0.2 : POOR MATCH     -- little overlap
+
+OVERALL RESULTS SUMMARY
+----------------------------------------------------------------------
+  Mean NAUR F1 score   : 0.8351
+  Mean coverage        : 0.9187
+  Mean unigram F1      : 0.8818
+  Mean bigram F1       : 0.8012
+  Mean trigram F1      : 0.7694
+
+  Match quality breakdown:
+    STRONG MATCH   :  72 questions
+    MODERATE MATCH :   9 questions
+    WEAK MATCH     :  16 questions
+    POOR MATCH     :   3 questions
+
+  NAUR Score Distribution:
+    0.0-0.2 | ###................. | 3 questions
+    0.2-0.4 | ################.... | 16 questions
+    0.4-0.6 | ######.............. | 6 questions
+    0.6-0.8 | ####................ | 4 questions
+    0.8-1.0 | ####################################################################### | 71 questions
+
+======================================================================
+  QUESTION-BY-QUESTION NAUR SCORES
+======================================================================
+
+[Q1] Is a disorder score above 0.5 a reliable cutoff for calling a region disordered?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable on it
+    s own.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.5778  (P=0.4906, R=0.7027, matched=26 words)
+    Bigram   F1 : 0.2273  (P=0.1923, R=0.2778, matched=10 phrases)
+    Trigram  F1 : 0.1163  (P=0.0980, R=0.1429, matched=5 chunks)
+    NAUR F1     : 0.3804  (weighted average)
+    Coverage    : 0.6857  (fraction of GT vocabulary found)
+    Match label : WEAK MATCH
+----------------------------------------------------------------------
+
+[Q2] Do confidence scores drop for IDRs shorter than 10 residues?
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented in experimental databases and predi
+    ction tools lack sufficient sequence context for short stretches.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.7342  (P=0.6744, R=0.8056, matched=29 words)
+    Bigram   F1 : 0.4675  (P=0.4286, R=0.5143, matched=18 phrases)
+    Trigram  F1 : 0.3200  (P=0.2927, R=0.3529, matched=12 chunks)
+    NAUR F1     : 0.5714  (weighted average)
+    Coverage    : 0.8125  (fraction of GT vocabulary found)
+    Match label : MODERATE MATCH
+----------------------------------------------------------------------
+
+[Q3] Do proline and glycine-rich regions consistently score higher disorder confidence than average?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable on it
+    s own.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.5778  (P=0.4906, R=0.7027, matched=26 words)
+    Bigram   F1 : 0.2273  (P=0.1923, R=0.2778, matched=10 phrases)
+    Trigram  F1 : 0.1163  (P=0.0980, R=0.1429, matched=5 chunks)
+    NAUR F1     : 0.3804  (weighted average)
+    Coverage    : 0.6857  (fraction of GT vocabulary found)
+    Match label : WEAK MATCH
+----------------------------------------------------------------------
+
+[Q4] Does applying a sliding window smooth out confidence scores without losing true IDR signal?
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust be chosen carefully to balance noise reduction against signal
+     preservation.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.7391  (P=0.6667, R=0.8293, matched=34 words)
+    Bigram   F1 : 0.5778  (P=0.5200, R=0.6500, matched=26 phrases)
+    Trigram  F1 : 0.4773  (P=0.4286, R=0.5385, matched=21 chunks)
+    NAUR F1     : 0.6383  (weighted average)
+    Coverage    : 0.8378  (fraction of GT vocabulary found)
+    Match label : MODERATE MATCH
+----------------------------------------------------------------------
+
+[Q5] How far off are raw confidence scores from the true disorder rate in DisProt?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable on it
+    s own.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.5778  (P=0.4906, R=0.7027, matched=26 words)
+    Bigram   F1 : 0.2273  (P=0.1923, R=0.2778, matched=10 phrases)
+    Trigram  F1 : 0.1163  (P=0.0980, R=0.1429, matched=5 chunks)
+    NAUR F1     : 0.3804  (weighted average)
+    Coverage    : 0.6857  (fraction of GT vocabulary found)
+    Match label : WEAK MATCH
+----------------------------------------------------------------------
+
+[Q6] When a confidence score falls in the uncertain range (0.4–0.6), does applying a sliding window smooth it toward the correct label, and what window size does the literature support?
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust be chosen carefully to balance noise reduction against signal
+     preservation.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.7391  (P=0.6667, R=0.8293, matched=34 words)
+    Bigram   F1 : 0.5778  (P=0.5200, R=0.6500, matched=26 phrases)
+    Trigram  F1 : 0.4773  (P=0.4286, R=0.5385, matched=21 chunks)
+    NAUR F1     : 0.6383  (weighted average)
+    Coverage    : 0.8378  (fraction of GT vocabulary found)
+    Match label : MODERATE MATCH
+----------------------------------------------------------------------
+
+[Q7] How much do raw confidence scores overestimate or underestimate true disorder rates across DisProt?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable on it
+    s own.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.5778  (P=0.4906, R=0.7027, matched=26 words)
+    Bigram   F1 : 0.2273  (P=0.1923, R=0.2778, matched=10 phrases)
+    Trigram  F1 : 0.1163  (P=0.0980, R=0.1429, matched=5 chunks)
+    NAUR F1     : 0.3804  (weighted average)
+    Coverage    : 0.6857  (fraction of GT vocabulary found)
+    Match label : WEAK MATCH
+----------------------------------------------------------------------
+
+[Q8] After applying symbolic smoothing and isotonic calibration together, by how much does residue level F1 improve over raw scores, and is this improvement consistent with gains reported for similar post processing pipelines in the literature?
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented in experimental databases and predi
+    ction tools lack sufficient sequence context for short stretches.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.7342  (P=0.6744, R=0.8056, matched=29 words)
+    Bigram   F1 : 0.4675  (P=0.4286, R=0.5143, matched=18 phrases)
+    Trigram  F1 : 0.3200  (P=0.2927, R=0.3529, matched=12 chunks)
+    NAUR F1     : 0.5714  (weighted average)
+    Coverage    : 0.8125  (fraction of GT vocabulary found)
+    Match label : MODERATE MATCH
+----------------------------------------------------------------------
+
+[Q9] What is the MAE between raw disorder confidence scores and DisProt ground truth labels, and how many standard deviations (Z-score) away from the mean prediction is each incorrectly labeled residue?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable on it
+    s own.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.5778  (P=0.4906, R=0.7027, matched=26 words)
+    Bigram   F1 : 0.2273  (P=0.1923, R=0.2778, matched=10 phrases)
+    Trigram  F1 : 0.1163  (P=0.0980, R=0.1429, matched=5 chunks)
+    NAUR F1     : 0.3804  (weighted average)
+    Coverage    : 0.6857  (fraction of GT vocabulary found)
+    Match label : WEAK MATCH
+----------------------------------------------------------------------
+
+[Q10] Do N-terminal, C-terminal, and internal IDRs show different MAE profiles, and are the Z-scores of prediction errors normally distributed within each positional group or skewed in a way that suggests a systematic bias?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q11] Does a neurosymbolic RAG system reduce variance in disorder confidence predictions compared to raw model outputs?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable on it
+    s own.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.5778  (P=0.4906, R=0.7027, matched=26 words)
+    Bigram   F1 : 0.2273  (P=0.1923, R=0.2778, matched=10 phrases)
+    Trigram  F1 : 0.1163  (P=0.0980, R=0.1429, matched=5 chunks)
+    NAUR F1     : 0.3804  (weighted average)
+    Coverage    : 0.6857  (fraction of GT vocabulary found)
+    Match label : WEAK MATCH
+----------------------------------------------------------------------
+
+[Q12] How does the precision-recall curve change after applying neurosymbolic reasoning?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q13] Does incorporating symbolic rules improve classification accuracy for borderline disorder regions?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable on it
+    s own.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.5778  (P=0.4906, R=0.7027, matched=26 words)
+    Bigram   F1 : 0.2273  (P=0.1923, R=0.2778, matched=10 phrases)
+    Trigram  F1 : 0.1163  (P=0.0980, R=0.1429, matched=5 chunks)
+    NAUR F1     : 0.3804  (weighted average)
+    Coverage    : 0.6857  (fraction of GT vocabulary found)
+    Match label : WEAK MATCH
+----------------------------------------------------------------------
+
+[Q14] What is the impact of neurosymbolic calibration on false positive rates in ordered regions?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q15] Does the neurosymbolic approach improve prediction consistency across homologous proteins?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q16] How sensitive are disorder predictions to the choice of retrieval documents in the RAG system?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable on it
+    s own.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.5778  (P=0.4906, R=0.7027, matched=26 words)
+    Bigram   F1 : 0.2273  (P=0.1923, R=0.2778, matched=10 phrases)
+    Trigram  F1 : 0.1163  (P=0.0980, R=0.1429, matched=5 chunks)
+    NAUR F1     : 0.3804  (weighted average)
+    Coverage    : 0.6857  (fraction of GT vocabulary found)
+    Match label : WEAK MATCH
+----------------------------------------------------------------------
+
+[Q17] Does contextual biological knowledge retrieved via RAG improve long IDR detection accuracy?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q18] How does performance differ between short and long IDRs after neurosymbolic processing?
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented in experimental databases and predi
+    ction tools lack sufficient sequence context for short stretches.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.7342  (P=0.6744, R=0.8056, matched=29 words)
+    Bigram   F1 : 0.4675  (P=0.4286, R=0.5143, matched=18 phrases)
+    Trigram  F1 : 0.3200  (P=0.2927, R=0.3529, matched=12 chunks)
+    NAUR F1     : 0.5714  (weighted average)
+    Coverage    : 0.8125  (fraction of GT vocabulary found)
+    Match label : MODERATE MATCH
+----------------------------------------------------------------------
+
+[Q19] Are certain amino acid compositions more responsive to symbolic correction rules?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q20] Does neurosymbolic reasoning reduce prediction noise in low-confidence regions?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q21] How does calibration affect AUROC compared to raw predictions?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q22] Does symbolic smoothing introduce bias toward overprediction of disorder?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable on it
+    s own.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.5778  (P=0.4906, R=0.7027, matched=26 words)
+    Bigram   F1 : 0.2273  (P=0.1923, R=0.2778, matched=10 phrases)
+    Trigram  F1 : 0.1163  (P=0.0980, R=0.1429, matched=5 chunks)
+    NAUR F1     : 0.3804  (weighted average)
+    Coverage    : 0.6857  (fraction of GT vocabulary found)
+    Match label : WEAK MATCH
+----------------------------------------------------------------------
+
+[Q23] What is the distribution of confidence score corrections applied by the neurosymbolic system?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q24] Does the system improve recall without sacrificing precision?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q25] How does performance vary across different protein families?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q26] Are improvements consistent across species in the DisProt dataset?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q27] Does the neurosymbolic model perform better on experimentally validated long IDRs?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q28] How does retrieval quality impact final prediction confidence?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q29] Are confidence score corrections correlated with sequence length?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented in experimental databases and predi
+    ction tools lack sufficient sequence context for short stretches.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.1923  (P=0.1163, R=0.5556, matched=5 words)
+    Bigram   F1 : 0.1200  (P=0.0714, R=0.3750, matched=3 phrases)
+    Trigram  F1 : 0.0833  (P=0.0488, R=0.2857, matched=2 chunks)
+    NAUR F1     : 0.1488  (weighted average)
+    Coverage    : 0.6250  (fraction of GT vocabulary found)
+    Match label : POOR MATCH
+----------------------------------------------------------------------
+
+[Q30] Does neurosymbolic reasoning improve predictions for low-complexity regions?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q31] How does entropy of predictions change after symbolic reasoning?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q32] Does the system reduce systematic bias in terminal regions?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q33] Are gains from neurosymbolic processing statistically significant?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q34] How does performance compare against baseline machine learning models?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q35] Does adding domain knowledge improve classification boundaries?
+
+  GROUND TRUTH:
+    92.6% of DisProt proteins contain at least one Pfam structured do
+    main alongside disordered regions. Structured domains and IDRs fr
+    equently co-occur in the same protein. Each region must be evalua
+    ted independently rather than labeling the whole protein as order
+    ed or disordered.
+
+  LLM1 PREDICTION:
+    92.6% of DisProt proteins contain at least one Pfam structured do
+    main alongside their disordered regions. This confirms that struc
+    tured domains and intrinsically disordered regions frequently co-
+    occur. Each region must be evaluated independently rather than cl
+    assifying the whole protein as ordered or disordered.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.8293  (P=0.8095, R=0.8500, matched=34 words)
+    Bigram   F1 : 0.7000  (P=0.6829, R=0.7179, matched=28 phrases)
+    Trigram  F1 : 0.5641  (P=0.5500, R=0.5789, matched=22 chunks)
+    NAUR F1     : 0.7375  (weighted average)
+    Coverage    : 0.8889  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q36] How robust is the model to noisy or incomplete retrieval data?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q37] Does the neurosymbolic system improve calibration curves?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q38] How does Brier score change after calibration?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q39] Are prediction improvements uniform across all confidence intervals?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q40] Does neurosymbolic reasoning improve interpretability of predictions?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q41] How does performance change when removing symbolic rules?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q42] Does the system better detect disordered binding regions?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable on it
+    s own.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.5778  (P=0.4906, R=0.7027, matched=26 words)
+    Bigram   F1 : 0.2273  (P=0.1923, R=0.2778, matched=10 phrases)
+    Trigram  F1 : 0.1163  (P=0.0980, R=0.1429, matched=5 chunks)
+    NAUR F1     : 0.3804  (weighted average)
+    Coverage    : 0.6857  (fraction of GT vocabulary found)
+    Match label : WEAK MATCH
+----------------------------------------------------------------------
+
+[Q43] Are certain motifs better recognized after symbolic processing?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q44] How does the system handle conflicting retrieved evidence?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q45] Does neurosymbolic reasoning reduce overfitting?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q46] What is the effect on Matthews Correlation Coefficient (MCC)?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q47] Does performance degrade on unseen protein structures?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q48] How does retrieval latency affect prediction quality?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q49] Does symbolic reasoning improve alignment with experimental annotations?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q50] Are prediction improvements localized or global across sequences?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q51] Does neurosymbolic RAG help identify disorder-to-order transitions?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable on it
+    s own.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.5778  (P=0.4906, R=0.7027, matched=26 words)
+    Bigram   F1 : 0.2273  (P=0.1923, R=0.2778, matched=10 phrases)
+    Trigram  F1 : 0.1163  (P=0.0980, R=0.1429, matched=5 chunks)
+    NAUR F1     : 0.3804  (weighted average)
+    Coverage    : 0.6857  (fraction of GT vocabulary found)
+    Match label : WEAK MATCH
+----------------------------------------------------------------------
+
+[Q52] How does the system perform on proteins with multiple IDRs?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q53] Does calibration reduce prediction skewness?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q54] Are confidence intervals narrower after processing?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q55] Does neurosymbolic reasoning improve classification of ambiguous residues?
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented in experimental databases and predi
+    ction tools lack sufficient sequence context for short stretches.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.7342  (P=0.6744, R=0.8056, matched=29 words)
+    Bigram   F1 : 0.4675  (P=0.4286, R=0.5143, matched=18 phrases)
+    Trigram  F1 : 0.3200  (P=0.2927, R=0.3529, matched=12 chunks)
+    NAUR F1     : 0.5714  (weighted average)
+    Coverage    : 0.8125  (fraction of GT vocabulary found)
+    Match label : MODERATE MATCH
+----------------------------------------------------------------------
+
+[Q56] How does the system perform under cross-validation?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q57] Does it generalize across different disorder prediction tools?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable on it
+    s own.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.5778  (P=0.4906, R=0.7027, matched=26 words)
+    Bigram   F1 : 0.2273  (P=0.1923, R=0.2778, matched=10 phrases)
+    Trigram  F1 : 0.1163  (P=0.0980, R=0.1429, matched=5 chunks)
+    NAUR F1     : 0.3804  (weighted average)
+    Coverage    : 0.6857  (fraction of GT vocabulary found)
+    Match label : WEAK MATCH
+----------------------------------------------------------------------
+
+[Q58] Are improvements correlated with sequence conservation?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q59] Does retrieval of structural data improve predictions?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q60] How does performance change with different window sizes?
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM1 PREDICTION:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If the sliding window size exceeds this mean short d
+    isordered regions risk being averaged out and lost. Window size m
+    ust be chosen carefully to balance noise reduction against signal
+     preservation.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.7391  (P=0.6667, R=0.8293, matched=34 words)
+    Bigram   F1 : 0.5778  (P=0.5200, R=0.6500, matched=26 phrases)
+    Trigram  F1 : 0.4773  (P=0.4286, R=0.5385, matched=21 chunks)
+    NAUR F1     : 0.6383  (weighted average)
+    Coverage    : 0.8378  (fraction of GT vocabulary found)
+    Match label : MODERATE MATCH
+----------------------------------------------------------------------
+
+[Q61] Does neurosymbolic reasoning help detect functional disorder regions?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable on it
+    s own.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.5778  (P=0.4906, R=0.7027, matched=26 words)
+    Bigram   F1 : 0.2273  (P=0.1923, R=0.2778, matched=10 phrases)
+    Trigram  F1 : 0.1163  (P=0.0980, R=0.1429, matched=5 chunks)
+    NAUR F1     : 0.3804  (weighted average)
+    Coverage    : 0.6857  (fraction of GT vocabulary found)
+    Match label : WEAK MATCH
+----------------------------------------------------------------------
+
+[Q62] Are gains higher in specific residue compositions?
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented in experimental databases and predi
+    ction tools lack sufficient sequence context for short stretches.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.7342  (P=0.6744, R=0.8056, matched=29 words)
+    Bigram   F1 : 0.4675  (P=0.4286, R=0.5143, matched=18 phrases)
+    Trigram  F1 : 0.3200  (P=0.2927, R=0.3529, matched=12 chunks)
+    NAUR F1     : 0.5714  (weighted average)
+    Coverage    : 0.8125  (fraction of GT vocabulary found)
+    Match label : MODERATE MATCH
+----------------------------------------------------------------------
+
+[Q63] Does the system improve classification of edge residues in IDRs?
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented in experimental databases and predi
+    ction tools lack sufficient sequence context for short stretches.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.7342  (P=0.6744, R=0.8056, matched=29 words)
+    Bigram   F1 : 0.4675  (P=0.4286, R=0.5143, matched=18 phrases)
+    Trigram  F1 : 0.3200  (P=0.2927, R=0.3529, matched=12 chunks)
+    NAUR F1     : 0.5714  (weighted average)
+    Coverage    : 0.8125  (fraction of GT vocabulary found)
+    Match label : MODERATE MATCH
+----------------------------------------------------------------------
+
+[Q64] How does prediction confidence correlate with experimental uncertainty?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q65] Does neurosymbolic reasoning improve long-range sequence dependencies?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q66] Are improvements stable across random seeds?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q67] Does the system perform better on curated subsets of DisProt?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q68] How does performance change when excluding uncertain regions?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q69] Does neurosymbolic reasoning improve classification of rare IDRs?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q70] Are prediction gains dependent on dataset size?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q71] Does the system improve classification under imbalanced data?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q72] How does it perform on noisy annotations?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q73] Does symbolic reasoning reduce prediction drift?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q74] How does performance compare before and after normalization?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q75] Does neurosymbolic reasoning improve stability across runs?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q76] Are improvements larger for specific protein lengths?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    Disordered regions shorter than 10 amino acids are difficult to p
+    redict reliably. Of 0 annotated disordered regions in DisProt 0.0
+    % are shorter than 10 residues with mean region length 0.0 aa. Sh
+    ort IDRs are underrepresented in experimental databases and predi
+    ction tools lack sufficient sequence context for short stretches.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.1923  (P=0.1163, R=0.5556, matched=5 words)
+    Bigram   F1 : 0.1200  (P=0.0714, R=0.3750, matched=3 phrases)
+    Trigram  F1 : 0.0833  (P=0.0488, R=0.2857, matched=2 chunks)
+    NAUR F1     : 0.1488  (weighted average)
+    Coverage    : 0.6250  (fraction of GT vocabulary found)
+    Match label : POOR MATCH
+----------------------------------------------------------------------
+
+[Q77] Does the system better align predictions with biological function?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q78] How does it handle missing sequence information?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q79] Does retrieval diversity impact performance?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q80] Are prediction improvements explainable through symbolic rules?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q81] Does neurosymbolic reasoning improve threshold selection?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable on it
+    s own.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.0968  (P=0.0566, R=0.3333, matched=3 words)
+    Bigram   F1 : 0.0000  (P=0.0000, R=0.0000, matched=0 phrases)
+    Trigram  F1 : 0.0000  (P=0.0000, R=0.0000, matched=0 chunks)
+    NAUR F1     : 0.0484  (weighted average)
+    Coverage    : 0.3750  (fraction of GT vocabulary found)
+    Match label : POOR MATCH
+----------------------------------------------------------------------
+
+[Q82] How does the system perform on synthetic datasets?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q83] Does calibration improve ranking of disorder scores?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable on it
+    s own.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.5778  (P=0.4906, R=0.7027, matched=26 words)
+    Bigram   F1 : 0.2273  (P=0.1923, R=0.2778, matched=10 phrases)
+    Trigram  F1 : 0.1163  (P=0.0980, R=0.1429, matched=5 chunks)
+    NAUR F1     : 0.3804  (weighted average)
+    Coverage    : 0.6857  (fraction of GT vocabulary found)
+    Match label : WEAK MATCH
+----------------------------------------------------------------------
+
+[Q84] Are prediction errors reduced uniformly?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q85] Does neurosymbolic reasoning improve classification confidence intervals?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q86] How does performance change with different retrieval strategies?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q87] Does the system improve detection of transient disorder?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable on it
+    s own.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.5778  (P=0.4906, R=0.7027, matched=26 words)
+    Bigram   F1 : 0.2273  (P=0.1923, R=0.2778, matched=10 phrases)
+    Trigram  F1 : 0.1163  (P=0.0980, R=0.1429, matched=5 chunks)
+    NAUR F1     : 0.3804  (weighted average)
+    Coverage    : 0.6857  (fraction of GT vocabulary found)
+    Match label : WEAK MATCH
+----------------------------------------------------------------------
+
+[Q88] Are gains consistent across evaluation metrics?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q89] Does neurosymbolic reasoning reduce model uncertainty?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q90] How does it perform under adversarial perturbations?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q91] Does the system improve robustness to sequence mutations?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q92] Are prediction improvements correlated with structural flexibility?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q93] Does neurosymbolic reasoning improve functional annotation alignment?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q94] How does performance compare across different datasets?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q95] Does the system improve classification of partially disordered regions?
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM1 PREDICTION:
+    Based on 13,396 DisProt proteins a disorder score above 0.5 is a 
+    commonly used cutoff but it is conservative. Only 29.1% of protei
+    ns exceed 0.5 while 44.2% exceed 0.3. Many true IDRs fall in the 
+    0.3 to 0.5 range and would be missed by a strict 0.5 threshold. T
+    he cutoff is a useful starting point but not fully reliable on it
+    s own.
+
+  NAUR SCORES:
+    Unigram  F1 : 0.5778  (P=0.4906, R=0.7027, matched=26 words)
+    Bigram   F1 : 0.2273  (P=0.1923, R=0.2778, matched=10 phrases)
+    Trigram  F1 : 0.1163  (P=0.0980, R=0.1429, matched=5 chunks)
+    NAUR F1     : 0.3804  (weighted average)
+    Coverage    : 0.6857  (fraction of GT vocabulary found)
+    Match label : WEAK MATCH
+----------------------------------------------------------------------
+
+[Q96] Are gains consistent across evaluation folds?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q97] Does neurosymbolic reasoning improve model calibration slope?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q98] How does the system perform on edge-case proteins?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q99] Does neurosymbolic reasoning reduce prediction bias?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+[Q100] Are overall improvements sufficient to justify added system complexity?
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  LLM1 PREDICTION:
+    DisProt summary 13,396 proteins mean disorder 0.378 mean region l
+    ength 0.0 aa.
+
+  NAUR SCORES:
+    Unigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=9 words)
+    Bigram   F1 : 1.0000  (P=1.0000, R=1.0000, matched=8 phrases)
+    Trigram  F1 : 1.0000  (P=1.0000, R=1.0000, matched=7 chunks)
+    NAUR F1     : 1.0000  (weighted average)
+    Coverage    : 1.0000  (fraction of GT vocabulary found)
+    Match label : STRONG MATCH
+----------------------------------------------------------------------
+
+======================================================================
+  END OF NAUR EVALUATION -- LLM Judge 1
+  Mean NAUR F1: 0.8351 | Strong: 72 | Moderate: 9 | Weak: 16 | Poor: 3
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
