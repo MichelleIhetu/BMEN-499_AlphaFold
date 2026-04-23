@@ -1,0 +1,724 @@
+========================================================================
+  BMEN-499 AlphaFold -- LLM Judge 2: Contradiction Count Test
+  Evaluation: Internal contradiction detection in RAG answers
+  Method    : Keyword-pair co-presence heuristic (8 rules)
+========================================================================
+
+WHAT THIS TEST MEASURES
+------------------------------------------------------------------------
+  Vanilla RAG (LLM Judge 2) retrieves and concatenates passages
+  without constraint checking. When conflicting passages are
+  retrieved together, the resulting answer contains internal
+  contradictions -- logically incompatible claims presented as
+  a single coherent answer.
+
+  A contradiction is flagged when BOTH sides of a known conflict
+  pair appear in the same predicted answer. Eight contradiction
+  rules cover the major biological and methodological tensions
+  present in the DisProt/AlphaFold knowledge base.
+
+========================================================================
+  SUMMARY STATISTICS
+------------------------------------------------------------------------
+  Total questions evaluated    : 100
+  Questions WITH contradiction : 34  (34.0%)
+  Questions WITHOUT contradiction: 66
+  Total contradiction instances: 34
+  Mean contradictions per Q   : 0.340
+
+  CONTRADICTION COUNTS BY RULE
+  --------------------------------------------------------------------
+  Rule      Type       Count  Description
+  --------------------------------------------------------------------
+  CR-001    TYPE-A         2  0.5 threshold reliable vs. misses real IDRs
+  CR-002    TYPE-B         6  pLDDT <50 = disorder vs. pLDDT >70 = ordered (no resolution)
+  CR-003    TYPE-B        17  High-confidence disorder (>0.7) vs. unreliable moderate range
+  CR-004    TYPE-C         0  Proline/glycine predict disorder vs. insufficient alone
+  CR-005    TYPE-D         0  Short IDRs unreliable vs. global DisProt confirmation
+  CR-006    TYPE-E         0  Sliding window erases short IDRs vs. reduces noise reliably
+  CR-007    TYPE-F         9  Mixed protein (IDR + domain) vs. whole-protein IDP classification
+  CR-008    TYPE-G         0  Experimental data takes precedence vs. pLDDT as primary signal
+
+  CONTRADICTION COUNTS BY TYPE
+  --------------------------------------------------------------------
+  Type       Count  Description
+  --------------------------------------------------------------------
+  TYPE-A         2  Threshold reliability conflict
+  TYPE-B        23  pLDDT score interpretation conflict
+  TYPE-C         0  Sequence composition predictive power conflict
+  TYPE-D         0  Short IDR confidence vs. database reliability conflict
+  TYPE-E         0  Sliding window benefit vs. signal-loss conflict
+  TYPE-F         9  Per-region vs. whole-protein classification conflict
+  TYPE-G         0  Experimental vs. computational evidence hierarchy conflict
+
+========================================================================
+  PER-QUESTION RESULTS
+========================================================================
+
+[Q001] Is a disorder score above 0.5 a reliable cutoff for calling a region disordered?
+       Contradictions found: 0  [clean]
+
+[Q002] Do confidence scores drop for IDRs shorter than 10 residues?
+       Contradictions found: 0  [clean]
+
+[Q003] Do proline and glycine-rich regions consistently score higher disorder confidence than average?
+       Contradictions found: 0  [clean]
+
+[Q004] Does applying a sliding window smooth out confidence scores without losing true IDR signal?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-003 (TYPE-B) -- High-confidence disorder (>0.7) vs. unreliable moderate range
+       Side A : "disorder scores above 0.7"
+       Side B : "MoRFs"
+       Conflict: One passage asserts disorder scores >0.7 are 
+               high-confidence, while another flags the pLDDT 50-70 
+               range as ambiguous conditional disorder. Retrieved 
+               together without integration, these create contradictory 
+               guidance -- one urges confidence, the other urges 
+               caution, for the same mid-high range. 
+
+[Q005] How far off are raw confidence scores from the true disorder rate in DisProt?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-003 (TYPE-B) -- High-confidence disorder (>0.7) vs. unreliable moderate range
+       Side A : "disorder scores above 0.7"
+       Side B : "MoRFs"
+       Conflict: One passage asserts disorder scores >0.7 are 
+               high-confidence, while another flags the pLDDT 50-70 
+               range as ambiguous conditional disorder. Retrieved 
+               together without integration, these create contradictory 
+               guidance -- one urges confidence, the other urges 
+               caution, for the same mid-high range. 
+
+[Q006] When a confidence score falls in the uncertain range (0.4–0.6), does applying a sliding window smooth it toward the correct label, and what window size does the literature support?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-003 (TYPE-B) -- High-confidence disorder (>0.7) vs. unreliable moderate range
+       Side A : "disorder scores above 0.7"
+       Side B : "MoRFs"
+       Conflict: One passage asserts disorder scores >0.7 are 
+               high-confidence, while another flags the pLDDT 50-70 
+               range as ambiguous conditional disorder. Retrieved 
+               together without integration, these create contradictory 
+               guidance -- one urges confidence, the other urges 
+               caution, for the same mid-high range. 
+
+[Q007] How much do raw confidence scores overestimate or underestimate true disorder rates across DisProt?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-002 (TYPE-B) -- pLDDT <50 = disorder vs. pLDDT >70 = ordered (no resolution)
+       Side A : "pLDDT below 50"
+       Side B : "pLDDT scores of 70 or above indicate high confidence"
+       Conflict: The answer simultaneously presents pLDDT <50 as the 
+               disorder signal and pLDDT >70 as the ordered signal. 
+               Without also including the 50-70 ambiguous zone, the two 
+               passages imply a binary interpretation that contradicts 
+               the continuous nature of the score and leaves 50-70 
+               unresolved. 
+
+[Q008] After applying symbolic smoothing and isotonic calibration together, by how much does residue level F1 improve over raw scores, and is this improvement consistent with gains reported for similar post processing pipelines in the literature?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-003 (TYPE-B) -- High-confidence disorder (>0.7) vs. unreliable moderate range
+       Side A : "disorder scores above 0.7"
+       Side B : "MoRFs"
+       Conflict: One passage asserts disorder scores >0.7 are 
+               high-confidence, while another flags the pLDDT 50-70 
+               range as ambiguous conditional disorder. Retrieved 
+               together without integration, these create contradictory 
+               guidance -- one urges confidence, the other urges 
+               caution, for the same mid-high range. 
+
+[Q009] What is the MAE between raw disorder confidence scores and DisProt ground truth labels, and how many standard deviations (Z-score) away from the mean prediction is each incorrectly labeled residue?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-003 (TYPE-B) -- High-confidence disorder (>0.7) vs. unreliable moderate range
+       Side A : "disorder scores above 0.7"
+       Side B : "MoRFs"
+       Conflict: One passage asserts disorder scores >0.7 are 
+               high-confidence, while another flags the pLDDT 50-70 
+               range as ambiguous conditional disorder. Retrieved 
+               together without integration, these create contradictory 
+               guidance -- one urges confidence, the other urges 
+               caution, for the same mid-high range. 
+
+[Q010] Do N-terminal, C-terminal, and internal IDRs show different MAE profiles, and are the Z-scores of prediction errors normally distributed within each positional group or skewed in a way that suggests a systematic bias?
+       Contradictions found: 0  [clean]
+
+[Q011] Does a neurosymbolic RAG system reduce variance in disorder confidence predictions compared to raw model outputs?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-003 (TYPE-B) -- High-confidence disorder (>0.7) vs. unreliable moderate range
+       Side A : "disorder scores above 0.7"
+       Side B : "conditionally disordered"
+       Conflict: One passage asserts disorder scores >0.7 are 
+               high-confidence, while another flags the pLDDT 50-70 
+               range as ambiguous conditional disorder. Retrieved 
+               together without integration, these create contradictory 
+               guidance -- one urges confidence, the other urges 
+               caution, for the same mid-high range. 
+
+[Q012] How does the precision-recall curve change after applying neurosymbolic reasoning?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-003 (TYPE-B) -- High-confidence disorder (>0.7) vs. unreliable moderate range
+       Side A : "disorder scores above 0.7"
+       Side B : "conditionally disordered"
+       Conflict: One passage asserts disorder scores >0.7 are 
+               high-confidence, while another flags the pLDDT 50-70 
+               range as ambiguous conditional disorder. Retrieved 
+               together without integration, these create contradictory 
+               guidance -- one urges confidence, the other urges 
+               caution, for the same mid-high range. 
+
+[Q013] Does incorporating symbolic rules improve classification accuracy for borderline disorder regions?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-003 (TYPE-B) -- High-confidence disorder (>0.7) vs. unreliable moderate range
+       Side A : "disorder scores above 0.7"
+       Side B : "MoRFs"
+       Conflict: One passage asserts disorder scores >0.7 are 
+               high-confidence, while another flags the pLDDT 50-70 
+               range as ambiguous conditional disorder. Retrieved 
+               together without integration, these create contradictory 
+               guidance -- one urges confidence, the other urges 
+               caution, for the same mid-high range. 
+
+[Q014] What is the impact of neurosymbolic calibration on false positive rates in ordered regions?
+       Contradictions found: 0  [clean]
+
+[Q015] Does the neurosymbolic approach improve prediction consistency across homologous proteins?
+       Contradictions found: 0  [clean]
+
+[Q016] How sensitive are disorder predictions to the choice of retrieval documents in the RAG system?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-003 (TYPE-B) -- High-confidence disorder (>0.7) vs. unreliable moderate range
+       Side A : "disorder scores above 0.7"
+       Side B : "conditionally disordered"
+       Conflict: One passage asserts disorder scores >0.7 are 
+               high-confidence, while another flags the pLDDT 50-70 
+               range as ambiguous conditional disorder. Retrieved 
+               together without integration, these create contradictory 
+               guidance -- one urges confidence, the other urges 
+               caution, for the same mid-high range. 
+
+[Q017] Does contextual biological knowledge retrieved via RAG improve long IDR detection accuracy?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-003 (TYPE-B) -- High-confidence disorder (>0.7) vs. unreliable moderate range
+       Side A : "disorder scores above 0.7"
+       Side B : "conditionally disordered"
+       Conflict: One passage asserts disorder scores >0.7 are 
+               high-confidence, while another flags the pLDDT 50-70 
+               range as ambiguous conditional disorder. Retrieved 
+               together without integration, these create contradictory 
+               guidance -- one urges confidence, the other urges 
+               caution, for the same mid-high range. 
+
+[Q018] How does performance differ between short and long IDRs after neurosymbolic processing?
+       Contradictions found: 0  [clean]
+
+[Q019] Are certain amino acid compositions more responsive to symbolic correction rules?
+       Contradictions found: 0  [clean]
+
+[Q020] Does neurosymbolic reasoning reduce prediction noise in low-confidence regions?
+       Contradictions found: 0  [clean]
+
+[Q021] How does calibration affect AUROC compared to raw predictions?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-002 (TYPE-B) -- pLDDT <50 = disorder vs. pLDDT >70 = ordered (no resolution)
+       Side A : "pLDDT below 50"
+       Side B : "pLDDT scores of 70 or above indicate high confidence"
+       Conflict: The answer simultaneously presents pLDDT <50 as the 
+               disorder signal and pLDDT >70 as the ordered signal. 
+               Without also including the 50-70 ambiguous zone, the two 
+               passages imply a binary interpretation that contradicts 
+               the continuous nature of the score and leaves 50-70 
+               unresolved. 
+
+[Q022] Does symbolic smoothing introduce bias toward overprediction of disorder?
+       Contradictions found: 0  [clean]
+
+[Q023] What is the distribution of confidence score corrections applied by the neurosymbolic system?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-002 (TYPE-B) -- pLDDT <50 = disorder vs. pLDDT >70 = ordered (no resolution)
+       Side A : "pLDDT below 50"
+       Side B : "pLDDT scores of 70 or above indicate high confidence"
+       Conflict: The answer simultaneously presents pLDDT <50 as the 
+               disorder signal and pLDDT >70 as the ordered signal. 
+               Without also including the 50-70 ambiguous zone, the two 
+               passages imply a binary interpretation that contradicts 
+               the continuous nature of the score and leaves 50-70 
+               unresolved. 
+
+[Q024] Does the system improve recall without sacrificing precision?
+       Contradictions found: 0  [clean]
+
+[Q025] How does performance vary across different protein families?
+       Contradictions found: 0  [clean]
+
+[Q026] Are improvements consistent across species in the DisProt dataset?
+       Contradictions found: 0  [clean]
+
+[Q027] Does the neurosymbolic model perform better on experimentally validated long IDRs?
+       Contradictions found: 0  [clean]
+
+[Q028] How does retrieval quality impact final prediction confidence?
+       Contradictions found: 0  [clean]
+
+[Q029] Are confidence score corrections correlated with sequence length?
+       Contradictions found: 0  [clean]
+
+[Q030] Does neurosymbolic reasoning improve predictions for low-complexity regions?
+       Contradictions found: 0  [clean]
+
+[Q031] How does entropy of predictions change after symbolic reasoning?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-002 (TYPE-B) -- pLDDT <50 = disorder vs. pLDDT >70 = ordered (no resolution)
+       Side A : "pLDDT below 50"
+       Side B : "pLDDT scores of 70 or above indicate high confidence"
+       Conflict: The answer simultaneously presents pLDDT <50 as the 
+               disorder signal and pLDDT >70 as the ordered signal. 
+               Without also including the 50-70 ambiguous zone, the two 
+               passages imply a binary interpretation that contradicts 
+               the continuous nature of the score and leaves 50-70 
+               unresolved. 
+
+[Q032] Does the system reduce systematic bias in terminal regions?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-002 (TYPE-B) -- pLDDT <50 = disorder vs. pLDDT >70 = ordered (no resolution)
+       Side A : "pLDDT below 50"
+       Side B : "pLDDT scores of 70 or above indicate high confidence"
+       Conflict: The answer simultaneously presents pLDDT <50 as the 
+               disorder signal and pLDDT >70 as the ordered signal. 
+               Without also including the 50-70 ambiguous zone, the two 
+               passages imply a binary interpretation that contradicts 
+               the continuous nature of the score and leaves 50-70 
+               unresolved. 
+
+[Q033] Are gains from neurosymbolic processing statistically significant?
+       Contradictions found: 0  [clean]
+
+[Q034] How does performance compare against baseline machine learning models?
+       Contradictions found: 0  [clean]
+
+[Q035] Does adding domain knowledge improve classification boundaries?
+       Contradictions found: 0  [clean]
+
+[Q036] How robust is the model to noisy or incomplete retrieval data?
+       Contradictions found: 0  [clean]
+
+[Q037] Does the neurosymbolic system improve calibration curves?
+       Contradictions found: 0  [clean]
+
+[Q038] How does Brier score change after calibration?
+       Contradictions found: 0  [clean]
+
+[Q039] Are prediction improvements uniform across all confidence intervals?
+       Contradictions found: 0  [clean]
+
+[Q040] Does neurosymbolic reasoning improve interpretability of predictions?
+       Contradictions found: 0  [clean]
+
+[Q041] How does performance change when removing symbolic rules?
+       Contradictions found: 0  [clean]
+
+[Q042] Does the system better detect disordered binding regions?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-007 (TYPE-F) -- Mixed protein (IDR + domain) vs. whole-protein IDP classification
+       Side A : "each region must be evaluated independently"
+       Side B : "whole protein as ordered or disordered"
+       Conflict: One passage insists that IDRs and structured domains 
+               co-occur and must be evaluated per-region, while another 
+               passage proposes classifying entire proteins as IDPs. 
+               Using these two passages together in the same answer 
+               contradicts the per-region evaluation principle with a 
+               whole-protein rule. 
+
+[Q043] Are certain motifs better recognized after symbolic processing?
+       Contradictions found: 0  [clean]
+
+[Q044] How does the system handle conflicting retrieved evidence?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-007 (TYPE-F) -- Mixed protein (IDR + domain) vs. whole-protein IDP classification
+       Side A : "each region must be evaluated independently"
+       Side B : "whole protein as ordered or disordered"
+       Conflict: One passage insists that IDRs and structured domains 
+               co-occur and must be evaluated per-region, while another 
+               passage proposes classifying entire proteins as IDPs. 
+               Using these two passages together in the same answer 
+               contradicts the per-region evaluation principle with a 
+               whole-protein rule. 
+
+[Q045] Does neurosymbolic reasoning reduce overfitting?
+       Contradictions found: 0  [clean]
+
+[Q046] What is the effect on Matthews Correlation Coefficient (MCC)?
+       Contradictions found: 0  [clean]
+
+[Q047] Does performance degrade on unseen protein structures?
+       Contradictions found: 0  [clean]
+
+[Q048] How does retrieval latency affect prediction quality?
+       Contradictions found: 0  [clean]
+
+[Q049] Does symbolic reasoning improve alignment with experimental annotations?
+       Contradictions found: 0  [clean]
+
+[Q050] Are prediction improvements localized or global across sequences?
+       Contradictions found: 0  [clean]
+
+[Q051] Does neurosymbolic RAG help identify disorder-to-order transitions?
+       Contradictions found: 0  [clean]
+
+[Q052] How does the system perform on proteins with multiple IDRs?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-007 (TYPE-F) -- Mixed protein (IDR + domain) vs. whole-protein IDP classification
+       Side A : "pfam structured domain alongside their disordered regions"
+       Side B : "whole protein as ordered or disordered"
+       Conflict: One passage insists that IDRs and structured domains 
+               co-occur and must be evaluated per-region, while another 
+               passage proposes classifying entire proteins as IDPs. 
+               Using these two passages together in the same answer 
+               contradicts the per-region evaluation principle with a 
+               whole-protein rule. 
+
+[Q053] Does calibration reduce prediction skewness?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-002 (TYPE-B) -- pLDDT <50 = disorder vs. pLDDT >70 = ordered (no resolution)
+       Side A : "pLDDT below 50"
+       Side B : "pLDDT scores of 70 or above indicate high confidence"
+       Conflict: The answer simultaneously presents pLDDT <50 as the 
+               disorder signal and pLDDT >70 as the ordered signal. 
+               Without also including the 50-70 ambiguous zone, the two 
+               passages imply a binary interpretation that contradicts 
+               the continuous nature of the score and leaves 50-70 
+               unresolved. 
+
+[Q054] Are confidence intervals narrower after processing?
+       Contradictions found: 0  [clean]
+
+[Q055] Does neurosymbolic reasoning improve classification of ambiguous residues?
+       Contradictions found: 0  [clean]
+
+[Q056] How does the system perform under cross-validation?
+       Contradictions found: 0  [clean]
+
+[Q057] Does it generalize across different disorder prediction tools?
+       Contradictions found: 0  [clean]
+
+[Q058] Are improvements correlated with sequence conservation?
+       Contradictions found: 0  [clean]
+
+[Q059] Does retrieval of structural data improve predictions?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-007 (TYPE-F) -- Mixed protein (IDR + domain) vs. whole-protein IDP classification
+       Side A : "each region must be evaluated independently"
+       Side B : "whole protein as ordered or disordered"
+       Conflict: One passage insists that IDRs and structured domains 
+               co-occur and must be evaluated per-region, while another 
+               passage proposes classifying entire proteins as IDPs. 
+               Using these two passages together in the same answer 
+               contradicts the per-region evaluation principle with a 
+               whole-protein rule. 
+
+[Q060] How does performance change with different window sizes?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-001 (TYPE-A) -- 0.5 threshold reliable vs. misses real IDRs
+       Side A : "0.5 disorder score threshold is commonly used"
+       Side B : "exceed 0.3, suggesting many disordered regions fall below"
+       Conflict: One passage treats 0.5 as a standard reliable cutoff 
+               while another explicitly states that many real IDRs 
+               score below 0.5 and would be missed -- these are 
+               logically incompatible recommendations for threshold 
+               selection. 
+
+[Q061] Does neurosymbolic reasoning help detect functional disorder regions?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-003 (TYPE-B) -- High-confidence disorder (>0.7) vs. unreliable moderate range
+       Side A : "disorder scores above 0.7"
+       Side B : "conditionally disordered"
+       Conflict: One passage asserts disorder scores >0.7 are 
+               high-confidence, while another flags the pLDDT 50-70 
+               range as ambiguous conditional disorder. Retrieved 
+               together without integration, these create contradictory 
+               guidance -- one urges confidence, the other urges 
+               caution, for the same mid-high range. 
+
+[Q062] Are gains higher in specific residue compositions?
+       Contradictions found: 0  [clean]
+
+[Q063] Does the system improve classification of edge residues in IDRs?
+       Contradictions found: 0  [clean]
+
+[Q064] How does prediction confidence correlate with experimental uncertainty?
+       Contradictions found: 0  [clean]
+
+[Q065] Does neurosymbolic reasoning improve long-range sequence dependencies?
+       Contradictions found: 0  [clean]
+
+[Q066] Are improvements stable across random seeds?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-003 (TYPE-B) -- High-confidence disorder (>0.7) vs. unreliable moderate range
+       Side A : "disorder scores above 0.7"
+       Side B : "conditionally disordered"
+       Conflict: One passage asserts disorder scores >0.7 are 
+               high-confidence, while another flags the pLDDT 50-70 
+               range as ambiguous conditional disorder. Retrieved 
+               together without integration, these create contradictory 
+               guidance -- one urges confidence, the other urges 
+               caution, for the same mid-high range. 
+
+[Q067] Does the system perform better on curated subsets of DisProt?
+       Contradictions found: 0  [clean]
+
+[Q068] How does performance change when excluding uncertain regions?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-007 (TYPE-F) -- Mixed protein (IDR + domain) vs. whole-protein IDP classification
+       Side A : "pfam structured domain alongside their disordered regions"
+       Side B : "whole protein as ordered or disordered"
+       Conflict: One passage insists that IDRs and structured domains 
+               co-occur and must be evaluated per-region, while another 
+               passage proposes classifying entire proteins as IDPs. 
+               Using these two passages together in the same answer 
+               contradicts the per-region evaluation principle with a 
+               whole-protein rule. 
+
+[Q069] Does neurosymbolic reasoning improve classification of rare IDRs?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-003 (TYPE-B) -- High-confidence disorder (>0.7) vs. unreliable moderate range
+       Side A : "disorder scores above 0.7"
+       Side B : "conditionally disordered"
+       Conflict: One passage asserts disorder scores >0.7 are 
+               high-confidence, while another flags the pLDDT 50-70 
+               range as ambiguous conditional disorder. Retrieved 
+               together without integration, these create contradictory 
+               guidance -- one urges confidence, the other urges 
+               caution, for the same mid-high range. 
+
+[Q070] Are prediction gains dependent on dataset size?
+       Contradictions found: 0  [clean]
+
+[Q071] Does the system improve classification under imbalanced data?
+       Contradictions found: 0  [clean]
+
+[Q072] How does it perform on noisy annotations?
+       Contradictions found: 0  [clean]
+
+[Q073] Does symbolic reasoning reduce prediction drift?
+       Contradictions found: 0  [clean]
+
+[Q074] How does performance compare before and after normalization?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-001 (TYPE-A) -- 0.5 threshold reliable vs. misses real IDRs
+       Side A : "0.5 disorder score threshold is commonly used"
+       Side B : "exceed 0.3, suggesting many disordered regions fall below"
+       Conflict: One passage treats 0.5 as a standard reliable cutoff 
+               while another explicitly states that many real IDRs 
+               score below 0.5 and would be missed -- these are 
+               logically incompatible recommendations for threshold 
+               selection. 
+
+[Q075] Does neurosymbolic reasoning improve stability across runs?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-003 (TYPE-B) -- High-confidence disorder (>0.7) vs. unreliable moderate range
+       Side A : "disorder scores above 0.7"
+       Side B : "conditionally disordered"
+       Conflict: One passage asserts disorder scores >0.7 are 
+               high-confidence, while another flags the pLDDT 50-70 
+               range as ambiguous conditional disorder. Retrieved 
+               together without integration, these create contradictory 
+               guidance -- one urges confidence, the other urges 
+               caution, for the same mid-high range. 
+
+[Q076] Are improvements larger for specific protein lengths?
+       Contradictions found: 0  [clean]
+
+[Q077] Does the system better align predictions with biological function?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-007 (TYPE-F) -- Mixed protein (IDR + domain) vs. whole-protein IDP classification
+       Side A : "each region must be evaluated independently"
+       Side B : "whole protein as ordered or disordered"
+       Conflict: One passage insists that IDRs and structured domains 
+               co-occur and must be evaluated per-region, while another 
+               passage proposes classifying entire proteins as IDPs. 
+               Using these two passages together in the same answer 
+               contradicts the per-region evaluation principle with a 
+               whole-protein rule. 
+
+[Q078] How does it handle missing sequence information?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-007 (TYPE-F) -- Mixed protein (IDR + domain) vs. whole-protein IDP classification
+       Side A : "pfam structured domain alongside their disordered regions"
+       Side B : "whole protein as ordered or disordered"
+       Conflict: One passage insists that IDRs and structured domains 
+               co-occur and must be evaluated per-region, while another 
+               passage proposes classifying entire proteins as IDPs. 
+               Using these two passages together in the same answer 
+               contradicts the per-region evaluation principle with a 
+               whole-protein rule. 
+
+[Q079] Does retrieval diversity impact performance?
+       Contradictions found: 0  [clean]
+
+[Q080] Are prediction improvements explainable through symbolic rules?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-003 (TYPE-B) -- High-confidence disorder (>0.7) vs. unreliable moderate range
+       Side A : "disorder scores above 0.7"
+       Side B : "conditionally disordered"
+       Conflict: One passage asserts disorder scores >0.7 are 
+               high-confidence, while another flags the pLDDT 50-70 
+               range as ambiguous conditional disorder. Retrieved 
+               together without integration, these create contradictory 
+               guidance -- one urges confidence, the other urges 
+               caution, for the same mid-high range. 
+
+[Q081] Does neurosymbolic reasoning improve threshold selection?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-003 (TYPE-B) -- High-confidence disorder (>0.7) vs. unreliable moderate range
+       Side A : "disorder scores above 0.7"
+       Side B : "conditionally disordered"
+       Conflict: One passage asserts disorder scores >0.7 are 
+               high-confidence, while another flags the pLDDT 50-70 
+               range as ambiguous conditional disorder. Retrieved 
+               together without integration, these create contradictory 
+               guidance -- one urges confidence, the other urges 
+               caution, for the same mid-high range. 
+
+[Q082] How does the system perform on synthetic datasets?
+       Contradictions found: 0  [clean]
+
+[Q083] Does calibration improve ranking of disorder scores?
+       Contradictions found: 0  [clean]
+
+[Q084] Are prediction errors reduced uniformly?
+       Contradictions found: 0  [clean]
+
+[Q085] Does neurosymbolic reasoning improve classification confidence intervals?
+       Contradictions found: 0  [clean]
+
+[Q086] How does performance change with different retrieval strategies?
+       Contradictions found: 0  [clean]
+
+[Q087] Does the system improve detection of transient disorder?
+       Contradictions found: 0  [clean]
+
+[Q088] Are gains consistent across evaluation metrics?
+       Contradictions found: 0  [clean]
+
+[Q089] Does neurosymbolic reasoning reduce model uncertainty?
+       Contradictions found: 0  [clean]
+
+[Q090] How does it perform under adversarial perturbations?
+       Contradictions found: 0  [clean]
+
+[Q091] Does the system improve robustness to sequence mutations?
+       Contradictions found: 0  [clean]
+
+[Q092] Are prediction improvements correlated with structural flexibility?
+       Contradictions found: 0  [clean]
+
+[Q093] Does neurosymbolic reasoning improve functional annotation alignment?
+       Contradictions found: 0  [clean]
+
+[Q094] How does performance compare across different datasets?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-007 (TYPE-F) -- Mixed protein (IDR + domain) vs. whole-protein IDP classification
+       Side A : "pfam structured domain alongside their disordered regions"
+       Side B : "whole protein as ordered or disordered"
+       Conflict: One passage insists that IDRs and structured domains 
+               co-occur and must be evaluated per-region, while another 
+               passage proposes classifying entire proteins as IDPs. 
+               Using these two passages together in the same answer 
+               contradicts the per-region evaluation principle with a 
+               whole-protein rule. 
+
+[Q095] Does the system improve classification of partially disordered regions?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-007 (TYPE-F) -- Mixed protein (IDR + domain) vs. whole-protein IDP classification
+       Side A : "each region must be evaluated independently"
+       Side B : "whole protein as ordered or disordered"
+       Conflict: One passage insists that IDRs and structured domains 
+               co-occur and must be evaluated per-region, while another 
+               passage proposes classifying entire proteins as IDPs. 
+               Using these two passages together in the same answer 
+               contradicts the per-region evaluation principle with a 
+               whole-protein rule. 
+
+[Q096] Are gains consistent across evaluation folds?
+       Contradictions found: 0  [clean]
+
+[Q097] Does neurosymbolic reasoning improve model calibration slope?
+       Contradictions found: 1  [CONTRADICTION]
+
+       Rule   : CR-003 (TYPE-B) -- High-confidence disorder (>0.7) vs. unreliable moderate range
+       Side A : "disorder scores above 0.7"
+       Side B : "MoRFs"
+       Conflict: One passage asserts disorder scores >0.7 are 
+               high-confidence, while another flags the pLDDT 50-70 
+               range as ambiguous conditional disorder. Retrieved 
+               together without integration, these create contradictory 
+               guidance -- one urges confidence, the other urges 
+               caution, for the same mid-high range. 
+
+[Q098] How does the system perform on edge-case proteins?
+       Contradictions found: 0  [clean]
+
+[Q099] Does neurosymbolic reasoning reduce prediction bias?
+       Contradictions found: 0  [clean]
+
+[Q100] Are overall improvements sufficient to justify added system complexity?
+       Contradictions found: 0  [clean]
+
+========================================================================
+  INTERPRETATION
+------------------------------------------------------------------------
+  Contradiction rate : 34.0%  [MODERATE]
+  Total instances    : 34
+
+  A substantial minority of answers contain contradictions. The 
+  retrieval model captures relevant content but lacks the biological 
+  reasoning layer needed to filter incompatible claims. Adding symbolic 
+  post-processing would improve answer consistency. 
+
+  WHY VANILLA RAG PRODUCES CONTRADICTIONS
+------------------------------------------------------------------------
+  BiomedBERT retrieves passages by semantic similarity, not logical
+  compatibility. The disorder knowledge base contains passages that
+  are semantically related (all discuss pLDDT, thresholds, etc.)
+  but biologically contradictory (e.g., 'use 0.5 threshold' vs.
+  '0.5 misses real IDRs'). Without symbolic rules to arbitrate,
+  the RAG generator concatenates all retrieved passages verbatim,
+  producing answers that say contradictory things simultaneously.
+
+  LLM Judge 1 avoids this by applying hard biological rules that
+  ground interpretations, resolve ambiguities, and prevent
+  incompatible passages from co-appearing in the same answer.
+
+========================================================================
+  END OF REPORT
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+========================================================================
