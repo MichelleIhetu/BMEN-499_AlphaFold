@@ -1,0 +1,195 @@
+========================================================================
+  BMEN-499 AlphaFold -- LLM Judge 2: Variance Test
+  Evaluation : Multi-dimensional variance analysis of RAG outputs
+  Questions  : 100
+========================================================================
+
+WHAT THIS TEST MEASURES
+------------------------------------------------------------------------
+  Variance analysis diagnoses whether vanilla RAG produces stable,
+  consistent, and discriminative answers. Three failure modes:
+
+  1. SCORE COMPRESSION   -- retrieval scores cluster in a narrow
+     high range (e.g. 0.95-0.98), meaning BiomedBERT cannot
+     differentiate question relevance. Low score variance = bad.
+
+  2. DOC RECYCLING       -- a few KB passages are retrieved for
+     nearly every question. Low doc frequency variance = bad.
+
+  3. ANSWER HOMOGENEITY  -- answers are all the same length and
+     content regardless of question complexity. Low answer
+     length variance = bad.
+
+========================================================================
+  VAR-1: RETRIEVAL SCORE VARIANCE (top-1 score per question)
+------------------------------------------------------------------------
+  Mean score          : 0.958472
+  Median score        : 0.958600
+  Std deviation       : 0.011543
+  Variance            : 0.00013323
+  Coeff of variation  : 1.2043%
+  Min score           : 0.922900
+  Max score           : 0.980800
+  Range (max - min)   : 0.057900
+  P10                 : 0.941900
+  P90                 : 0.971400
+  IQR (P75 - P25)     : 0.013500
+
+  Score distribution (top-1 retrieval scores):
+    0.97 - 1.00    15 ( 15.0%)  ███░░░░░░░░░░░░░░░░░░░░░░
+    0.95 - 0.97    68 ( 68.0%)  █████████████████░░░░░░░░
+    0.93 - 0.95    15 ( 15.0%)  ███░░░░░░░░░░░░░░░░░░░░░░
+    0.90 - 0.93     2 (  2.0%)  ░░░░░░░░░░░░░░░░░░░░░░░░░
+    0.85 - 0.90     0 (  0.0%)  ░░░░░░░░░░░░░░░░░░░░░░░░░
+    0.00 - 0.85     0 (  0.0%)  ░░░░░░░░░░░░░░░░░░░░░░░░░
+
+  Interpretation (CV=1.2043%): LOW -- retrieval scores are tightly compressed. The retrieve
+  r shows minimal discrimination between questions. Symbolic rules in LLM Judge 1 bypass this by applying biological constraints independently of embedding similarity.
+
+========================================================================
+  VAR-2: ANSWER LENGTH VARIANCE (word count per answer)
+------------------------------------------------------------------------
+  Mean word count     : 149.94
+  Median word count   : 148.00
+  Std deviation       : 6.4898
+  Variance            : 42.1176
+  Coeff of variation  : 4.3283%
+  Min word count      : 137
+  Max word count      : 165
+  Range (max - min)   : 28
+  P10                 : 141
+  P90                 : 157
+  IQR (P75 - P25)     : 7
+
+  Word count distribution:
+    < 50  words     0 (  0.0%)  ░░░░░░░░░░░░░░░░░░░░░░░░░
+    50-100 words     0 (  0.0%)  ░░░░░░░░░░░░░░░░░░░░░░░░░
+    100-150 words    54 ( 54.0%)  █████████████░░░░░░░░░░░░
+    150-200 words    46 ( 46.0%)  ███████████░░░░░░░░░░░░░░
+    200-250 words     0 (  0.0%)  ░░░░░░░░░░░░░░░░░░░░░░░░░
+    > 250  words     0 (  0.0%)  ░░░░░░░░░░░░░░░░░░░░░░░░░
+
+  Unusually LONG answers (> mean + 2 stdev):
+    Q018  165 words  How does performance differ between short and long IDRs
+    Q038  165 words  How does Brier score change after calibration?
+    Q045  165 words  Does neurosymbolic reasoning reduce overfitting?
+    Q051  165 words  Does neurosymbolic RAG help identify disorder-to-order 
+    Q073  165 words  Does symbolic reasoning reduce prediction drift?
+    Q090  165 words  How does it perform under adversarial perturbations?
+
+  Interpretation (CV=4.3283%): VERY LOW -- answers are near-identical in length. The RAG ge
+  nerator returns the same amount of text for every question, confirming it is recycling fixed-length passage concatenations.
+
+========================================================================
+  VAR-3: KB DOCUMENT SELECTION FREQUENCY VARIANCE
+  (How often each KB passage is retrieved across all questions)
+------------------------------------------------------------------------
+  Doc freq variance   : 503.4103
+  Doc freq stdev      : 22.4368
+  Doc freq CV         : 97.2262%
+  Min retrievals      : 1
+  Max retrievals      : 63
+  Most retrieved      : KB-009  (63 times)
+  Least retrieved     : KB-013  (1 time(s))
+
+  Retrieval frequency per KB document:
+    KB-009    63 retrievals ( 21.0% of slots)  █████████████████████████
+    KB-011    62 retrievals ( 20.7% of slots)  ████████████████████████░
+    KB-008    47 retrievals ( 15.7% of slots)  ██████████████████░░░░░░░
+    KB-010    37 retrievals ( 12.3% of slots)  ██████████████░░░░░░░░░░░
+    KB-003    24 retrievals (  8.0% of slots)  █████████░░░░░░░░░░░░░░░░
+    KB-005    22 retrievals (  7.3% of slots)  ████████░░░░░░░░░░░░░░░░░
+    KB-004    17 retrievals (  5.7% of slots)  ██████░░░░░░░░░░░░░░░░░░░
+    KB-012    11 retrievals (  3.7% of slots)  ████░░░░░░░░░░░░░░░░░░░░░
+    KB-002     9 retrievals (  3.0% of slots)  ███░░░░░░░░░░░░░░░░░░░░░░
+    KB-007     4 retrievals (  1.3% of slots)  █░░░░░░░░░░░░░░░░░░░░░░░░
+    KB-001     2 retrievals (  0.7% of slots)  ░░░░░░░░░░░░░░░░░░░░░░░░░
+    KB-006     1 retrievals (  0.3% of slots)  ░░░░░░░░░░░░░░░░░░░░░░░░░
+    KB-013     1 retrievals (  0.3% of slots)  ░░░░░░░░░░░░░░░░░░░░░░░░░
+
+  Interpretation (CV=97.2262%): HIGH IMBALANCE -- a few KB documents dominate all retrievals
+   while others are rarely used. The retriever has a strong passage bias. Questions are not being matched to the most relevant specific passages.
+
+========================================================================
+  VAR-4: TOPIC COVERAGE ENTROPY
+  (How evenly are all KB topics covered? 1.0 = perfectly even)
+------------------------------------------------------------------------
+  Shannon entropy     : 3.0496 bits
+  Max possible entropy: 3.7004 bits
+  Topic evenness      : 0.8241  (0=skewed, 1=perfectly even)
+
+  MODERATE EVENNESS -- some topics are retrieved significantly more 
+  than others. The retriever has a mild topic bias. 
+
+========================================================================
+  VAR-5: WITHIN-QUESTION RETRIEVAL SCORE SPREAD
+  (Range between rank-1 and rank-3 scores per question)
+------------------------------------------------------------------------
+  Mean spread (rank1-rank3)  : 0.002678
+  Stdev of spread            : 0.001820
+  Min spread                 : 0.000100
+  Max spread                 : 0.010700
+
+  NEAR-ZERO SPREAD -- the top-3 retrieved passages receive almost 
+  identical scores. BiomedBERT cannot rank passages by relevance; all 
+  disorder-related passages score equally similar to the question. The 
+  retriever is essentially choosing at random among its top candidates. 
+
+========================================================================
+  VAR-6: KB DOCUMENT RANK STABILITY
+  (Does each doc consistently appear at the same rank?)
+------------------------------------------------------------------------
+  Doc ID       Rank 1   Rank 2   Rank 3   Rank Var  Stability
+  --------------------------------------------------------------
+  KB-001            0        0        2     0.0000  stable
+  KB-002            2        2        5     0.7500  variable
+  KB-003            8       10        6     0.6014  variable
+  KB-004            2        9        6     0.4412  stable
+  KB-005            9        4        9     0.8571  variable
+  KB-006            0        0        1     0.0000  stable
+  KB-007            2        1        1     0.9167  variable
+  KB-008           15       15       17     0.6938  variable
+  KB-009           13       27       23     0.5550  variable
+  KB-010           18        9       10     0.7297  variable
+  KB-011           29       17       16     0.6930  variable
+  KB-012            2        5        4     0.5636  variable
+  KB-013            0        1        0     0.0000  stable
+
+========================================================================
+  OVERALL VARIANCE SCORECARD
+------------------------------------------------------------------------
+  Dimension                              Value  Unit      Rating
+  ------------------------------------------------------------------
+  VAR-1  Retrieval score CV             1.2043  % CV      LOW
+                                                          (Low CV = bad (score compression))
+  VAR-2  Answer length CV               4.3283  % CV      VERY LOW
+                                                          (Low CV = bad (answer homogeneity))
+  VAR-3  Doc frequency CV              97.2262  % CV      SEVERE
+                                                          (High CV = bad (doc recycling))
+  VAR-4  Topic evenness                82.4100  %         MODERATE
+                                                          (Low = bad (topic bias))
+  VAR-5  Within-Q spread                2.6780  x1e-3     LOW
+                                                          (Low = bad (can't rank passages))
+
+========================================================================
+  CONCLUSION
+------------------------------------------------------------------------
+  The variance profile above characterises vanilla RAG (LLM Judge 2)
+  as a system with:
+
+  * COMPRESSED retrieval scores -- BiomedBERT cannot differentiate
+    question relevance within the disorder prediction domain.
+  * RECYCLED passages           -- a few KB docs dominate all
+    retrievals, creating answer homogeneity across questions.
+  * UNIFORM answer length       -- answers are fixed-length
+    concatenations regardless of question complexity.
+
+  LLM Judge 1 (BiomedBERT + symbolic rules + calibration) addresses
+  these failures by routing answers through biological constraint
+  rules that produce variable, question-specific responses with
+  calibrated confidence scores -- yielding healthier variance.
+
+========================================================================
+  END OF REPORT
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+========================================================================
