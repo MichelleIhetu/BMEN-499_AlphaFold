@@ -1,0 +1,301 @@
+========================================================================
+  BMEN-499 AlphaFold -- LLM Judge 2: Cosine Similarity Test
+  Evaluation : Inter-answer cosine similarity (TF-IDF)
+  Purpose    : Measure answer diversity / genericity of RAG
+  Questions  : 100
+  Pairs      : 4,950
+  Vocabulary : 177 terms
+========================================================================
+
+WHAT THIS TEST MEASURES
+------------------------------------------------------------------------
+  Cosine similarity between all pairs of predicted answers reveals
+  whether vanilla RAG produces discriminative, question-specific
+  responses or generic, passage-recycling answers. High pairwise
+  similarity indicates the retriever is returning overlapping
+  passage sets for different questions -- a hallmark failure of
+  pure neural retrieval without symbolic grounding.
+
+  TF-IDF weighting down-weights common biomedical terms (pLDDT,
+  DisProt, disorder) that appear in all answers, so similarity
+  scores reflect actual content overlap rather than shared
+  vocabulary. Scores near 1.0 mean near-identical answers.
+
+========================================================================
+  SUMMARY STATISTICS
+------------------------------------------------------------------------
+  Mean cosine similarity       : 0.516746
+  Median cosine similarity     : 0.530823
+  Std deviation                : 0.257787
+  Min similarity               : 0.090173
+  Max similarity (excl. self)  : 1.000000
+  Threshold for 'high sim'     : >= 0.90
+  Pairs above threshold        : 343 / 4,950 (6.93%)
+
+  Interpretation: MODERATE -- some answer recycling
+
+  Moderate similarity suggests partial answer recycling. Some question 
+  types are retrieving distinct passages while others share content. 
+  The symbolic rules in LLM Judge 1 should further improve 
+  differentiation. 
+
+========================================================================
+  SIMILARITY DISTRIBUTION
+------------------------------------------------------------------------
+  Similarity Range                       Count  % of pairs
+  ----------------------------------------------------------
+  0.95 - 1.00 (near-identical)             340       6.87%  ███
+  0.90 - 0.95 (very high)                    3       0.06%  
+  0.80 - 0.90 (high)                       458       9.25%  ████
+  0.70 - 0.80 (moderate-high)              443       8.95%  ████
+  0.50 - 0.70 (moderate)                 1,534      30.99%  ███████████████
+  0.00 - 0.50 (low)                      2,172      43.88%  █████████████████████
+
+========================================================================
+  TOP CO-RETRIEVED KNOWLEDGE BASE DOCUMENT PAIRS
+  (Most frequently retrieved together -- drives answer similarity)
+------------------------------------------------------------------------
+  Doc Pair                Co-occurrences  % of Questions
+  ------------------------------------------------------------
+  KB-009 + KB-011                  39           39.0%
+  KB-008 + KB-011                  33           33.0%
+  KB-009 + KB-010                  32           32.0%
+  KB-003 + KB-009                  22           22.0%
+  KB-008 + KB-009                  22           22.0%
+  KB-003 + KB-010                  17           17.0%
+  KB-010 + KB-011                  15           15.0%
+  KB-004 + KB-005                  12           12.0%
+  KB-005 + KB-008                  11           11.0%
+  KB-005 + KB-011                  10           10.0%
+
+  NOTE: High co-occurrence means these passage pairs appear
+  together in many answers, contributing to answer similarity.
+  Vanilla RAG has no mechanism to prevent this recycling.
+
+========================================================================
+  HIGH SIMILARITY PAIRS  (cosine >= 0.90)
+  343 pairs found
+------------------------------------------------------------------------
+
+  Q002 vs Q076  sim=1.000000
+    Q002: Do confidence scores drop for IDRs shorter than 10 residues?
+    Q076: Are improvements larger for specific protein lengths?
+    Top doc Q002: KB-007  |  Top doc Q076: KB-008
+
+  Q002 vs Q084  sim=1.000000
+    Q002: Do confidence scores drop for IDRs shorter than 10 residues?
+    Q084: Are prediction errors reduced uniformly?
+    Top doc Q002: KB-007  |  Top doc Q084: KB-011
+
+  Q003 vs Q007  sim=1.000000
+    Q003: Do proline and glycine-rich regions consistently score higher disorder confidenc
+    Q007: How much do raw confidence scores overestimate or underestimate true disorder ra
+    Top doc Q003: KB-009  |  Top doc Q007: KB-003
+
+  Q003 vs Q014  sim=1.000000
+    Q003: Do proline and glycine-rich regions consistently score higher disorder confidenc
+    Q014: What is the impact of neurosymbolic calibration on false positive rates in order
+    Top doc Q003: KB-009  |  Top doc Q014: KB-009
+
+  Q003 vs Q026  sim=1.000000
+    Q003: Do proline and glycine-rich regions consistently score higher disorder confidenc
+    Q026: Are improvements consistent across species in the DisProt dataset?
+    Top doc Q003: KB-009  |  Top doc Q026: KB-009
+
+  Q003 vs Q083  sim=1.000000
+    Q003: Do proline and glycine-rich regions consistently score higher disorder confidenc
+    Q083: Does calibration improve ranking of disorder scores?
+    Top doc Q003: KB-009  |  Top doc Q083: KB-009
+
+  Q005 vs Q008  sim=1.000000
+    Q005: How far off are raw confidence scores from the true disorder rate in DisProt?
+    Q008: After applying symbolic smoothing and isotonic calibration together, by how much
+    Top doc Q005: KB-003  |  Top doc Q008: KB-003
+
+  Q005 vs Q009  sim=1.000000
+    Q005: How far off are raw confidence scores from the true disorder rate in DisProt?
+    Q009: What is the MAE between raw disorder confidence scores and DisProt ground truth 
+    Top doc Q005: KB-003  |  Top doc Q009: KB-003
+
+  Q005 vs Q011  sim=1.000000
+    Q005: How far off are raw confidence scores from the true disorder rate in DisProt?
+    Q011: Does a neurosymbolic RAG system reduce variance in disorder confidence predictio
+    Top doc Q005: KB-003  |  Top doc Q011: KB-009
+
+  Q005 vs Q012  sim=1.000000
+    Q005: How far off are raw confidence scores from the true disorder rate in DisProt?
+    Q012: How does the precision-recall curve change after applying neurosymbolic reasonin
+    Top doc Q005: KB-003  |  Top doc Q012: KB-010
+
+  Q005 vs Q013  sim=1.000000
+    Q005: How far off are raw confidence scores from the true disorder rate in DisProt?
+    Q013: Does incorporating symbolic rules improve classification accuracy for borderline
+    Top doc Q005: KB-003  |  Top doc Q013: KB-003
+
+  Q005 vs Q016  sim=1.000000
+    Q005: How far off are raw confidence scores from the true disorder rate in DisProt?
+    Q016: How sensitive are disorder predictions to the choice of retrieval documents in t
+    Top doc Q005: KB-003  |  Top doc Q016: KB-010
+
+  Q005 vs Q017  sim=1.000000
+    Q005: How far off are raw confidence scores from the true disorder rate in DisProt?
+    Q017: Does contextual biological knowledge retrieved via RAG improve long IDR detectio
+    Top doc Q005: KB-003  |  Top doc Q017: KB-010
+
+  Q005 vs Q061  sim=1.000000
+    Q005: How far off are raw confidence scores from the true disorder rate in DisProt?
+    Q061: Does neurosymbolic reasoning help detect functional disorder regions?
+    Top doc Q005: KB-003  |  Top doc Q061: KB-010
+
+  Q005 vs Q066  sim=1.000000
+    Q005: How far off are raw confidence scores from the true disorder rate in DisProt?
+    Q066: Are improvements stable across random seeds?
+    Top doc Q005: KB-003  |  Top doc Q066: KB-010
+
+  Q005 vs Q069  sim=1.000000
+    Q005: How far off are raw confidence scores from the true disorder rate in DisProt?
+    Q069: Does neurosymbolic reasoning improve classification of rare IDRs?
+    Top doc Q005: KB-003  |  Top doc Q069: KB-010
+
+  Q005 vs Q075  sim=1.000000
+    Q005: How far off are raw confidence scores from the true disorder rate in DisProt?
+    Q075: Does neurosymbolic reasoning improve stability across runs?
+    Top doc Q005: KB-003  |  Top doc Q075: KB-010
+
+  Q005 vs Q080  sim=1.000000
+    Q005: How far off are raw confidence scores from the true disorder rate in DisProt?
+    Q080: Are prediction improvements explainable through symbolic rules?
+    Top doc Q005: KB-003  |  Top doc Q080: KB-010
+
+  Q005 vs Q081  sim=1.000000
+    Q005: How far off are raw confidence scores from the true disorder rate in DisProt?
+    Q081: Does neurosymbolic reasoning improve threshold selection?
+    Top doc Q005: KB-003  |  Top doc Q081: KB-010
+
+  Q005 vs Q097  sim=1.000000
+    Q005: How far off are raw confidence scores from the true disorder rate in DisProt?
+    Q097: Does neurosymbolic reasoning improve model calibration slope?
+    Top doc Q005: KB-003  |  Top doc Q097: KB-009
+
+  Q007 vs Q014  sim=1.000000
+    Q007: How much do raw confidence scores overestimate or underestimate true disorder ra
+    Q014: What is the impact of neurosymbolic calibration on false positive rates in order
+    Top doc Q007: KB-003  |  Top doc Q014: KB-009
+
+  Q007 vs Q026  sim=1.000000
+    Q007: How much do raw confidence scores overestimate or underestimate true disorder ra
+    Q026: Are improvements consistent across species in the DisProt dataset?
+    Top doc Q007: KB-003  |  Top doc Q026: KB-009
+
+  Q007 vs Q083  sim=1.000000
+    Q007: How much do raw confidence scores overestimate or underestimate true disorder ra
+    Q083: Does calibration improve ranking of disorder scores?
+    Top doc Q007: KB-003  |  Top doc Q083: KB-009
+
+  Q008 vs Q009  sim=1.000000
+    Q008: After applying symbolic smoothing and isotonic calibration together, by how much
+    Q009: What is the MAE between raw disorder confidence scores and DisProt ground truth 
+    Top doc Q008: KB-003  |  Top doc Q009: KB-003
+
+  Q008 vs Q011  sim=1.000000
+    Q008: After applying symbolic smoothing and isotonic calibration together, by how much
+    Q011: Does a neurosymbolic RAG system reduce variance in disorder confidence predictio
+    Top doc Q008: KB-003  |  Top doc Q011: KB-009
+
+  Q008 vs Q012  sim=1.000000
+    Q008: After applying symbolic smoothing and isotonic calibration together, by how much
+    Q012: How does the precision-recall curve change after applying neurosymbolic reasonin
+    Top doc Q008: KB-003  |  Top doc Q012: KB-010
+
+  Q008 vs Q013  sim=1.000000
+    Q008: After applying symbolic smoothing and isotonic calibration together, by how much
+    Q013: Does incorporating symbolic rules improve classification accuracy for borderline
+    Top doc Q008: KB-003  |  Top doc Q013: KB-003
+
+  Q008 vs Q016  sim=1.000000
+    Q008: After applying symbolic smoothing and isotonic calibration together, by how much
+    Q016: How sensitive are disorder predictions to the choice of retrieval documents in t
+    Top doc Q008: KB-003  |  Top doc Q016: KB-010
+
+  Q008 vs Q017  sim=1.000000
+    Q008: After applying symbolic smoothing and isotonic calibration together, by how much
+    Q017: Does contextual biological knowledge retrieved via RAG improve long IDR detectio
+    Top doc Q008: KB-003  |  Top doc Q017: KB-010
+
+  Q008 vs Q061  sim=1.000000
+    Q008: After applying symbolic smoothing and isotonic calibration together, by how much
+    Q061: Does neurosymbolic reasoning help detect functional disorder regions?
+    Top doc Q008: KB-003  |  Top doc Q061: KB-010
+
+  ... and 313 more pairs above threshold (showing top 30)
+
+========================================================================
+  TOP 10 MOST GENERIC ANSWERS
+  (Highest mean similarity to all other answers)
+------------------------------------------------------------------------
+  Rank   Q#      Mean Sim  Top Doc     Question
+  --------------------------------------------------------------------
+  1      Q21     0.629297  KB-009      How does calibration affect AUROC compared to raw 
+  2      Q23     0.629297  KB-008      What is the distribution of confidence score corre
+  3      Q28     0.629297  KB-011      How does retrieval quality impact final prediction
+  4      Q29     0.629297  KB-011      Are confidence score corrections correlated with s
+  5      Q31     0.629297  KB-008      How does entropy of predictions change after symbo
+  6      Q32     0.629297  KB-008      Does the system reduce systematic bias in terminal
+  7      Q33     0.629297  KB-009      Are gains from neurosymbolic processing statistica
+  8      Q39     0.629297  KB-011      Are prediction improvements uniform across all con
+  9      Q47     0.629297  KB-011      Does performance degrade on unseen protein structu
+  10     Q53     0.629297  KB-008      Does calibration reduce prediction skewness?
+
+========================================================================
+  TOP 10 MOST DISTINCT ANSWERS
+  (Lowest mean similarity to all other answers)
+------------------------------------------------------------------------
+  Rank   Q#      Mean Sim  Top Doc     Question
+  --------------------------------------------------------------------
+  1      Q60     0.250622  KB-005      How does performance change with different window 
+  2      Q74     0.250622  KB-005      How does performance compare before and after norm
+  3      Q25     0.305061  KB-004      How does performance vary across different protein
+  4      Q78     0.305061  KB-012      How does it handle missing sequence information?
+  5      Q86     0.305061  KB-005      How does performance change with different retriev
+  6      Q94     0.305061  KB-004      How does performance compare across different data
+  7      Q52     0.315239  KB-012      How does the system perform on proteins with multi
+  8      Q57     0.361590  KB-005      Does it generalize across different disorder predi
+  9      Q59     0.370240  KB-011      Does retrieval of structural data improve predicti
+  10     Q77     0.370240  KB-011      Does the system better align predictions with biol
+
+========================================================================
+  SIMILARITY PERCENTILE TABLE
+------------------------------------------------------------------------
+  Percentile        Cosine Similarity
+  ------------------------------------
+  P10                        0.150023
+  P25                        0.299288
+  P50                        0.530823
+  P75                        0.709577
+  P90                        0.874500
+  P95                        1.000000
+  P99                        1.000000
+
+========================================================================
+  IMPLICATIONS FOR LLM JUDGE 1 VS JUDGE 2 COMPARISON
+------------------------------------------------------------------------
+  This cosine similarity test quantifies a core limitation of
+  vanilla RAG: answer homogeneity. When BiomedBERT encodes all
+  disorder-related questions into a tight embedding cluster,
+  the retriever returns overlapping passage sets, producing
+  highly similar answers regardless of question specificity.
+
+  LLM Judge 1 addresses this through symbolic rules that:
+    (1) Route questions to rule-specific answer branches
+    (2) Apply pLDDT / composition / threshold rules selectively
+    (3) Produce calibrated confidence scores that vary by case
+    (4) Prevent passage recycling through hard constraints
+
+  Expected: LLM Judge 1 inter-answer cosine similarity should
+  be significantly lower than LLM Judge 2, demonstrating that
+  symbolic rules improve answer discriminability.
+
+========================================================================
+  END OF REPORT
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+========================================================================
