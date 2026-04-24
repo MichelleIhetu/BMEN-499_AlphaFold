@@ -1,0 +1,2089 @@
+======================================================================
+  BMEN-499 AlphaFold -- Likert Score: LLM Judge 2 vs Ground Truth
+  Model   : Vanilla RAG -- BiomedBERT Retriever (LLM Judge 2)
+  Metric  : 5-Point Likert Scale across 5 explainability criteria
+  Dataset : 13,396 DisProt proteins
+  Questions evaluated: 100
+======================================================================
+
+WHAT IS LLM JUDGE 2 (VANILLA RAG)?
+----------------------------------------------------------------------
+  BiomedBERT retrieves the most semantically similar DisProt
+  knowledge base passages and concatenates them as the answer.
+  No symbolic rules, no calibration -- pure neural retrieval.
+  Compare with LLM Judge 1 to see the value of symbolic grounding.
+
+LIKERT SCALE
+----------------------------------------------------------------------
+  1 = Very Poor | 2 = Poor | 3 = Acceptable | 4 = Good | 5 = Excellent
+
+  CRITERION 1 -- Factual Accuracy (weight=30%)
+    Numbers within 3% and key facts match ground truth.
+
+  CRITERION 2 -- Completeness (weight=25%)
+    Prediction covers all key GT content words and sentences.
+
+  CRITERION 3 -- Clarity (weight=20%)
+    Sentence length (ideal 15-25 words) and word variety.
+
+  CRITERION 4 -- Relevance (weight=15%)
+    Question keyword coverage in the answer.
+
+  CRITERION 5 -- Scientific Depth (weight=10%)
+    Biomedical terms like IDR, pLDDT, Pfam, proline present.
+
+OVERALL RESULTS SUMMARY
+----------------------------------------------------------------------
+  Mean overall Likert score  : 3.831 / 5.0  (std=0.145)
+  Mean factual accuracy      : 4.74 / 5
+  Mean completeness          : 4.74 / 5
+  Mean clarity               : 4.00 / 5
+  Mean relevance             : 1.31 / 5
+  Mean scientific depth      : 2.27 / 5
+  Best  : Q15 = 4.050 (GOOD (4))
+  Worst : Q8 = 3.450 (ACCEPTABLE (3))
+
+  Quality breakdown:
+    Excellent  (4.5-5.0) :   0 questions
+    Good       (3.5-4.5) :  97 questions
+    Acceptable (2.5-3.5) :   3 questions
+    Poor       (1.5-2.5) :   0 questions
+    Very Poor  (0.0-1.5) :   0 questions
+
+  Criteria Radar (mean scores):
+    Factual Accuracy  [##################..] 4.74/5
+    Completeness      [##################..] 4.74/5
+    Clarity           [################....] 4.00/5
+    Relevance         [#####...............] 1.31/5
+    Scientific Depth  [#########...........] 2.27/5
+
+======================================================================
+  QUESTION-BY-QUESTION LIKERT SCORES
+======================================================================
+
+[Q1] Is a disorder score above 0.5 a reliable cutoff for calling a region disordered?
+  OVERALL LIKERT : 3.600/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.58
+    Completeness      : 4/5  -- Coverage=0.58, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=6.3 words, Uniqueness=0.82
+    Relevance         : 2/5  -- Question keyword coverage=0.33 (3/9 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: intrinsically disordered, idr, disprot, threshold
+    OVERALL           : 3.600/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q2] Do confidence scores drop for IDRs shorter than 10 residues?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    Of 0 DisProt regions 0.0% are shorter than 10 residues with mean 
+    0.0 aa. Short IDRs are hard to predict reliably due to limited se
+    quence context. Sliding window averaging smooths per-residue diso
+    rder scores but windows larger than mean region length risk smoot
+    hing out short IDRs entirely.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.60
+    Completeness      : 4/5  -- Coverage=0.60, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=11.5 words, Uniqueness=0.92
+    Relevance         : 4/5  -- Question keyword coverage=0.71 (5/7 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: idr, residue, disprot, sequence
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q3] Do proline and glycine-rich regions consistently score higher disorder confidence than average?
+  OVERALL LIKERT : 3.600/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.58
+    Completeness      : 4/5  -- Coverage=0.58, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=6.3 words, Uniqueness=0.82
+    Relevance         : 2/5  -- Question keyword coverage=0.30 (3/10 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: intrinsically disordered, idr, disprot, threshold
+    OVERALL           : 3.600/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q4] Does applying a sliding window smooth out confidence scores without losing true IDR signal?
+  OVERALL LIKERT : 3.600/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If sliding window size exceeds this mean short disor
+    dered regions risk being averaged out and lost entirely.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.62
+    Completeness      : 4/5  -- Coverage=0.62, Length ratio=0.80
+    Clarity           : 4/5  -- Avg sentence len=9.8 words, Uniqueness=0.88
+    Relevance         : 2/5  -- Question keyword coverage=0.33 (4/12 terms)
+    Scientific Depth  : 3/5  -- Science terms=3/25: amino acid, residue, disprot
+    OVERALL           : 3.600/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q5] How far off are raw confidence scores from the true disorder rate in DisProt?
+  OVERALL LIKERT : 3.750/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.58
+    Completeness      : 4/5  -- Coverage=0.58, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=6.3 words, Uniqueness=0.82
+    Relevance         : 3/5  -- Question keyword coverage=0.40 (4/10 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: intrinsically disordered, idr, disprot, threshold
+    OVERALL           : 3.750/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q6] When a confidence score falls in the uncertain range (0.4–0.6), does applying a sliding window smooth it toward the correct label, and what window size does the literature support?
+  OVERALL LIKERT : 3.600/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If sliding window size exceeds this mean short disor
+    dered regions risk being averaged out and lost entirely.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.62
+    Completeness      : 4/5  -- Coverage=0.62, Length ratio=0.80
+    Clarity           : 4/5  -- Avg sentence len=9.8 words, Uniqueness=0.88
+    Relevance         : 2/5  -- Question keyword coverage=0.16 (3/19 terms)
+    Scientific Depth  : 3/5  -- Science terms=3/25: amino acid, residue, disprot
+    OVERALL           : 3.600/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q7] How much do raw confidence scores overestimate or underestimate true disorder rates across DisProt?
+  OVERALL LIKERT : 3.600/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.58
+    Completeness      : 4/5  -- Coverage=0.58, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=6.3 words, Uniqueness=0.82
+    Relevance         : 2/5  -- Question keyword coverage=0.33 (4/12 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: intrinsically disordered, idr, disprot, threshold
+    OVERALL           : 3.600/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q8] After applying symbolic smoothing and isotonic calibration together, by how much does residue level F1 improve over raw scores, and is this improvement consistent with gains reported for similar post processing pipelines in the literature?
+  OVERALL LIKERT : 3.450/5  --  ACCEPTABLE (3)
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    Of 0 DisProt regions 0.0% are shorter than 10 residues with mean 
+    0.0 aa. Short IDRs are hard to predict reliably due to limited se
+    quence context. Sliding window averaging smooths per-residue diso
+    rder scores but windows larger than mean region length risk smoot
+    hing out short IDRs entirely.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.60
+    Completeness      : 4/5  -- Coverage=0.60, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=11.5 words, Uniqueness=0.92
+    Relevance         : 1/5  -- Question keyword coverage=0.12 (3/25 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: idr, residue, disprot, sequence
+    OVERALL           : 3.450/5  --  ACCEPTABLE (3)
+----------------------------------------------------------------------
+
+[Q9] What is the MAE between raw disorder confidence scores and DisProt ground truth labels, and how many standard deviations (Z-score) away from the mean prediction is each incorrectly labeled residue?
+  OVERALL LIKERT : 3.600/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.58
+    Completeness      : 4/5  -- Coverage=0.58, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=6.3 words, Uniqueness=0.82
+    Relevance         : 2/5  -- Question keyword coverage=0.32 (7/22 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: intrinsically disordered, idr, disprot, threshold
+    OVERALL           : 3.600/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q10] Do N-terminal, C-terminal, and internal IDRs show different MAE profiles, and are the Z-scores of prediction errors normally distributed within each positional group or skewed in a way that suggests a systematic bias?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/20 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q11] Does a neurosymbolic RAG system reduce variance in disorder confidence predictions compared to raw model outputs?
+  OVERALL LIKERT : 3.450/5  --  ACCEPTABLE (3)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.58
+    Completeness      : 4/5  -- Coverage=0.58, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=6.3 words, Uniqueness=0.82
+    Relevance         : 1/5  -- Question keyword coverage=0.08 (1/12 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: intrinsically disordered, idr, disprot, threshold
+    OVERALL           : 3.450/5  --  ACCEPTABLE (3)
+----------------------------------------------------------------------
+
+[Q12] How does the precision-recall curve change after applying neurosymbolic reasoning?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/9 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q13] Does incorporating symbolic rules improve classification accuracy for borderline disorder regions?
+  OVERALL LIKERT : 3.600/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.58
+    Completeness      : 4/5  -- Coverage=0.58, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=6.3 words, Uniqueness=0.82
+    Relevance         : 2/5  -- Question keyword coverage=0.22 (2/9 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: intrinsically disordered, idr, disprot, threshold
+    OVERALL           : 3.600/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q14] What is the impact of neurosymbolic calibration on false positive rates in ordered regions?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/9 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q15] Does the neurosymbolic approach improve prediction consistency across homologous proteins?
+  OVERALL LIKERT : 4.050/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 2/5  -- Question keyword coverage=0.12 (1/8 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 4.050/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q16] How sensitive are disorder predictions to the choice of retrieval documents in the RAG system?
+  OVERALL LIKERT : 3.450/5  --  ACCEPTABLE (3)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.58
+    Completeness      : 4/5  -- Coverage=0.58, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=6.3 words, Uniqueness=0.82
+    Relevance         : 1/5  -- Question keyword coverage=0.11 (1/9 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: intrinsically disordered, idr, disprot, threshold
+    OVERALL           : 3.450/5  --  ACCEPTABLE (3)
+----------------------------------------------------------------------
+
+[Q17] Does contextual biological knowledge retrieved via RAG improve long IDR detection accuracy?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/11 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q18] How does performance differ between short and long IDRs after neurosymbolic processing?
+  OVERALL LIKERT : 3.600/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    Of 0 DisProt regions 0.0% are shorter than 10 residues with mean 
+    0.0 aa. Short IDRs are hard to predict reliably due to limited se
+    quence context. Sliding window averaging smooths per-residue diso
+    rder scores but windows larger than mean region length risk smoot
+    hing out short IDRs entirely.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.60
+    Completeness      : 4/5  -- Coverage=0.60, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=11.5 words, Uniqueness=0.92
+    Relevance         : 2/5  -- Question keyword coverage=0.20 (2/10 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: idr, residue, disprot, sequence
+    OVERALL           : 3.600/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q19] Are certain amino acid compositions more responsive to symbolic correction rules?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/8 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q20] Does neurosymbolic reasoning reduce prediction noise in low-confidence regions?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/8 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q21] How does calibration affect AUROC compared to raw predictions?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/7 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q22] Does symbolic smoothing introduce bias toward overprediction of disorder?
+  OVERALL LIKERT : 3.600/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.58
+    Completeness      : 4/5  -- Coverage=0.58, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=6.3 words, Uniqueness=0.82
+    Relevance         : 2/5  -- Question keyword coverage=0.14 (1/7 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: intrinsically disordered, idr, disprot, threshold
+    OVERALL           : 3.600/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q23] What is the distribution of confidence score corrections applied by the neurosymbolic system?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/8 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q24] Does the system improve recall without sacrificing precision?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q25] How does performance vary across different protein families?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/7 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q26] Are improvements consistent across species in the DisProt dataset?
+  OVERALL LIKERT : 4.050/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 2/5  -- Question keyword coverage=0.17 (1/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 4.050/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q27] Does the neurosymbolic model perform better on experimentally validated long IDRs?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/8 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q28] How does retrieval quality impact final prediction confidence?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/7 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q29] Are confidence score corrections correlated with sequence length?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q30] Does neurosymbolic reasoning improve predictions for low-complexity regions?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/7 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q31] How does entropy of predictions change after symbolic reasoning?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/7 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q32] Does the system reduce systematic bias in terminal regions?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q33] Are gains from neurosymbolic processing statistically significant?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/5 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q34] How does performance compare against baseline machine learning models?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/8 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q35] Does adding domain knowledge improve classification boundaries?
+  OVERALL LIKERT : 3.550/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    92.6% of DisProt proteins contain at least one Pfam structured do
+    main alongside disordered regions. Structured domains and IDRs fr
+    equently co-occur in the same protein. Each region must be evalua
+    ted independently rather than labeling the whole protein as order
+    ed or disordered.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    92.6% of DisProt proteins contain Pfam domains alongside disorder
+    ed regions confirming IDRs and structured domains frequently co-o
+    ccur. Each region must be evaluated independently. Proteins with 
+    no Pfam domains and disorder content above 0.5 are classified as 
+    intrinsically disordered proteins IDPs.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.52
+    Completeness      : 4/5  -- Coverage=0.52, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=10.2 words, Uniqueness=0.82
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 4/5  -- Science terms=6/25: intrinsically disordered, idr, idp, pfam, disprot
+    OVERALL           : 3.550/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q36] How robust is the model to noisy or incomplete retrieval data?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/7 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q37] Does the neurosymbolic system improve calibration curves?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/5 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q38] How does Brier score change after calibration?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q39] Are prediction improvements uniform across all confidence intervals?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/7 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q40] Does neurosymbolic reasoning improve interpretability of predictions?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/5 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q41] How does performance change when removing symbolic rules?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/7 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q42] Does the system better detect disordered binding regions?
+  OVERALL LIKERT : 3.600/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.58
+    Completeness      : 4/5  -- Coverage=0.58, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=6.3 words, Uniqueness=0.82
+    Relevance         : 2/5  -- Question keyword coverage=0.17 (1/6 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: intrinsically disordered, idr, disprot, threshold
+    OVERALL           : 3.600/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q43] Are certain motifs better recognized after symbolic processing?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/7 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q44] How does the system handle conflicting retrieved evidence?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q45] Does neurosymbolic reasoning reduce overfitting?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/4 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q46] What is the effect on Matthews Correlation Coefficient (MCC)?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q47] Does performance degrade on unseen protein structures?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/5 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q48] How does retrieval latency affect prediction quality?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q49] Does symbolic reasoning improve alignment with experimental annotations?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q50] Are prediction improvements localized or global across sequences?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q51] Does neurosymbolic RAG help identify disorder-to-order transitions?
+  OVERALL LIKERT : 3.600/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.58
+    Completeness      : 4/5  -- Coverage=0.58, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=6.3 words, Uniqueness=0.82
+    Relevance         : 2/5  -- Question keyword coverage=0.14 (1/7 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: intrinsically disordered, idr, disprot, threshold
+    OVERALL           : 3.600/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q52] How does the system perform on proteins with multiple IDRs?
+  OVERALL LIKERT : 4.050/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 2/5  -- Question keyword coverage=0.17 (1/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 4.050/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q53] Does calibration reduce prediction skewness?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/4 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q54] Are confidence intervals narrower after processing?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/5 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q55] Does neurosymbolic reasoning improve classification of ambiguous residues?
+  OVERALL LIKERT : 3.600/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    Of 0 DisProt regions 0.0% are shorter than 10 residues with mean 
+    0.0 aa. Short IDRs are hard to predict reliably due to limited se
+    quence context. Sliding window averaging smooths per-residue diso
+    rder scores but windows larger than mean region length risk smoot
+    hing out short IDRs entirely.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.60
+    Completeness      : 4/5  -- Coverage=0.60, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=11.5 words, Uniqueness=0.92
+    Relevance         : 2/5  -- Question keyword coverage=0.17 (1/6 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: idr, residue, disprot, sequence
+    OVERALL           : 3.600/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q56] How does the system perform under cross-validation?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q57] Does it generalize across different disorder prediction tools?
+  OVERALL LIKERT : 3.600/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.58
+    Completeness      : 4/5  -- Coverage=0.58, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=6.3 words, Uniqueness=0.82
+    Relevance         : 2/5  -- Question keyword coverage=0.17 (1/6 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: intrinsically disordered, idr, disprot, threshold
+    OVERALL           : 3.600/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q58] Are improvements correlated with sequence conservation?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/4 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q59] Does retrieval of structural data improve predictions?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/5 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q60] How does performance change with different window sizes?
+  OVERALL LIKERT : 3.600/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If sliding window size exceeds this mean short disor
+    dered regions risk being averaged out and lost entirely.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.62
+    Completeness      : 4/5  -- Coverage=0.62, Length ratio=0.80
+    Clarity           : 4/5  -- Avg sentence len=9.8 words, Uniqueness=0.88
+    Relevance         : 2/5  -- Question keyword coverage=0.17 (1/6 terms)
+    Scientific Depth  : 3/5  -- Science terms=3/25: amino acid, residue, disprot
+    OVERALL           : 3.600/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q61] Does neurosymbolic reasoning help detect functional disorder regions?
+  OVERALL LIKERT : 3.600/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.58
+    Completeness      : 4/5  -- Coverage=0.58, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=6.3 words, Uniqueness=0.82
+    Relevance         : 2/5  -- Question keyword coverage=0.29 (2/7 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: intrinsically disordered, idr, disprot, threshold
+    OVERALL           : 3.600/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q62] Are gains higher in specific residue compositions?
+  OVERALL LIKERT : 3.600/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    Of 0 DisProt regions 0.0% are shorter than 10 residues with mean 
+    0.0 aa. Short IDRs are hard to predict reliably due to limited se
+    quence context. Sliding window averaging smooths per-residue diso
+    rder scores but windows larger than mean region length risk smoot
+    hing out short IDRs entirely.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.60
+    Completeness      : 4/5  -- Coverage=0.60, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=11.5 words, Uniqueness=0.92
+    Relevance         : 2/5  -- Question keyword coverage=0.20 (1/5 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: idr, residue, disprot, sequence
+    OVERALL           : 3.600/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q63] Does the system improve classification of edge residues in IDRs?
+  OVERALL LIKERT : 3.600/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    Of 0 DisProt regions 0.0% are shorter than 10 residues with mean 
+    0.0 aa. Short IDRs are hard to predict reliably due to limited se
+    quence context. Sliding window averaging smooths per-residue diso
+    rder scores but windows larger than mean region length risk smoot
+    hing out short IDRs entirely.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.60
+    Completeness      : 4/5  -- Coverage=0.60, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=11.5 words, Uniqueness=0.92
+    Relevance         : 2/5  -- Question keyword coverage=0.33 (2/6 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: idr, residue, disprot, sequence
+    OVERALL           : 3.600/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q64] How does prediction confidence correlate with experimental uncertainty?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q65] Does neurosymbolic reasoning improve long-range sequence dependencies?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/7 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q66] Are improvements stable across random seeds?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/5 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q67] Does the system perform better on curated subsets of DisProt?
+  OVERALL LIKERT : 4.050/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 2/5  -- Question keyword coverage=0.17 (1/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 4.050/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q68] How does performance change when excluding uncertain regions?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/7 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q69] Does neurosymbolic reasoning improve classification of rare IDRs?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q70] Are prediction gains dependent on dataset size?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/5 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q71] Does the system improve classification under imbalanced data?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q72] How does it perform on noisy annotations?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/4 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q73] Does symbolic reasoning reduce prediction drift?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/5 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q74] How does performance compare before and after normalization?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q75] Does neurosymbolic reasoning improve stability across runs?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q76] Are improvements larger for specific protein lengths?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/5 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q77] Does the system better align predictions with biological function?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q78] How does it handle missing sequence information?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/5 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q79] Does retrieval diversity impact performance?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/4 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q80] Are prediction improvements explainable through symbolic rules?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q81] Does neurosymbolic reasoning improve threshold selection?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/5 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q82] How does the system perform on synthetic datasets?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/5 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q83] Does calibration improve ranking of disorder scores?
+  OVERALL LIKERT : 3.750/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.58
+    Completeness      : 4/5  -- Coverage=0.58, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=6.3 words, Uniqueness=0.82
+    Relevance         : 3/5  -- Question keyword coverage=0.40 (2/5 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: intrinsically disordered, idr, disprot, threshold
+    OVERALL           : 3.750/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q84] Are prediction errors reduced uniformly?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/4 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q85] Does neurosymbolic reasoning improve classification confidence intervals?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q86] How does performance change with different retrieval strategies?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q87] Does the system improve detection of transient disorder?
+  OVERALL LIKERT : 3.600/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.58
+    Completeness      : 4/5  -- Coverage=0.58, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=6.3 words, Uniqueness=0.82
+    Relevance         : 2/5  -- Question keyword coverage=0.20 (1/5 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: intrinsically disordered, idr, disprot, threshold
+    OVERALL           : 3.600/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q88] Are gains consistent across evaluation metrics?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/5 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q89] Does neurosymbolic reasoning reduce model uncertainty?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/5 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q90] How does it perform under adversarial perturbations?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/5 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q91] Does the system improve robustness to sequence mutations?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/5 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q92] Are prediction improvements correlated with structural flexibility?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/5 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q93] Does neurosymbolic reasoning improve functional annotation alignment?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q94] How does performance compare across different datasets?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q95] Does the system improve classification of partially disordered regions?
+  OVERALL LIKERT : 3.600/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 4/5  -- Number match=1.00, Term overlap=0.58
+    Completeness      : 4/5  -- Coverage=0.58, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=6.3 words, Uniqueness=0.82
+    Relevance         : 2/5  -- Question keyword coverage=0.17 (1/6 terms)
+    Scientific Depth  : 3/5  -- Science terms=4/25: intrinsically disordered, idr, disprot, threshold
+    OVERALL           : 3.600/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q96] Are gains consistent across evaluation folds?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/5 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q97] Does neurosymbolic reasoning improve model calibration slope?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q98] How does the system perform on edge-case proteins?
+  OVERALL LIKERT : 4.050/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 2/5  -- Question keyword coverage=0.17 (1/6 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 4.050/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q99] Does neurosymbolic reasoning reduce prediction bias?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/5 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+[Q100] Are overall improvements sufficient to justify added system complexity?
+  OVERALL LIKERT : 3.900/5  --  GOOD (4)
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LIKERT SCORES:
+    Factual Accuracy  : 5/5  -- Number match=1.00, Term overlap=1.00
+    Completeness      : 5/5  -- Coverage=1.00, Length ratio=1.00
+    Clarity           : 4/5  -- Avg sentence len=7.0 words, Uniqueness=1.00
+    Relevance         : 1/5  -- Question keyword coverage=0.00 (0/7 terms)
+    Scientific Depth  : 2/5  -- Science terms=1/25: disprot
+    OVERALL           : 3.900/5  --  GOOD (4)
+----------------------------------------------------------------------
+
+======================================================================
+  END OF LIKERT SCORE -- LLM Judge 2 (Vanilla RAG)
+  Mean Likert: 3.831/5 | Excellent: 0 | Good: 97 | Acceptable: 3 | Poor: 0 | Very Poor: 0
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
