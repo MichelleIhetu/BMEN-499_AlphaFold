@@ -1,0 +1,195 @@
+======================================================================
+  BMEN-499 AlphaFold -- LLM Judge 3: Contradiction Count
+  Script  : contradiction_count3.py
+  Source  : LLM3_predictions.txt (BioMistral RAG)
+  Questions analyzed : 100
+======================================================================
+
+CONTRADICTION RULE DEFINITIONS
+----------------------------------------------------------------------
+  C1    Threshold reliability conflict
+        Answer states 0.5 is the standard cutoff, but also states 0.5 misses true IDRs
+  C2    pLDDT polarity conflict
+        Answer conflates pLDDT < 50 (disorder) with pLDDT >= 70 (order) as equally 'reliable'
+  C3    Short IDR reliability conflict
+        Answer calls short IDRs unreliable but also cites them as validated DisProt regions
+  C4    Proline signal strength conflict
+        Answer calls proline a 'strong' predictor but elsewhere qualifies it as needing combination
+  C5    Glycine signal strength conflict
+        Answer implies glycine contributes meaningfully to disorder but also calls it weak
+  C6    Gray zone classification conflict
+        Answer calls 0.3-0.5 range ambiguous/unclassifiable but also assigns a label to it
+  C7    Experimental vs computational precedence conflict
+        Answer states DisProt experimental data takes precedence, but also calls pLDDT the most reliable signal
+  C8    Pfam co-occurrence vs whole-protein classification conflict
+        Answer notes IDRs and domains co-occur but also classifies the whole protein
+  C9    Sliding window signal loss conflict
+        Answer warns sliding window smooths out short IDRs, but uses window averaging as a solution
+  C10   IDP classification vs Pfam presence conflict
+        Answer classifies protein as IDP (no Pfam) while also citing Pfam domain co-occurrence
+
+PER-QUESTION CONTRADICTION FLAGS
+----------------------------------------------------------------------
+     Q    C1    C2    C3    C4    C5    C6    C7    C8    C9   C10  Total  Severity
+  ---------------------------------------------------------------------------------
+     1     1     0     0     0     0     0     0     0     0     0      1  LOW 
+     2     0     0     1     0     0     0     0     0     0     0      1  LOW 
+     3     0     0     0     1     1     0     0     0     0     0      2  MED 
+     4     0     0     0     0     0     0     0     0     1     0      1  LOW 
+     5     0     0     0     0     0     0     0     0     1     0      1  LOW 
+     6     0     0     0     0     0     0     0     0     1     0      1  LOW 
+     7     1     0     0     0     0     0     0     0     0     0      1  LOW 
+     8     0     0     0     0     0     0     0     0     1     0      1  LOW 
+     9     0     0     0     0     0     0     0     0     1     0      1  LOW 
+    10     1     0     1     0     0     0     0     0     0     0      2  MED 
+    11     0     1     0     0     0     0     1     0     0     0      2  MED 
+    12     0     0     0     0     0     0     0     0     0     0      0  NONE
+    13     0     1     0     0     0     0     1     0     0     0      2  MED 
+    14     0     1     0     0     0     0     1     0     0     0      2  MED 
+    15     0     0     0     0     0     0     0     1     0     1      2  MED 
+    16     0     1     0     0     0     0     1     0     1     0      3  MED 
+    17     0     1     0     0     0     0     1     0     0     0      2  MED 
+    18     0     0     1     0     0     0     0     0     0     0      1  LOW 
+    19     0     0     1     0     0     0     0     0     0     0      1  LOW 
+    20     0     1     0     0     0     0     1     0     0     0      2  MED 
+    21     0     0     1     0     0     0     0     0     0     0      1  LOW 
+    22     1     0     0     0     0     0     0     0     0     0      1  LOW 
+    23     1     0     1     0     0     0     0     0     0     0      2  MED 
+    24     1     0     0     1     1     0     0     0     0     0      3  MED 
+    25     1     0     0     0     0     0     0     1     0     1      3  MED 
+    26     0     1     0     0     0     0     1     0     0     0      2  MED 
+    27     0     1     1     0     0     0     1     0     0     0      3  MED 
+    28     0     1     0     0     0     0     1     0     0     0      2  MED 
+    29     0     0     1     0     0     0     0     0     0     0      1  LOW 
+    30     0     1     0     0     0     0     1     0     0     0      2  MED 
+    31     0     0     0     0     1     0     0     0     0     0      1  LOW 
+    32     0     0     1     0     0     0     0     0     0     0      1  LOW 
+    33     0     1     0     0     0     0     1     0     0     0      2  MED 
+    34     1     0     0     0     0     0     0     1     0     0      2  MED 
+    35     0     0     0     0     0     0     0     1     0     0      1  LOW 
+    36     0     0     0     1     1     0     0     0     0     0      2  MED 
+    37     0     0     0     0     0     0     0     0     0     0      0  NONE
+    38     0     0     0     0     1     0     0     0     0     0      1  LOW 
+    39     1     0     1     0     0     0     0     0     0     0      2  MED 
+    40     0     0     0     0     0     0     0     0     0     0      0  NONE
+    41     1     0     0     0     0     0     0     0     0     0      1  LOW 
+    42     0     0     0     0     0     0     0     1     0     1      2  MED 
+    43     0     0     0     0     0     0     0     0     0     0      0  NONE
+    44     1     0     0     0     0     0     0     1     0     0      2  MED 
+    45     0     1     0     0     0     0     1     0     0     0      2  MED 
+    46     1     0     0     0     0     0     0     1     0     0      2  MED 
+    47     0     0     0     0     0     0     0     1     0     1      2  MED 
+    48     1     0     0     0     1     0     0     0     0     0      2  MED 
+    49     0     1     0     0     0     0     1     0     0     0      2  MED 
+    50     0     1     0     0     0     0     1     0     0     0      2  MED 
+    51     0     0     0     0     0     0     0     0     0     0      0  NONE
+    52     1     0     0     0     0     0     0     1     0     1      3  MED 
+    53     0     0     0     1     1     0     0     0     0     0      2  MED 
+    54     0     0     0     0     1     0     0     0     0     0      1  LOW 
+    55     0     1     0     0     0     0     1     0     0     0      2  MED 
+    56     1     0     0     0     0     0     0     0     0     0      1  LOW 
+    57     1     0     0     0     0     0     0     0     0     0      1  LOW 
+    58     0     0     0     0     0     0     0     1     0     0      1  LOW 
+    59     0     0     0     0     1     0     0     0     0     0      1  LOW 
+    60     1     0     0     0     0     0     0     1     0     1      3  MED 
+    61     0     1     0     0     0     0     1     0     0     0      2  MED 
+    62     0     1     0     0     0     0     1     0     0     0      2  MED 
+    63     0     1     0     0     0     0     1     0     0     0      2  MED 
+    64     0     0     0     1     1     0     0     0     0     0      2  MED 
+    65     0     1     0     0     0     0     1     0     0     0      2  MED 
+    66     0     1     0     0     0     0     1     0     1     0      3  MED 
+    67     0     1     0     0     0     0     1     0     0     0      2  MED 
+    68     1     0     0     0     0     0     0     1     0     1      3  MED 
+    69     0     1     0     0     0     0     1     0     0     0      2  MED 
+    70     1     0     0     0     0     0     0     1     0     1      3  MED 
+    71     1     0     0     0     0     0     0     0     0     0      1  LOW 
+    72     0     0     0     0     0     0     0     1     0     1      2  MED 
+    73     0     1     0     0     1     0     1     0     0     0      3  MED 
+    74     1     0     0     0     0     0     0     0     0     0      1  LOW 
+    75     0     1     0     0     0     0     1     0     0     0      2  MED 
+    76     0     0     1     0     0     0     0     0     0     0      1  LOW 
+    77     0     0     0     0     0     0     0     1     0     1      2  MED 
+    78     0     0     0     0     0     0     0     1     0     1      2  MED 
+    79     1     0     0     0     0     0     0     1     0     0      2  MED 
+    80     0     1     0     0     0     0     1     0     0     0      2  MED 
+    81     0     1     0     0     0     0     1     0     0     0      2  MED 
+    82     1     0     0     0     0     0     0     1     0     0      2  MED 
+    83     0     1     0     0     0     0     1     0     0     0      2  MED 
+    84     1     0     1     0     0     0     0     0     0     0      2  MED 
+    85     0     1     0     0     0     0     1     0     0     0      2  MED 
+    86     1     0     0     0     0     0     0     1     0     1      3  MED 
+    87     1     0     0     0     1     0     0     0     0     0      2  MED 
+    88     1     0     0     0     0     0     0     1     0     0      2  MED 
+    89     0     0     0     0     0     0     0     0     0     0      0  NONE
+    90     0     0     0     0     0     0     0     0     0     0      0  NONE
+    91     0     0     0     1     1     0     0     0     0     0      2  MED 
+    92     0     1     0     0     0     0     1     0     0     0      2  MED 
+    93     0     1     0     0     0     0     1     0     0     0      2  MED 
+    94     1     0     0     0     0     0     0     1     0     1      3  MED 
+    95     0     0     0     0     0     0     0     1     0     1      2  MED 
+    96     0     1     0     0     0     0     1     0     0     0      2  MED 
+    97     0     1     0     0     0     0     1     0     0     0      2  MED 
+    98     0     1     0     0     0     0     1     0     0     0      2  MED 
+    99     0     0     1     0     0     0     0     0     0     0      1  LOW 
+   100     1     0     0     0     0     0     0     0     0     0      1  LOW 
+
+PER-RULE TOTALS (across all questions)
+----------------------------------------------------------------------
+  Rule   Label                                     Count      Rate
+  --------------------------------------------------------------
+  C1     Threshold reliability conflict               29     29.0%
+  C2     pLDDT polarity conflict                      33     33.0%
+  C3     Short IDR reliability conflict               13     13.0%
+  C4     Proline signal strength conflict              6      6.0%
+  C5     Glycine signal strength conflict             13     13.0%
+  C6     Gray zone classification conflict             0      0.0%
+  C7     Experimental vs computational precedence conflict     33     33.0%
+  C8     Pfam co-occurrence vs whole-protein classification conflict     22     22.0%
+  C9     Sliding window signal loss conflict           7      7.0%
+  C10    IDP classification vs Pfam presence conflict     14     14.0%
+
+SEVERITY DISTRIBUTION
+----------------------------------------------------------------------
+  NONE   (0 contradictions)  :    7  (  7.0%)
+  LOW    (1 contradiction)   :   28  ( 28.0%)
+  MEDIUM (2-3 contradictions):   65  ( 65.0%)
+  HIGH   (4+ contradictions) :    0  (  0.0%)
+
+SUMMARY STATISTICS
+----------------------------------------------------------------------
+  Total questions              : 100
+  Questions with >= 1 flag     : 93
+  Contradiction rate           : 93.00%
+  Total contradiction flags    : 170
+  Mean contradictions per Q    : 1.7000
+  Most frequent contradiction  : C2 -- pLDDT polarity conflict (33x)
+  Most contradicted question   : Q16 (3 flags)
+    "How sensitive are disorder predictions to the choice of retr..."
+
+INTERPRETATION
+----------------------------------------------------------------------
+  LLM Judge 3 (BioMistral RAG) uses an extractive fallback when
+  BioMistral-7B is not loaded. The extractive mode concatenates
+  retrieved passages directly, which can produce internal
+  contradictions when the top-3 retrieved documents assert
+  conflicting claims (e.g., 'pLDDT is the most reliable signal'
+  AND 'experimental data takes precedence').
+
+  C7 (Experimental vs computational precedence) is expected to be
+  the most frequent contradiction because KB-009 ('pLDDT is the
+  most reliable signal') and KB-011 ('experimental data takes
+  precedence') are frequently retrieved together.
+
+  C4/C5 (Proline/Glycine signal strength) contradictions arise
+  because KB-004 labels proline a 'strong predictor' while KB-006
+  qualifies glycine as needing combination -- but KB-005 also
+  notes glycine 'adds conformational freedom', creating tension.
+
+  TO REDUCE CONTRADICTIONS: Run with --no-gen flag removed and
+  BioMistral-7B loaded. The generative model synthesizes retrieved
+  passages into a coherent answer that resolves conflicts, rather
+  than concatenating them directly.
+
+======================================================================
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
