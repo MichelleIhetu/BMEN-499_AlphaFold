@@ -1,0 +1,47 @@
+======================================================================
+  BMEN-499 AlphaFold -- K-Fold Validation: L2 MILD
+  K=5  |  Base Threshold=0.3  |  MinRegion=5 aa
+  Dataset: 13,396 DisProt proteins  |  Seed: 42
+======================================================================
+
+STRICTNESS LEVEL 2 -- MILD
+----------------------------------------------------------------------
+  Disorder threshold : 0.30  (liberal but standard cutoff)
+  Min region length  : 5 aa  (filters trivially short regions)
+  Calibration        : Mean-shift on training fold
+  Split strategy     : Random shuffle, no stratification
+  Decision rule      : score >= calibrated_threshold
+
+PER-FOLD RESULTS
+----------------------------------------------------------------------
+  Fold        Acc     Prec      Rec       F1   CalThr  PosRate     TP     FP     TN     FN
+  --------------------------------------------------------------------
+  1        0.5816   0.0000   0.0000   0.0000   0.3387   0.0000      0   1121   1558      0
+  2        0.5950   0.0000   0.0000   0.0000   0.3397   0.0000      0   1085   1594      0
+  3        0.5816   0.0000   0.0000   0.0000   0.3393   0.0000      0   1121   1558      0
+  4        0.5726   0.0000   0.0000   0.0000   0.3374   0.0000      0   1145   1534      0
+  5        0.5873   0.0000   0.0000   0.0000   0.3389   0.0000      0   1106   1574      0
+
+AGGREGATE SUMMARY
+----------------------------------------------------------------------
+  Mean Accuracy  : 0.5836  (+/- 0.0074)
+  Mean Precision : 0.0000  (+/- 0.0000)
+  Mean Recall    : 0.0000  (+/- 0.0000)
+  Mean F1        : 0.0000  (+/- 0.0000)
+
+CALIBRATION ANALYSIS
+----------------------------------------------------------------------
+  Base threshold       : 0.3000
+  Mean cal threshold   : 0.3388  (+/- 0.0008)
+  Max cal drift        : 0.0397
+
+INTERPRETATION
+----------------------------------------------------------------------
+  L2 Mild applies the commonly accepted 0.30 disorder boundary.
+  Mean-shift calibration adjusts for training fold composition,
+  which helps when disorder prevalence varies across splits.
+  Compare F1 here vs L1 to see the cost of tightening the cutoff.
+
+======================================================================
+  Project: BMEN-499 -- Michelle Ihetu, USC
+======================================================================

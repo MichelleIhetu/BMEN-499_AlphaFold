@@ -1,0 +1,43 @@
+======================================================================
+  BMEN-499 AlphaFold -- K-Fold Validation: L1 LENIENT
+  K=5  |  Threshold=0.1  |  MinRegion=1 aa
+  Dataset: 13,396 DisProt proteins
+  Seed: 42
+======================================================================
+
+STRICTNESS LEVEL 1 -- LENIENT
+----------------------------------------------------------------------
+  Disorder threshold : 0.10  (very permissive)
+  Min region length  : 1 aa  (any region counts)
+  Calibration        : None
+  Split strategy     : Random shuffle, no stratification
+  Decision rule      : score >= min(0.10, 1.2 * mean_train)
+
+PER-FOLD RESULTS
+----------------------------------------------------------------------
+  Fold        Acc     Prec      Rec       F1      Thr     TP     FP     TN     FN       N
+  ------------------------------------------------------------------
+  1        1.0000   1.0000   1.0000   1.0000   0.1000   2051      0    628      0    2679
+  2        1.0000   1.0000   1.0000   1.0000   0.1000   2031      0    648      0    2679
+  3        1.0000   1.0000   1.0000   1.0000   0.1000   2031      0    648      0    2679
+  4        1.0000   1.0000   1.0000   1.0000   0.1000   2049      0    630      0    2679
+  5        1.0000   1.0000   1.0000   1.0000   0.1000   2010      0    670      0    2680
+
+AGGREGATE SUMMARY
+----------------------------------------------------------------------
+  Mean Accuracy  : 1.0000  (+/- 0.0000)
+  Mean Precision : 1.0000  (+/- 0.0000)
+  Mean Recall    : 1.0000  (+/- 0.0000)
+  Mean F1        : 1.0000  (+/- 0.0000)
+
+INTERPRETATION
+----------------------------------------------------------------------
+  L1 Lenient is the most permissive configuration.
+  A low threshold (0.10) means nearly all proteins with any
+  measured disorder are labelled positive. Recall is expected
+  to be very high but precision may be lower due to many FPs.
+  Use this as the upper-bound recall reference.
+
+======================================================================
+  Project: BMEN-499 -- Michelle Ihetu, USC
+======================================================================
