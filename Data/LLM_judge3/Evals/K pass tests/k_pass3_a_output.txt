@@ -1,0 +1,43 @@
+======================================================================
+  BMEN-499 AlphaFold -- LLM Judge 3: K-Pass Test L1 LENIENT
+  Script   : k_pass3_a.py
+  K=5  |  Threshold=0.1  |  MinRegion=1 aa
+  Proteins : 13,396  |  Predictions : 100
+  Seed     : 42
+======================================================================
+
+STRICTNESS LEVEL 1 -- LENIENT
+----------------------------------------------------------------------
+  Disorder threshold : 0.10  (very permissive)
+  Min region length  : 1 aa  (any region counts)
+  Calibration        : None
+  Split strategy     : Random shuffle, no stratification
+  Prediction signal  : 70% disorder score + 30% LLM3 answer quality
+
+PER-FOLD RESULTS
+----------------------------------------------------------------------
+  Fold        Acc     Prec      Rec       F1      Thr     Pos     TP     FP     TN     FN
+  ------------------------------------------------------------------------
+  1        0.7656   0.7656   1.0000   0.8672   0.1000   0.766   2051    628      0      0
+  2        0.7581   0.7581   1.0000   0.8624   0.1000   0.758   2031    648      0      0
+  3        0.7581   0.7581   1.0000   0.8624   0.1000   0.758   2031    648      0      0
+  4        0.7648   0.7648   1.0000   0.8668   0.1000   0.765   2049    630      0      0
+  5        0.7500   0.7500   1.0000   0.8571   0.1000   0.750   2010    670      0      0
+
+AGGREGATE SUMMARY
+----------------------------------------------------------------------
+  Mean Accuracy  : 0.7593  (+/- 0.0056)
+  Mean Precision : 0.7593  (+/- 0.0056)
+  Mean Recall    : 1.0000  (+/- 0.0000)
+  Mean F1        : 0.8632  (+/- 0.0037)
+
+INTERPRETATION
+----------------------------------------------------------------------
+  L1 Lenient is the most permissive configuration (threshold=0.10).
+  Expected very high recall -- almost all proteins pass.
+  Use this as the upper-bound recall reference when comparing
+  across k_pass3_a through k_pass3_e.
+
+======================================================================
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================

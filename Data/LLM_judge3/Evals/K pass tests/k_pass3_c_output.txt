@@ -1,0 +1,45 @@
+======================================================================
+  BMEN-499 AlphaFold -- LLM Judge 3: K-Pass Test L3 MODERATE
+  Script   : k_pass3_c.py
+  K=5  |  Threshold=0.5  |  MinRegion=10 aa
+  Proteins : 13,396  |  Predictions : 100
+  Seed     : 42
+======================================================================
+
+STRICTNESS LEVEL 3 -- MODERATE
+----------------------------------------------------------------------
+  Disorder threshold : 0.50  (canonical IDR benchmark cutoff)
+  Min region length  : 10 aa
+  Calibration        : Z-score normalization per fold
+  Split strategy     : Stratified by disorder score quartile
+  Extra metric       : MCC (Matthews Correlation Coefficient)
+  Prediction signal  : 60% disorder score (z) + 40% LLM3 quality (z)
+
+PER-FOLD RESULTS
+----------------------------------------------------------------------
+  Fold        Acc     Prec      Rec       F1      MCC      mu   sigma    Pos
+  --------------------------------------------------------------------
+  1        0.5549   0.0000   0.0000   0.0000   0.0000  0.3778  0.3330  0.000
+  2        0.5586   0.0000   0.0000   0.0000   0.0000  0.3773  0.3318  0.000
+  3        0.5660   0.0000   0.0000   0.0000   0.0000  0.3780  0.3327  0.000
+  4        0.5631   0.0000   0.0000   0.0000   0.0000  0.3775  0.3324  0.000
+  5        0.5460   0.0000   0.0000   0.0000   0.0000  0.3774  0.3319  0.000
+
+AGGREGATE SUMMARY
+----------------------------------------------------------------------
+  Mean Accuracy  : 0.5577  (+/- 0.0070)
+  Mean Precision : 0.0000  (+/- 0.0000)
+  Mean Recall    : 0.0000  (+/- 0.0000)
+  Mean F1        : 0.0000  (+/- 0.0000)
+  Mean MCC       : 0.0000  (+/- 0.0000)
+  Confusion totals: TP=0 FP=5,925 TN=7,471 FN=0
+
+INTERPRETATION
+----------------------------------------------------------------------
+  L3 Moderate uses the canonical 0.50 IDR threshold.
+  This is the primary reference fold configuration.
+  MCC is the most balanced metric for imbalanced datasets.
+
+======================================================================
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================

@@ -1,0 +1,44 @@
+======================================================================
+  BMEN-499 AlphaFold -- LLM Judge 3: K-Pass Test L2 MILD
+  Script   : k_pass3_b.py
+  K=5  |  Threshold=0.3  |  MinRegion=5 aa
+  Proteins : 13,396  |  Predictions : 100
+  Seed     : 42
+======================================================================
+
+STRICTNESS LEVEL 2 -- MILD
+----------------------------------------------------------------------
+  Disorder threshold : 0.30  (liberal standard cutoff)
+  Min region length  : 5 aa
+  Calibration        : Mean-shift on training fold
+  Split strategy     : Random shuffle, no stratification
+  Prediction signal  : 65% disorder score + 35% LLM3 answer quality
+
+PER-FOLD RESULTS
+----------------------------------------------------------------------
+  Fold        Acc     Prec      Rec       F1   CalThr     Pos     TP     FP     TN     FN
+  ------------------------------------------------------------------------
+  1        0.2434   0.0000   0.0000   0.0000   0.3387   0.000      0   2027    652      0
+  2        0.2583   0.0000   0.0000   0.0000   0.3397   0.000      0   1987    692      0
+  3        0.2437   0.0000   0.0000   0.0000   0.3393   0.000      0   2026    653      0
+  4        0.2415   0.0000   0.0000   0.0000   0.3374   0.000      0   2032    647      0
+  5        0.2601   0.0000   0.0000   0.0000   0.3389   0.000      0   1983    697      0
+
+AGGREGATE SUMMARY
+----------------------------------------------------------------------
+  Mean Accuracy       : 0.2494  (+/- 0.0080)
+  Mean Precision      : 0.0000  (+/- 0.0000)
+  Mean Recall         : 0.0000  (+/- 0.0000)
+  Mean F1             : 0.0000  (+/- 0.0000)
+  Mean Cal Threshold  : 0.3388  (+/- 0.0008)
+  Max Cal Drift       : 0.0397
+
+INTERPRETATION
+----------------------------------------------------------------------
+  L2 Mild applies the 0.30 liberal disorder boundary.
+  Compare F1 here vs k_pass3_a to see the cost of tightening
+  the cutoff from 0.10 to 0.30.
+
+======================================================================
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================

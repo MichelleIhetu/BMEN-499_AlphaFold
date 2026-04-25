@@ -1,0 +1,78 @@
+======================================================================
+  BMEN-499 AlphaFold -- LLM Judge 3: K-Pass Test L5 SEVERE
+  Script   : k_pass3_e.py
+  K=5  |  Threshold=0.85  |  MinRegion=30 aa
+  Proteins : 13,396  |  Predictions : 100
+  Seed     : 42
+======================================================================
+
+STRICTNESS LEVEL 5 -- SEVERE
+----------------------------------------------------------------------
+  Disorder threshold : 0.85  (fully/near-fully disordered only)
+  Min region length  : 30 aa
+  Calibration        : Platt sigmoid scaling
+  Split strategy     : Stratified by disorder quartile + Pfam flag
+  Extra metrics      : AUROC, Brier, ECE, McNemar fold agreement
+  ECE pass threshold : < 0.05
+  Imbalance warning  : pos_rate < 0.10
+  Prediction signal  : 50% disorder score + 50% LLM3 answer quality
+
+PER-FOLD RESULTS
+----------------------------------------------------------------------
+  Fold        Acc     Prec      Rec       F1      MCC   AUROC   Brier     ECE  ECE?    Pos
+  ----------------------------------------------------------------------------
+  1        1.0000   0.0000   0.0000   0.0000   0.0000  0.5000  0.1153  0.3389  FAIL  0.000
+  2        1.0000   0.0000   0.0000   0.0000   0.0000  0.5000  0.1155  0.3392  FAIL  0.000
+  3        1.0000   0.0000   0.0000   0.0000   0.0000  0.5000  0.1154  0.3391  FAIL  0.000
+  4        1.0000   0.0000   0.0000   0.0000   0.0000  0.5000  0.1158  0.3396  FAIL  0.000
+  5        1.0000   0.0000   0.0000   0.0000   0.0000  0.5000  0.1155  0.3393  FAIL  0.000
+
+MCNEMAR PAIRWISE FOLD AGREEMENT
+----------------------------------------------------------------------
+  Pair              b      c   p_approx   sig
+  --------------------------------------
+  Fold 1 vs 2        0      0     1.0000    ns
+  Fold 1 vs 3        0      0     1.0000    ns
+  Fold 1 vs 4        0      0     1.0000    ns
+  Fold 1 vs 5        0      0     1.0000    ns
+  Fold 2 vs 3        0      0     1.0000    ns
+  Fold 2 vs 4        0      0     1.0000    ns
+  Fold 2 vs 5        0      0     1.0000    ns
+  Fold 3 vs 4        0      0     1.0000    ns
+  Fold 3 vs 5        0      0     1.0000    ns
+  Fold 4 vs 5        0      0     1.0000    ns
+
+AGGREGATE SUMMARY
+----------------------------------------------------------------------
+  Mean Accuracy  : 1.0000  (+/- 0.0000)
+  Mean F1        : 0.0000  (+/- 0.0000)
+  Mean MCC       : 0.0000  (+/- 0.0000)
+  Mean AUROC     : 0.5000  (+/- 0.0000)
+  Mean Brier     : 0.1155  (+/- 0.0002)
+  Mean ECE       : 0.3392  (+/- 0.0002)
+  ECE PASS folds : 0/5
+  [!] IMBALANCE WARNING: 5 fold(s) had pos_rate < 0.1
+
+OVERALL PASS/FAIL VERDICT
+----------------------------------------------------------------------
+  [FAIL]  Mean F1 >= 0.50
+  [FAIL]  Mean MCC >= 0.30
+  [FAIL]  Mean AUROC >= 0.70
+  [PASS]  Mean Brier <= 0.20
+  [FAIL]  Mean ECE <= 0.05
+  [PASS]  All folds completed
+
+  OVERALL: FAIL
+
+INTERPRETATION
+----------------------------------------------------------------------
+  L5 Severe is the most demanding configuration (threshold=0.85).
+  Very few proteins qualify as positive -- expect low recall
+  and high precision. LLM3 answer quality is weighted 50/50
+  with disorder score at this level, reflecting that at extreme
+  thresholds the model's semantic grounding matters as much as
+  the raw disorder signal.
+
+======================================================================
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
