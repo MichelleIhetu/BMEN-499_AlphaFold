@@ -1,0 +1,226 @@
+======================================================================
+  BMEN-499 AlphaFold -- LLM Judge 3: BERT Score Analysis
+  Script  : BERT_score3.py
+  Source  : LLM3_predictions.txt (BioMistral RAG)
+  Questions analyzed : 100
+  Method  : TF-IDF weighted BERTScore approximation
+            (no PyTorch/transformers required)
+======================================================================
+
+METHOD OVERVIEW
+----------------------------------------------------------------------
+  BERTScore measures semantic similarity between a candidate
+  answer and a reference answer using three metrics:
+    Precision (P) -- candidate tokens grounded in reference
+    Recall    (R) -- reference tokens covered by candidate
+    F1            -- harmonic mean of P and R
+
+  Reference answers are drawn from the DisProt KB passages
+  (KB-001 through KB-014) matched to each question by the
+  top retrieved document ID in the prediction file.
+
+  Score interpretation (F1):
+    >= 0.85  EXCELLENT    >= 0.70  GOOD
+    >= 0.55  MODERATE     >= 0.40  WEAK     < 0.40  POOR
+
+PER-QUESTION BERT SCORES
+----------------------------------------------------------------------
+     Q         P         R        F1  Label         RefDoc  
+  --------------------------------------------------------
+     1    1.0000    0.3180    0.4958  WEAK       KB-002  
+     2    1.0000    0.6596    0.8484  GOOD       KB-007  
+     3    1.0000    0.2635    0.4386  WEAK       KB-009  
+     4    1.0000    0.6743    0.8435  GOOD       KB-008  
+     5    1.0000    0.2349    0.4019  WEAK       KB-003  
+     6    1.0000    0.4718    0.6965  MODERATE   KB-002  
+     7    1.0000    0.3443    0.5235  WEAK       KB-009  
+     8    1.0000    0.6743    0.8435  GOOD       KB-008  
+     9    1.0000    0.6743    0.8435  GOOD       KB-008  
+    10    1.0000    0.3850    0.5582  MODERATE   KB-001  
+    11    1.0000    0.2734    0.4401  WEAK       KB-009  
+    12    1.0000    0.2642    0.4371  WEAK       KB-009  
+    13    1.0000    0.2357    0.3850  POOR       KB-002  
+    14    1.0000    0.2734    0.4401  WEAK       KB-009  
+    15    1.0000    0.1875    0.3214  POOR       KB-012  
+    16    1.0000    0.2352    0.3954  POOR       KB-011  
+    17    1.0000    0.2734    0.4401  WEAK       KB-009  
+    18    1.0000    0.2558    0.4199  WEAK       KB-009  
+    19    1.0000    0.6596    0.8484  GOOD       KB-007  
+    20    1.0000    0.2734    0.4401  WEAK       KB-009  
+    21    1.0000    0.3580    0.5338  WEAK       KB-002  
+    22    1.0000    0.3237    0.5085  WEAK       KB-009  
+    23    1.0000    0.3233    0.5064  WEAK       KB-009  
+    24    1.0000    0.3942    0.6093  MODERATE   KB-001  
+    25    1.0000    0.4117    0.6020  MODERATE   KB-013  
+    26    1.0000    0.2734    0.4401  WEAK       KB-009  
+    27    1.0000    0.2732    0.4394  WEAK       KB-009  
+    28    1.0000    0.2734    0.4401  WEAK       KB-009  
+    29    1.0000    0.3580    0.5338  WEAK       KB-002  
+    30    1.0000    0.2716    0.4441  WEAK       KB-009  
+    31    1.0000    0.2704    0.4475  WEAK       KB-009  
+    32    1.0000    0.2604    0.4274  WEAK       KB-009  
+    33    1.0000    0.2716    0.4441  WEAK       KB-009  
+    34    1.0000    0.3199    0.5007  WEAK       KB-009  
+    35    1.0000    0.2563    0.4226  WEAK       KB-009  
+    36    1.0000    0.2635    0.4386  WEAK       KB-009  
+    37    1.0000    0.2838    0.4526  WEAK       KB-004  
+    38    1.0000    0.2648    0.4391  WEAK       KB-009  
+    39    1.0000    0.3233    0.5064  WEAK       KB-009  
+    40    1.0000    0.2556    0.4265  WEAK       KB-009  
+    41    1.0000    0.4015    0.6071  MODERATE   KB-001  
+    42    1.0000    0.1875    0.3214  POOR       KB-012  
+    43    1.0000    0.3046    0.4799  WEAK       KB-002  
+    44    1.0000    0.1493    0.2649  POOR       KB-012  
+    45    1.0000    0.2716    0.4441  WEAK       KB-009  
+    46    1.0000    0.3595    0.5510  MODERATE   KB-001  
+    47    1.0000    0.2612    0.4256  WEAK       KB-009  
+    48    1.0000    0.3270    0.5180  WEAK       KB-009  
+    49    1.0000    0.2734    0.4401  WEAK       KB-009  
+    50    1.0000    0.2475    0.4067  WEAK       KB-011  
+    51    1.0000    0.2648    0.4403  WEAK       KB-009  
+    52    1.0000    0.4117    0.6020  MODERATE   KB-013  
+    53    1.0000    0.3632    0.5700  MODERATE   KB-005  
+    54    1.0000    0.1955    0.3381  POOR       KB-012  
+    55    1.0000    0.2734    0.4401  WEAK       KB-009  
+    56    1.0000    0.3237    0.5085  WEAK       KB-009  
+    57    1.0000    0.3653    0.5463  WEAK       KB-013  
+    58    1.0000    0.1765    0.3114  POOR       KB-012  
+    59    1.0000    0.1834    0.3233  POOR       KB-012  
+    60    1.0000    0.3679    0.5454  WEAK       KB-001  
+    61    1.0000    0.2734    0.4401  WEAK       KB-009  
+    62    1.0000    0.2475    0.4067  WEAK       KB-011  
+    63    1.0000    0.1616    0.2844  POOR       KB-012  
+    64    1.0000    0.2635    0.4386  WEAK       KB-009  
+    65    1.0000    0.2716    0.4441  WEAK       KB-009  
+    66    1.0000    0.2689    0.4447  WEAK       KB-009  
+    67    1.0000    0.2734    0.4401  WEAK       KB-009  
+    68    1.0000    0.1851    0.3206  POOR       KB-012  
+    69    1.0000    0.2681    0.4321  WEAK       KB-009  
+    70    1.0000    0.4117    0.6020  MODERATE   KB-013  
+    71    0.9063    0.4029    0.5578  MODERATE   KB-001  
+    72    1.0000    0.2612    0.4256  WEAK       KB-009  
+    73    1.0000    0.2778    0.4512  WEAK       KB-009  
+    74    1.0000    0.3996    0.6113  MODERATE   KB-013  
+    75    1.0000    0.2716    0.4441  WEAK       KB-009  
+    76    1.0000    0.5920    0.7775  GOOD       KB-007  
+    77    1.0000    0.4060    0.5954  MODERATE   KB-013  
+    78    1.0000    0.1914    0.3363  POOR       KB-012  
+    79    1.0000    0.1493    0.2649  POOR       KB-012  
+    80    1.0000    0.2419    0.4008  WEAK       KB-011  
+    81    1.0000    0.2734    0.4401  WEAK       KB-009  
+    82    1.0000    0.3199    0.5007  WEAK       KB-009  
+    83    1.0000    0.2734    0.4401  WEAK       KB-009  
+    84    1.0000    0.6111    0.8004  GOOD       KB-007  
+    85    1.0000    0.2734    0.4401  WEAK       KB-009  
+    86    1.0000    0.4117    0.6020  MODERATE   KB-013  
+    87    1.0000    0.3340    0.5333  WEAK       KB-005  
+    88    1.0000    0.1493    0.2649  POOR       KB-012  
+    89    1.0000    0.2904    0.4698  WEAK       KB-004  
+    90    1.0000    0.2599    0.4329  WEAK       KB-009  
+    91    1.0000    0.2635    0.4386  WEAK       KB-009  
+    92    1.0000    0.2681    0.4321  WEAK       KB-009  
+    93    1.0000    0.2734    0.4401  WEAK       KB-009  
+    94    1.0000    0.1851    0.3206  POOR       KB-012  
+    95    1.0000    0.1875    0.3214  POOR       KB-012  
+    96    1.0000    0.2681    0.4321  WEAK       KB-009  
+    97    1.0000    0.2734    0.4401  WEAK       KB-009  
+    98    1.0000    0.2716    0.4441  WEAK       KB-009  
+    99    1.0000    0.2595    0.4322  WEAK       KB-009  
+   100    1.0000    0.3237    0.5085  WEAK       KB-009  
+
+AGGREGATE STATISTICS
+----------------------------------------------------------------------
+  Metric           Mean      Std      Min      Max   Median      P25      P75
+  ------------------------------------------------------------------
+  Precision      0.9991   0.0093   0.9063   1.0000   1.0000   1.0000   1.0000
+  Recall         0.3096   0.1136   0.1493   0.6743   0.2734   0.2612   0.3443
+  F1             0.4796   0.1263   0.2649   0.8484   0.4401   0.4321   0.5333
+
+F1 SCORE DISTRIBUTION
+----------------------------------------------------------------------
+  EXCELLENT (>=0.85) :    0 (  0.0%)  
+  GOOD      (>=0.70) :    7 (  7.0%)  ##
+  MODERATE  (>=0.55) :   13 ( 13.0%)  #####
+  WEAK      (>=0.40) :   65 ( 65.0%)  ##########################
+  POOR      (< 0.40) :   15 ( 15.0%)  ######
+
+F1 BY REFERENCE DOCUMENT
+----------------------------------------------------------------------
+  RefDoc        N    MeanF1     StdF1
+  ------------------------------------
+  KB-008        3    0.8435    0.0000
+  KB-007        4    0.8187    0.0308
+  KB-013        7    0.5944    0.0201
+  KB-001        6    0.5715    0.0263
+  KB-005        2    0.5516    0.0183
+  KB-002        6    0.5208    0.0930
+  KB-004        2    0.4612    0.0086
+  KB-009       52    0.4502    0.0277
+  KB-011        4    0.4024    0.0047
+  KB-003        1    0.4019    0.0000
+  KB-012       13    0.3072    0.0262
+
+TOP 5 HIGHEST F1 SCORES
+----------------------------------------------------------------------
+  Q  2  F1=0.8484  P=1.0000  R=0.6596  GOOD     
+       Q: "Do confidence scores drop for IDRs shorter than 10 residue"
+       Ref: "Of the annotated disordered regions in DisProt, a percenta"
+  Q 19  F1=0.8484  P=1.0000  R=0.6596  GOOD     
+       Q: "Are certain amino acid compositions more responsive to sym"
+       Ref: "Of the annotated disordered regions in DisProt, a percenta"
+  Q  4  F1=0.8435  P=1.0000  R=0.6743  GOOD     
+       Q: "Does applying a sliding window smooth out confidence score"
+       Ref: "Sliding window averaging smooths per-residue disorder scor"
+  Q  8  F1=0.8435  P=1.0000  R=0.6743  GOOD     
+       Q: "After applying symbolic smoothing and isotonic calibration"
+       Ref: "Sliding window averaging smooths per-residue disorder scor"
+  Q  9  F1=0.8435  P=1.0000  R=0.6743  GOOD     
+       Q: "What is the MAE between raw disorder confidence scores and"
+       Ref: "Sliding window averaging smooths per-residue disorder scor"
+
+BOTTOM 5 LOWEST F1 SCORES
+----------------------------------------------------------------------
+  Q 58  F1=0.3114  P=1.0000  R=0.1765  POOR     
+       Q: "Are improvements correlated with sequence conservation?"
+       Ref: "92.6% of DisProt proteins contain Pfam structured domains "
+  Q 63  F1=0.2844  P=1.0000  R=0.1616  POOR     
+       Q: "Does the system improve classification of edge residues in"
+       Ref: "92.6% of DisProt proteins contain Pfam structured domains "
+  Q 44  F1=0.2649  P=1.0000  R=0.1493  POOR     
+       Q: "How does the system handle conflicting retrieved evidence?"
+       Ref: "92.6% of DisProt proteins contain Pfam structured domains "
+  Q 79  F1=0.2649  P=1.0000  R=0.1493  POOR     
+       Q: "Does retrieval diversity impact performance?"
+       Ref: "92.6% of DisProt proteins contain Pfam structured domains "
+  Q 88  F1=0.2649  P=1.0000  R=0.1493  POOR     
+       Q: "Are gains consistent across evaluation metrics?"
+       Ref: "92.6% of DisProt proteins contain Pfam structured domains "
+
+PRECISION vs RECALL BALANCE
+----------------------------------------------------------------------
+  Precision > Recall :  100 (100.0%)
+  Recall > Precision :    0 (0.0%)
+  Equal              :    0 (0.0%)
+
+  System is PRECISION-DOMINANT: answers contain more of the
+  reference content than the reference covers of the answers.
+  Suggests answers are more specific than the reference passages.
+
+INTERPRETATION
+----------------------------------------------------------------------
+  High F1 scores indicate the predicted answer closely mirrors
+  the reference KB passage -- expected in extractive fallback
+  mode since answers ARE concatenated KB passages.
+
+  Questions with low F1 indicate retrieval mismatch: the top
+  retrieved document does not well represent the question, so
+  the reference-answer semantic overlap is low even though the
+  answer itself may be factually correct on a different topic.
+
+  For true BERTScore with contextual embeddings, install:
+    pip install bert-score
+  and replace the TF-IDF vectors with actual BERT embeddings.
+
+======================================================================
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================

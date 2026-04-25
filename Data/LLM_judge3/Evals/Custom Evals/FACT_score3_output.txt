@@ -1,0 +1,205 @@
+======================================================================
+  BMEN-499 AlphaFold -- LLM Judge 3: FACT Score Analysis
+  Script  : FACT_score3.py
+  Source  : LLM3_predictions.txt (BioMistral RAG)
+  Questions analyzed : 100
+======================================================================
+
+FACT SCORE FRAMEWORK
+----------------------------------------------------------------------
+  FACT = (F + A + C + T) / 4   (range 0.0 - 1.0)
+
+  F  Fidelity     -- claims supported by DisProt KB signal phrases
+  A  Accuracy     -- numerical values match ground-truth DisProt stats
+  C  Completeness -- key factual dimensions covered for the question
+  T  Traceability -- claims traceable to specific KB passages (KB-001..014)
+
+  Ground-truth DisProt constants:
+    Proteins : 13,396     Mean disorder : 0.378
+    Pct>0.5  : 29.1%   Pct>0.3       : 44.2%
+    Proline  : 6.0%    Glycine       : 7.0%
+    Pfam     : 92.6%   Numeric tolerance : 5%
+
+  Score interpretation:
+    >=0.85  HIGHLY FACTUAL    >=0.70  FACTUAL
+    >=0.55  PARTLY FACTUAL    >=0.40  WEAKLY FACTUAL   <0.40  UNFACTUAL
+
+PER-QUESTION FACT SCORES
+----------------------------------------------------------------------
+     Q       F       A       C       T     FACT  Label             
+  ------------------------------------------------------------
+     1  0.3000  0.8333  0.8167  1.0000   0.7375  FACTUAL         
+     2  0.2800  0.5000  1.0000  1.0000   0.6950  PARTLY FACTUAL  
+     3  0.3800  1.0000  0.9970  1.0000   0.8442  FACTUAL         
+     4  0.3200  1.0000  0.6364  1.0000   0.7391  FACTUAL         
+     5  0.3700  0.5000  0.8381  1.0000   0.6770  PARTLY FACTUAL  
+     6  0.4000  0.5000  0.7167  1.0000   0.6542  PARTLY FACTUAL  
+     7  0.3200  0.8333  0.8167  1.0000   0.7425  FACTUAL         
+     8  0.3200  1.0000  0.5480  1.0000   0.7170  FACTUAL         
+     9  0.3200  1.0000  0.5857  1.0000   0.7264  FACTUAL         
+    10  0.2700  0.7143  0.8633  1.0000   0.7119  FACTUAL         
+    11  0.2800  1.0000  0.8879  1.0000   0.7920  FACTUAL         
+    12  0.3600  1.0000  0.6667  1.0000   0.7567  FACTUAL         
+    13  0.2800  1.0000  0.8933  1.0000   0.7933  FACTUAL         
+    14  0.2800  1.0000  0.9000  1.0000   0.7950  FACTUAL         
+    15  0.4400  1.0000  0.7000  1.0000   0.7850  FACTUAL         
+    16  0.2200  1.0000  0.7524  1.0000   0.7431  FACTUAL         
+    17  0.2300  1.0000  0.8333  1.0000   0.7658  FACTUAL         
+    18  0.3700  0.6667  0.8933  1.0000   0.7325  FACTUAL         
+    19  0.2800  0.5000  0.8333  1.0000   0.6533  PARTLY FACTUAL  
+    20  0.2800  1.0000  0.9083  1.0000   0.7971  FACTUAL         
+    21  0.2800  0.5000  0.8333  1.0000   0.6533  PARTLY FACTUAL  
+    22  0.3000  0.8333  0.7042  1.0000   0.7094  FACTUAL         
+    23  0.2700  0.7143  0.8708  1.0000   0.7138  FACTUAL         
+    24  0.3000  0.8000  1.0000  1.0000   0.7750  FACTUAL         
+    25  0.2900  0.6667  0.8762  1.0000   0.7082  FACTUAL         
+    26  0.2300  1.0000  0.8833  1.0000   0.7783  FACTUAL         
+    27  0.2000  0.5000  0.8667  1.0000   0.6417  PARTLY FACTUAL  
+    28  0.2300  1.0000  0.8762  1.0000   0.7765  FACTUAL         
+    29  0.2800  0.5000  0.8762  1.0000   0.6640  PARTLY FACTUAL  
+    30  0.3000  1.0000  0.9190  1.0000   0.8048  FACTUAL         
+    31  0.4200  0.5000  0.6667  1.0000   0.6467  PARTLY FACTUAL  
+    32  0.2800  0.5000  0.8762  1.0000   0.6640  PARTLY FACTUAL  
+    33  0.3000  1.0000  0.8333  1.0000   0.7833  FACTUAL         
+    34  0.3900  0.8571  0.8333  1.0000   0.7701  FACTUAL         
+    35  0.4500  1.0000  0.8333  1.0000   0.8208  FACTUAL         
+    36  0.3800  1.0000  0.8333  1.0000   0.8033  FACTUAL         
+    37  0.3800  1.0000  0.8333  1.0000   0.8033  FACTUAL         
+    38  0.3100  1.0000  0.8333  1.0000   0.7858  FACTUAL         
+    39  0.2700  0.7143  0.8333  1.0000   0.7044  FACTUAL         
+    40  0.4700  1.0000  0.8333  1.0000   0.8258  FACTUAL         
+    41  0.3400  0.8000  0.8333  1.0000   0.7433  FACTUAL         
+    42  0.4400  1.0000  0.7524  1.0000   0.7981  FACTUAL         
+    43  0.3600  1.0000  0.6667  1.0000   0.7567  FACTUAL         
+    44  0.3900  0.8571  0.8333  1.0000   0.7701  FACTUAL         
+    45  0.3000  1.0000  0.8333  1.0000   0.7833  FACTUAL         
+    46  0.2900  0.7143  1.0000  1.0000   0.7511  FACTUAL         
+    47  0.4400  1.0000  0.7167  1.0000   0.7892  FACTUAL         
+    48  0.3000  0.8333  0.8333  1.0000   0.7417  FACTUAL         
+    49  0.2300  1.0000  0.9083  1.0000   0.7846  FACTUAL         
+    50  0.2300  1.0000  0.8833  1.0000   0.7783  FACTUAL         
+    51  0.4900  1.0000  0.7095  1.0000   0.7999  FACTUAL         
+    52  0.2900  0.6667  0.9619  1.0000   0.7296  FACTUAL         
+    53  0.3800  1.0000  0.8333  1.0000   0.8033  FACTUAL         
+    54  0.3000  0.5000  0.8333  1.0000   0.6583  PARTLY FACTUAL  
+    55  0.2800  1.0000  0.8762  1.0000   0.7890  FACTUAL         
+    56  0.3000  0.8333  0.7167  1.0000   0.7125  FACTUAL         
+    57  0.3400  0.7143  0.7095  1.0000   0.6910  PARTLY FACTUAL  
+    58  0.3000  1.0000  0.8933  1.0000   0.7983  FACTUAL         
+    59  0.2500  1.0000  0.7167  1.0000   0.7417  FACTUAL         
+    60  0.2900  0.6667  0.8762  1.0000   0.7082  FACTUAL         
+    61  0.2300  1.0000  0.9083  1.0000   0.7846  FACTUAL         
+    62  0.2300  1.0000  0.8333  1.0000   0.7658  FACTUAL         
+    63  0.3200  1.0000  0.7095  1.0000   0.7574  FACTUAL         
+    64  0.3800  1.0000  0.8762  1.0000   0.8140  FACTUAL         
+    65  0.3000  1.0000  0.8333  1.0000   0.7833  FACTUAL         
+    66  0.2200  1.0000  0.6667  1.0000   0.7217  FACTUAL         
+    67  0.2300  1.0000  0.8762  1.0000   0.7765  FACTUAL         
+    68  0.2900  0.8333  0.8762  1.0000   0.7499  FACTUAL         
+    69  0.3200  1.0000  0.7095  1.0000   0.7574  FACTUAL         
+    70  0.2900  0.6667  0.8333  1.0000   0.6975  PARTLY FACTUAL  
+    71  0.3400  0.8333  0.6667  1.0000   0.7100  FACTUAL         
+    72  0.4400  1.0000  0.6667  1.0000   0.7767  FACTUAL         
+    73  0.2300  1.0000  0.7167  1.0000   0.7367  FACTUAL         
+    74  0.3400  0.6667  0.8333  1.0000   0.7100  FACTUAL         
+    75  0.3000  1.0000  0.8333  1.0000   0.7833  FACTUAL         
+    76  0.3700  0.6667  0.8333  1.0000   0.7175  FACTUAL         
+    77  0.4400  0.5000  0.7042  1.0000   0.6610  PARTLY FACTUAL  
+    78  0.4400  1.0000  0.8333  1.0000   0.8183  FACTUAL         
+    79  0.3900  0.8571  0.8333  1.0000   0.7701  FACTUAL         
+    80  0.2500  1.0000  0.7167  1.0000   0.7417  FACTUAL         
+    81  0.2300  1.0000  0.8333  1.0000   0.7658  FACTUAL         
+    82  0.3900  0.8571  0.8333  1.0000   0.7701  FACTUAL         
+    83  0.2300  1.0000  0.9333  1.0000   0.7908  FACTUAL         
+    84  0.2700  0.7143  0.8333  1.0000   0.7044  FACTUAL         
+    85  0.2300  1.0000  0.8333  1.0000   0.7658  FACTUAL         
+    86  0.2900  0.6667  0.8762  1.0000   0.7082  FACTUAL         
+    87  0.3000  0.8333  0.8833  1.0000   0.7542  FACTUAL         
+    88  0.3900  0.8571  0.8333  1.0000   0.7701  FACTUAL         
+    89  0.4700  1.0000  0.8333  1.0000   0.8258  FACTUAL         
+    90  0.3800  1.0000  0.8333  1.0000   0.8033  FACTUAL         
+    91  0.3800  1.0000  0.8333  1.0000   0.8033  FACTUAL         
+    92  0.3200  1.0000  0.7167  1.0000   0.7592  FACTUAL         
+    93  0.2300  1.0000  0.8333  1.0000   0.7658  FACTUAL         
+    94  0.2900  0.8333  0.8333  1.0000   0.7392  FACTUAL         
+    95  0.4400  1.0000  0.7524  1.0000   0.7981  FACTUAL         
+    96  0.3200  1.0000  0.6667  1.0000   0.7467  FACTUAL         
+    97  0.2300  1.0000  0.8333  1.0000   0.7658  FACTUAL         
+    98  0.3000  1.0000  0.8833  1.0000   0.7958  FACTUAL         
+    99  0.3500  0.5000  0.6667  1.0000   0.6292  PARTLY FACTUAL  
+   100  0.3000  0.8333  0.6667  1.0000   0.7000  FACTUAL         
+
+AGGREGATE STATISTICS PER SUB-SCORE
+----------------------------------------------------------------------
+  Sub       Mean       Std       Min       Max    Median       P25       P75
+  ------------------------------------------------------------------
+  F       0.3186    0.0684    0.2000    0.4900    0.3000    0.2800    0.3800
+  A       0.8684    0.1762    0.5000    1.0000    1.0000    0.7143    1.0000
+  C       0.8136    0.0912    0.5480    1.0000    0.8333    0.7167    0.8762
+  T       1.0000    0.0000    1.0000    1.0000    1.0000    1.0000    1.0000
+  FACT    0.7501    0.0479    0.6292    0.8442    0.7583    0.7138    0.7858
+
+FACT SCORE DISTRIBUTION
+----------------------------------------------------------------------
+  HIGHLY FACTUAL  (>=0.85) :    0 (  0.0%)  
+  FACTUAL         (>=0.70) :   86 ( 86.0%)  ##################################
+  PARTLY FACTUAL  (>=0.55) :   14 ( 14.0%)  #####
+  WEAKLY FACTUAL  (>=0.40) :    0 (  0.0%)  
+  UNFACTUAL       (< 0.40) :    0 (  0.0%)  
+
+SUB-SCORE RADAR SUMMARY
+----------------------------------------------------------------------
+  F  Fidelity       : 0.3186  ############ <-- WEAKEST
+  A  Accuracy       : 0.8684  ##################################
+  C  Completeness   : 0.8136  ################################
+  T  Traceability   : 1.0000  ######################################## <-- STRONGEST
+
+TOP 5 MOST FACTUAL ANSWERS
+----------------------------------------------------------------------
+  Q  3  FACT=0.8442  F=0.380 A=1.000 C=0.997 T=1.000
+       "Do proline and glycine-rich regions consistently score higher "
+  Q 40  FACT=0.8258  F=0.470 A=1.000 C=0.833 T=1.000
+       "Does neurosymbolic reasoning improve interpretability of predi"
+  Q 89  FACT=0.8258  F=0.470 A=1.000 C=0.833 T=1.000
+       "Does neurosymbolic reasoning reduce model uncertainty?"
+  Q 35  FACT=0.8208  F=0.450 A=1.000 C=0.833 T=1.000
+       "Does adding domain knowledge improve classification boundaries"
+  Q 78  FACT=0.8183  F=0.440 A=1.000 C=0.833 T=1.000
+       "How does it handle missing sequence information?"
+
+BOTTOM 5 LEAST FACTUAL ANSWERS
+----------------------------------------------------------------------
+  Q 19  FACT=0.6533  F=0.280 A=0.500 C=0.833 T=1.000
+       "Are certain amino acid compositions more responsive to symboli"
+  Q 21  FACT=0.6533  F=0.280 A=0.500 C=0.833 T=1.000
+       "How does calibration affect AUROC compared to raw predictions?"
+  Q 31  FACT=0.6467  F=0.420 A=0.500 C=0.667 T=1.000
+       "How does entropy of predictions change after symbolic reasonin"
+  Q 27  FACT=0.6417  F=0.200 A=0.500 C=0.867 T=1.000
+       "Does the neurosymbolic model perform better on experimentally "
+  Q 99  FACT=0.6292  F=0.350 A=0.500 C=0.667 T=1.000
+       "Does neurosymbolic reasoning reduce prediction bias?"
+
+INTERPRETATION
+----------------------------------------------------------------------
+  F (Fidelity) is expected to be highest in extractive fallback
+  mode since answers directly contain KB signal phrases.
+
+  A (Accuracy) depends on whether numeric values from the KB
+  appear in the answer. Questions that retrieve KB-001 or KB-014
+  score highest on A since those passages are statistics-dense.
+
+  C (Completeness) rewards answers that cover disorder evidence,
+  mechanism, quantification, limitation, and recommendation.
+  Extractive answers covering multiple KB passages score higher.
+
+  T (Traceability) scores how many distinct KB passages contributed
+  facts to the answer. Answers drawing from 3+ KB entries score
+  highest since the RAG system retrieves top-3 passages per query.
+
+  Low FACT scores indicate questions where the retrieved passages
+  were topically mismatched, reducing all four sub-scores together.
+
+======================================================================
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
