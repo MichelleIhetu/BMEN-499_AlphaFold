@@ -1,0 +1,209 @@
+======================================================================
+  BMEN-499 AlphaFold -- LLM Judge 3: Agreement Score Analysis
+  Script  : agreement_score3.py
+  Source  : LLM3_predictions.txt (BioMistral RAG)
+  Questions analyzed : 100
+======================================================================
+
+THREE-JUDGE AGREEMENT FRAMEWORK
+----------------------------------------------------------------------
+  Judge A -- Retrieval Fidelity    (1=poor  2=partial  3=high)
+             Does the answer faithfully reflect retrieved passages?
+  Judge B -- Question Relevance    (1=off-topic  2=partial  3=direct)
+             Does the answer address what the question actually asks?
+  Judge C -- Scientific Validity   (1=invalid  2=acceptable  3=valid)
+             Are claims consistent with IDR/AlphaFold literature?
+
+  Agreement metrics computed:
+    Percent Agreement  -- raw proportion of matching judgments
+    Cohen's Kappa      -- chance-corrected pairwise agreement
+    Fleiss' Kappa      -- multi-rater generalization (3 judges)
+    Krippendorff Alpha -- ordinal reliability coefficient
+
+  Kappa interpretation:
+    >= 0.80  Almost Perfect   0.60-0.79  Substantial
+    0.40-0.59  Moderate       0.20-0.39  Fair   < 0.20  Slight
+
+PER-QUESTION JUDGE SCORES
+----------------------------------------------------------------------
+     Q    JA   JB   JC    Mean    AB   AC   BC   All
+  ----------------------------------------------------
+     1     3    3    2   2.667     Y    N    N     N
+     2     3    3    2   2.667     Y    N    N     N
+     3     3    3    3   3.000     Y    Y    Y     Y
+     4     3    3    3   3.000     Y    Y    Y     Y
+     5     3    3    2   2.667     Y    N    N     N
+     6     3    2    2   2.333     N    N    Y     N
+     7     3    3    3   3.000     Y    Y    Y     Y
+     8     3    2    3   2.667     N    Y    N     N
+     9     3    3    3   3.000     Y    Y    Y     Y
+    10     3    2    2   2.333     N    N    Y     N
+    11     3    2    2   2.333     N    N    Y     N
+    12     3    1    3   2.333     N    Y    N     N
+    13     3    2    2   2.333     N    N    Y     N
+    14     3    2    2   2.333     N    N    Y     N
+    15     3    1    3   2.333     N    Y    N     N
+    16     3    2    2   2.333     N    N    Y     N
+    17     3    1    2   2.000     N    N    N     N
+    18     3    2    2   2.333     N    N    Y     N
+    19     3    1    2   2.000     N    N    N     N
+    20     3    2    2   2.333     N    N    Y     N
+    21     3    1    2   2.000     N    N    N     N
+    22     3    1    2   2.000     N    N    N     N
+    23     3    1    2   2.000     N    N    N     N
+    24     3    1    3   2.333     N    Y    N     N
+    25     3    1    2   2.000     N    N    N     N
+    26     3    1    2   2.000     N    N    N     N
+    27     3    1    2   2.000     N    N    N     N
+    28     3    1    2   2.000     N    N    N     N
+    29     3    1    2   2.000     N    N    N     N
+    30     3    2    3   2.667     N    Y    N     N
+    31     3    1    3   2.333     N    Y    N     N
+    32     3    1    2   2.000     N    N    N     N
+    33     3    1    3   2.333     N    Y    N     N
+    34     3    1    2   2.000     N    N    N     N
+    35     3    1    2   2.000     N    N    N     N
+    36     3    1    3   2.333     N    Y    N     N
+    37     3    1    3   2.333     N    Y    N     N
+    38     3    1    3   2.333     N    Y    N     N
+    39     3    1    2   2.000     N    N    N     N
+    40     3    1    3   2.333     N    Y    N     N
+    41     3    1    3   2.333     N    Y    N     N
+    42     3    2    3   2.667     N    Y    N     N
+    43     3    1    3   2.333     N    Y    N     N
+    44     3    1    2   2.000     N    N    N     N
+    45     3    1    3   2.333     N    Y    N     N
+    46     2    1    1   1.333     N    N    Y     N
+    47     3    1    3   2.333     N    Y    N     N
+    48     3    1    3   2.333     N    Y    N     N
+    49     3    2    2   2.333     N    N    Y     N
+    50     3    1    2   2.000     N    N    N     N
+    51     3    1    3   2.333     N    Y    N     N
+    52     3    2    2   2.333     N    N    Y     N
+    53     3    1    3   2.333     N    Y    N     N
+    54     3    1    2   2.000     N    N    N     N
+    55     3    1    2   2.000     N    N    N     N
+    56     3    1    2   2.000     N    N    N     N
+    57     3    1    3   2.333     N    Y    N     N
+    58     3    1    1   1.667     N    N    Y     N
+    59     3    1    2   2.000     N    N    N     N
+    60     3    1    2   2.000     N    N    N     N
+    61     3    2    2   2.333     N    N    Y     N
+    62     3    1    2   2.000     N    N    N     N
+    63     3    1    2   2.000     N    N    N     N
+    64     3    1    3   2.333     N    Y    N     N
+    65     3    1    3   2.333     N    Y    N     N
+    66     3    1    2   2.000     N    N    N     N
+    67     3    1    2   2.000     N    N    N     N
+    68     3    1    2   2.000     N    N    N     N
+    69     3    1    2   2.000     N    N    N     N
+    70     3    1    2   2.000     N    N    N     N
+    71     3    1    3   2.333     N    Y    N     N
+    72     3    1    3   2.333     N    Y    N     N
+    73     3    1    3   2.333     N    Y    N     N
+    74     3    1    3   2.333     N    Y    N     N
+    75     3    1    3   2.333     N    Y    N     N
+    76     3    1    2   2.000     N    N    N     N
+    77     3    1    3   2.333     N    Y    N     N
+    78     3    1    3   2.333     N    Y    N     N
+    79     3    1    2   2.000     N    N    N     N
+    80     3    1    3   2.333     N    Y    N     N
+    81     3    1    2   2.000     N    N    N     N
+    82     3    1    2   2.000     N    N    N     N
+    83     3    2    2   2.333     N    N    Y     N
+    84     3    1    2   2.000     N    N    N     N
+    85     3    1    2   2.000     N    N    N     N
+    86     3    1    2   2.000     N    N    N     N
+    87     3    1    3   2.333     N    Y    N     N
+    88     3    1    2   2.000     N    N    N     N
+    89     3    1    3   2.333     N    Y    N     N
+    90     3    1    3   2.333     N    Y    N     N
+    91     3    1    3   2.333     N    Y    N     N
+    92     3    1    2   2.000     N    N    N     N
+    93     3    1    2   2.000     N    N    N     N
+    94     3    1    2   2.000     N    N    N     N
+    95     3    2    3   2.667     N    Y    N     N
+    96     3    1    2   2.000     N    N    N     N
+    97     3    1    2   2.000     N    N    N     N
+    98     3    1    3   2.333     N    Y    N     N
+    99     3    1    3   2.333     N    Y    N     N
+   100     3    1    2   2.000     N    N    N     N
+
+SCORE DISTRIBUTIONS PER JUDGE
+----------------------------------------------------------------------
+  Judge A (Retrieval Fidelity)
+    Score 1:    0 (  0.0%)  Score 2:    1 (  1.0%)  Score 3:   99 ( 99.0%)
+    Mean: 2.9900   Std: 0.0995   Median: 3.0
+
+  Judge B (Question Relevance)
+    Score 1:   77 ( 77.0%)  Score 2:   16 ( 16.0%)  Score 3:    7 (  7.0%)
+    Mean: 1.3000   Std: 0.5916   Median: 1.0
+
+  Judge C (Scientific Validity)
+    Score 1:    2 (  2.0%)  Score 2:   57 ( 57.0%)  Score 3:   41 ( 41.0%)
+    Mean: 2.3900   Std: 0.5272   Median: 2.0
+
+PAIRWISE PERCENT AGREEMENT
+----------------------------------------------------------------------
+  Judge A vs Judge B : 0.0700  (7.0%)
+  Judge A vs Judge C : 0.4100  (41.0%)
+  Judge B vs Judge C : 0.1800  (18.0%)
+  All three agree    : 0.0400  (4.0%)
+
+COHEN'S KAPPA (pairwise, chance-corrected)
+----------------------------------------------------------------------
+  Kappa (A vs B) : -0.0010  Slight/Poor    
+  Kappa (A vs C) : -0.0027  Slight/Poor    
+  Kappa (B vs C) :  0.0517  Slight/Poor    
+  Mean Kappa     :  0.0160  Slight/Poor    
+
+MULTI-RATER AGREEMENT METRICS
+----------------------------------------------------------------------
+  Fleiss' Kappa         : -0.2387  Slight/Poor    
+  Krippendorff's Alpha  : -0.3253  Slight/Poor    
+
+AGREEMENT / DISAGREEMENT SUMMARY
+----------------------------------------------------------------------
+  Full agreement (all 3 judges match) :    4 / 100  (4.0%)
+  Any disagreement                    :   96 / 100  (96.0%)
+
+  Questions with full agreement (sample):
+    Q  3  JA=3 JB=3 JC=3  "Do proline and glycine-rich regions consistently score "
+    Q  4  JA=3 JB=3 JC=3  "Does applying a sliding window smooth out confidence sc"
+    Q  7  JA=3 JB=3 JC=3  "How much do raw confidence scores overestimate or under"
+    Q  9  JA=3 JB=3 JC=3  "What is the MAE between raw disorder confidence scores "
+
+  Questions with largest judge disagreement (spread):
+    Q 12  spread=2  JA=3 JB=1 JC=3  "How does the precision-recall curve change after"
+    Q 15  spread=2  JA=3 JB=1 JC=3  "Does the neurosymbolic approach improve predicti"
+    Q 17  spread=2  JA=3 JB=1 JC=2  "Does contextual biological knowledge retrieved v"
+    Q 19  spread=2  JA=3 JB=1 JC=2  "Are certain amino acid compositions more respons"
+    Q 21  spread=2  JA=3 JB=1 JC=2  "How does calibration affect AUROC compared to ra"
+
+OVERALL AGREEMENT VERDICT
+----------------------------------------------------------------------
+  Fleiss' Kappa        : -0.2387  --> Slight/Poor    
+  Krippendorff's Alpha : -0.3253  --> Slight/Poor    
+
+INTERPRETATION
+----------------------------------------------------------------------
+  Judge A (Retrieval Fidelity) is expected to score HIGH for
+  extractive fallback mode because answers ARE the retrieved
+  passages concatenated directly.
+
+  Judge B (Question Relevance) is expected to show more variance
+  because BiomedBERT retrieval sometimes pulls passages that are
+  topically related but do not directly answer the specific question.
+
+  Judge C (Scientific Validity) should be moderate-to-high since
+  the KB passages are grounded in DisProt experimental data, but
+  contradictory co-retrieved passages can reduce validity scores.
+
+  Low Kappa between Judge A and Judge B reflects the core tension
+  in RAG systems: high retrieval fidelity does not guarantee high
+  question relevance when the retriever pulls semantically similar
+  but question-mismatched passages.
+
+======================================================================
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
