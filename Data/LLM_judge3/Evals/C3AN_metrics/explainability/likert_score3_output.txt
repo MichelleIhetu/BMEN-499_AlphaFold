@@ -1,0 +1,195 @@
+======================================================================
+  BMEN-499 AlphaFold -- LLM Judge 3: Likert Score Analysis
+  Script  : likert_score3.py
+  Source  : LLM3_predictions.txt (BioMistral RAG)
+  Questions scored : 100
+  Scale   : 1 (Absent) --> 5 (Strongly Present)
+======================================================================
+
+LIKERT DIMENSION DEFINITIONS
+----------------------------------------------------------------------
+  L1  Factual Grounding         -- specific numbers, thresholds, stats
+  L2  Causal Explanation         -- WHY not just WHAT (causal language)
+  L3  Uncertainty Acknowledgment -- hedging, gray zones, limits
+  L4  Biological Specificity     -- domain terminology depth
+  L5  Answer Completeness        -- length + multi-evidence
+  L6  Actionability              -- practical guidance or recommendation
+
+PER-QUESTION LIKERT SCORES
+----------------------------------------------------------------------
+     Q    L1   L2   L3   L4   L5   L6   Total    Mean  Label       
+  ------------------------------------------------------------
+     1     4    1    5    3    3    2      18    3.00  MODERATE   
+     2     5    2    5    3    3    2      20    3.33  MODERATE   
+     3     4    4    1    5    3    2      19    3.17  MODERATE   
+     4     3    2    2    4    3    1      15    2.50  MODERATE   
+     5     2    2    2    4    2    2      14    2.33  WEAK       
+     6     2    2    5    4    3    2      18    3.00  MODERATE   
+     7     4    2    1    3    3    1      14    2.33  WEAK       
+     8     3    2    2    4    3    1      15    2.50  MODERATE   
+     9     3    2    2    4    3    1      15    2.50  MODERATE   
+    10     5    2    3    3    3    1      17    2.83  MODERATE   
+    11     2    1    5    2    3    2      15    2.50  MODERATE   
+    12     2    1    5    3    3    2      16    2.67  MODERATE   
+    13     2    1    5    2    3    2      15    2.50  MODERATE   
+    14     2    1    5    2    3    2      15    2.50  MODERATE   
+    15     3    1    1    4    3    2      14    2.33  WEAK       
+    16     3    1    2    4    3    2      15    2.50  MODERATE   
+    17     2    1    5    2    3    2      15    2.50  MODERATE   
+    18     5    2    3    3    3    2      18    3.00  MODERATE   
+    19     5    2    5    3    3    2      20    3.33  MODERATE   
+    20     2    1    5    2    3    2      15    2.50  MODERATE   
+    21     5    2    5    3    3    2      20    3.33  MODERATE   
+    22     4    1    5    3    3    2      18    3.00  MODERATE   
+    23     5    2    3    3    3    1      17    2.83  MODERATE   
+    24     2    4    1    5    3    2      17    2.83  MODERATE   
+    25     2    1    1    3    3    2      12    2.00  WEAK       
+    26     2    1    5    2    3    2      15    2.50  MODERATE   
+    27     5    2    3    3    3    2      18    3.00  MODERATE   
+    28     2    1    5    2    3    2      15    2.50  MODERATE   
+    29     5    2    5    3    3    2      20    3.33  MODERATE   
+    30     4    4    1    4    2    2      17    2.83  MODERATE   
+    31     4    1    1    5    3    2      16    2.67  MODERATE   
+    32     5    2    5    3    3    2      20    3.33  MODERATE   
+    33     4    4    1    4    2    2      17    2.83  MODERATE   
+    34     4    1    1    4    3    2      15    2.50  MODERATE   
+    35     3    1    5    3    3    3      18    3.00  MODERATE   
+    36     4    4    1    5    3    2      19    3.17  MODERATE   
+    37     4    4    5    4    3    2      22    3.67  GOOD       
+    38     4    1    5    3    3    2      18    3.00  MODERATE   
+    39     5    2    3    3    3    1      17    2.83  MODERATE   
+    40     4    4    1    5    3    2      19    3.17  MODERATE   
+    41     2    4    1    5    3    1      16    2.67  MODERATE   
+    42     3    1    1    4    3    2      14    2.33  WEAK       
+    43     2    1    5    3    3    2      16    2.67  MODERATE   
+    44     4    1    1    4    3    2      15    2.50  MODERATE   
+    45     4    4    1    4    2    2      17    2.83  MODERATE   
+    46     4    2    3    3    3    2      17    2.83  MODERATE   
+    47     3    1    1    4    3    2      14    2.33  WEAK       
+    48     4    1    1    4    4    2      16    2.67  MODERATE   
+    49     2    1    5    2    3    2      15    2.50  MODERATE   
+    50     2    1    5    2    3    2      15    2.50  MODERATE   
+    51     4    4    1    5    3    1      18    3.00  MODERATE   
+    52     2    1    1    3    3    2      12    2.00  WEAK       
+    53     4    4    1    5    3    2      19    3.17  MODERATE   
+    54     4    2    3    3    3    3      18    3.00  MODERATE   
+    55     2    1    5    2    3    2      15    2.50  MODERATE   
+    56     4    1    5    3    3    2      18    3.00  MODERATE   
+    57     4    1    1    4    3    1      14    2.33  WEAK       
+    58     2    1    5    3    3    4      18    3.00  MODERATE   
+    59     2    1    1    4    2    4      14    2.33  WEAK       
+    60     2    1    1    3    3    2      12    2.00  WEAK       
+    61     2    1    5    2    3    2      15    2.50  MODERATE   
+    62     2    1    5    2    3    2      15    2.50  MODERATE   
+    63     3    1    1    3    3    3      14    2.33  WEAK       
+    64     4    4    1    5    3    2      19    3.17  MODERATE   
+    65     4    4    1    4    2    2      17    2.83  MODERATE   
+    66     3    1    2    4    3    2      15    2.50  MODERATE   
+    67     2    1    5    2    3    2      15    2.50  MODERATE   
+    68     2    1    1    3    3    2      12    2.00  WEAK       
+    69     3    1    1    3    3    3      14    2.33  WEAK       
+    70     2    1    1    3    3    2      12    2.00  WEAK       
+    71     4    1    1    4    3    1      14    2.33  WEAK       
+    72     3    1    1    4    3    2      14    2.33  WEAK       
+    73     4    1    1    3    3    2      14    2.33  WEAK       
+    74     2    4    1    5    3    1      16    2.67  MODERATE   
+    75     4    4    1    4    2    2      17    2.83  MODERATE   
+    76     5    2    3    3    3    2      18    3.00  MODERATE   
+    77     3    1    1    4    3    2      14    2.33  WEAK       
+    78     2    4    1    5    3    2      17    2.83  MODERATE   
+    79     4    1    1    4    3    2      15    2.50  MODERATE   
+    80     2    2    1    3    3    2      13    2.17  WEAK       
+    81     2    1    5    2    3    2      15    2.50  MODERATE   
+    82     4    1    1    4    3    2      15    2.50  MODERATE   
+    83     2    1    5    2    3    2      15    2.50  MODERATE   
+    84     5    2    3    3    3    1      17    2.83  MODERATE   
+    85     2    1    5    2    3    2      15    2.50  MODERATE   
+    86     2    1    1    3    3    2      12    2.00  WEAK       
+    87     4    1    1    4    4    2      16    2.67  MODERATE   
+    88     4    1    1    4    3    2      15    2.50  MODERATE   
+    89     4    4    1    5    3    2      19    3.17  MODERATE   
+    90     4    4    5    4    3    2      22    3.67  GOOD       
+    91     4    4    1    5    3    2      19    3.17  MODERATE   
+    92     3    1    1    3    3    3      14    2.33  WEAK       
+    93     2    1    5    2    3    2      15    2.50  MODERATE   
+    94     2    1    1    3    3    2      12    2.00  WEAK       
+    95     3    1    1    4    3    2      14    2.33  WEAK       
+    96     3    1    1    3    3    3      14    2.33  WEAK       
+    97     2    1    5    2    3    2      15    2.50  MODERATE   
+    98     4    4    1    4    2    2      17    2.83  MODERATE   
+    99     5    5    3    5    3    1      22    3.67  GOOD       
+   100     4    1    5    3    3    2      18    3.00  MODERATE   
+
+AGGREGATE SCORES PER DIMENSION
+----------------------------------------------------------------------
+  Dim  Label                            Mean    Std  Min  Max  Median  Overall Label
+  --------------------------------------------------------------------
+  L1   Factual Grounding                3.25   1.08    2    5    3.00  MODERATE   
+  L2   Causal Explanation               1.85   1.20    1    5    1.00  WEAK       
+  L3   Uncertainty Acknowledgment       2.66   1.82    1    5    2.00  MODERATE   
+  L4   Biological Specificity           3.41   0.94    2    5    3.00  MODERATE   
+  L5   Answer Completeness              2.94   0.31    2    4    3.00  MODERATE   
+  L6   Actionability                    1.96   0.53    1    4    2.00  WEAK       
+
+  Overall Mean Likert Score : 2.6783 / 5.00  -->  MODERATE   
+
+MEAN SCORE DISTRIBUTION
+----------------------------------------------------------------------
+  EXCELLENT  (4.5-5.0) :    0 (  0.0%)  
+  GOOD       (3.5-4.4) :    3 (  3.0%)  #
+  MODERATE   (2.5-3.4) :   73 ( 73.0%)  #############################
+  WEAK       (1.5-2.4) :   24 ( 24.0%)  #########
+  POOR       (1.0-1.4) :    0 (  0.0%)  
+
+TOP 5 HIGHEST SCORING ANSWERS
+----------------------------------------------------------------------
+  Q 37  mean=3.67  L1=4 L2=4 L3=5 L4=4 L5=3 L6=2
+       "Does the neurosymbolic system improve calibration curves?"
+  Q 90  mean=3.67  L1=4 L2=4 L3=5 L4=4 L5=3 L6=2
+       "How does it perform under adversarial perturbations?"
+  Q 99  mean=3.67  L1=5 L2=5 L3=3 L4=5 L5=3 L6=1
+       "Does neurosymbolic reasoning reduce prediction bias?"
+  Q  2  mean=3.33  L1=5 L2=2 L3=5 L4=3 L5=3 L6=2
+       "Do confidence scores drop for IDRs shorter than 10 residues?"
+  Q 19  mean=3.33  L1=5 L2=2 L3=5 L4=3 L5=3 L6=2
+       "Are certain amino acid compositions more responsive to symbo"
+
+BOTTOM 5 LOWEST SCORING ANSWERS
+----------------------------------------------------------------------
+  Q 60  mean=2.00  L1=2 L2=1 L3=1 L4=3 L5=3 L6=2
+       "How does performance change with different window sizes?"
+  Q 68  mean=2.00  L1=2 L2=1 L3=1 L4=3 L5=3 L6=2
+       "How does performance change when excluding uncertain regions"
+  Q 70  mean=2.00  L1=2 L2=1 L3=1 L4=3 L5=3 L6=2
+       "Are prediction gains dependent on dataset size?"
+  Q 86  mean=2.00  L1=2 L2=1 L3=1 L4=3 L5=3 L6=2
+       "How does performance change with different retrieval strateg"
+  Q 94  mean=2.00  L1=2 L2=1 L3=1 L4=3 L5=3 L6=2
+       "How does performance compare across different datasets?"
+
+DIMENSION RANKINGS
+----------------------------------------------------------------------
+  #1  L4  Biological Specificity          3.41  ####################
+  #2  L1  Factual Grounding               3.25  ###################
+  #3  L5  Answer Completeness             2.94  #################
+  #4  L3  Uncertainty Acknowledgment      2.66  ###############
+  #5  L6  Actionability                   1.96  ###########
+  #6  L2  Causal Explanation              1.85  ###########
+
+INTERPRETATION
+----------------------------------------------------------------------
+  Strongest dimension : L4 -- Biological Specificity
+  Weakest dimension   : L2  -- Causal Explanation
+
+  LLM Judge 3 in extractive fallback mode scores well on L4
+  (Biological Specificity) because KB passages are rich in domain
+  terms (pLDDT, IDR, MoRF, DisProt). L3 (Uncertainty) scores
+  moderately because the KB includes gray zone language. L2
+  (Causal Explanation) and L6 (Actionability) are typically
+  lower in extractive mode since causal synthesis requires the
+  generative model (BioMistral-7B) to connect retrieved facts.
+  Loading BioMistral-7B would improve L2, L5, and L6 scores.
+
+======================================================================
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
