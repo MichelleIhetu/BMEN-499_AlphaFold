@@ -1,0 +1,249 @@
+======================================================================
+  BMEN-499 AlphaFold -- LLM Judge 3: Performance Drop Analysis
+  Script  : performance_drop3.py
+  Source  : LLM3_predictions.txt (BioMistral RAG)
+  Questions analyzed : 100
+======================================================================
+
+COMPOSITE QUALITY SCORE FORMULA
+----------------------------------------------------------------------
+  Score = 0.30 * Q1 + 0.30 * Q2 + 0.25 * Q3 + 0.15 * Q4
+  Q1  Factual Density    -- quantitative facts per 100 words (x10)
+  Q2  Term Precision     -- biomedical term coverage (x3 scaled)
+  Q3  Relevance Overlap  -- question-answer token overlap %
+  Q4  Structural Clarity -- sentence count coherence proxy
+  All components scaled 0-100; final score 0-100.
+
+PERFORMANCE DROP AXES
+----------------------------------------------------------------------
+  D1  Question Complexity   -- simple vs complex questions
+  D2  Question Type         -- factual vs reasoning questions
+  D3  Retrieval Score       -- high vs low retrieval confidence
+  D4  Topic Domain          -- best vs worst performing topic
+  D5  Answer Length         -- long vs short answers
+
+  Effect size (Cohen's d):  Large>=0.80  Medium>=0.50  Small>=0.20
+
+PER-QUESTION COMPOSITE SCORES
+----------------------------------------------------------------------
+     Q    Score  Type        Topic                       Len   RetScr
+  --------------------------------------------------------------
+     1   75.178  reasoning   General Disorder             87   0.9770
+     2   79.809  reasoning   pLDDT/AlphaFold              77   0.9752
+     3   73.789  reasoning   Amino Acid Composition       70   0.9789
+     4   74.409  reasoning   pLDDT/AlphaFold              73   0.9786
+     5   62.163  reasoning   pLDDT/AlphaFold              67   0.9747
+     6   58.975  factual     pLDDT/AlphaFold              72   0.9771
+     7   70.960  factual     pLDDT/AlphaFold              85   0.9705
+     8   65.480  reasoning   Amino Acid Composition       73   0.9767
+     9   68.853  factual     pLDDT/AlphaFold              73   0.9784
+    10   65.956  reasoning   Statistical Metrics          85   0.9788
+    11   60.822  reasoning   Statistical Metrics          74   0.9710
+    12   63.142  reasoning   Statistical Metrics          77   0.9650
+    13   62.211  reasoning   Statistical Metrics          74   0.9697
+    14   62.905  factual     Statistical Metrics          74   0.9716
+    15   64.955  reasoning   Neurosymbolic/RAG            77   0.9644
+    16   67.539  reasoning   Neurosymbolic/RAG            70   0.9670
+    17   56.655  reasoning   Statistical Metrics          74   0.9715
+    18   67.852  reasoning   Neurosymbolic/RAG            74   0.9547
+    19   63.142  reasoning   Amino Acid Composition       77   0.9667
+    20   62.905  reasoning   Neurosymbolic/RAG            74   0.9667
+    21   63.142  reasoning   Statistical Metrics          77   0.9554
+    22   64.463  reasoning   Sliding Window               87   0.9659
+    23   66.896  factual     pLDDT/AlphaFold              85   0.9661
+    24   65.757  reasoning   Statistical Metrics          77   0.9463
+    25   70.757  reasoning   General Disorder             84   0.9115
+    26   61.655  reasoning   General Disorder             74   0.9671
+    27   63.834  reasoning   Neurosymbolic/RAG            72   0.9699
+    28   60.822  reasoning   Neurosymbolic/RAG            74   0.9600
+    29   67.309  reasoning   pLDDT/AlphaFold              77   0.9684
+    30   66.755  reasoning   Neurosymbolic/RAG            68   0.9565
+    31   64.627  reasoning   Statistical Metrics          77   0.9524
+    32   67.309  reasoning   General Disorder             77   0.9706
+    33   59.612  reasoning   Neurosymbolic/RAG            68   0.9560
+    34   60.892  reasoning   General Disorder             84   0.9410
+    35   58.341  reasoning   General Disorder             76   0.9547
+    36   61.289  reasoning   Neurosymbolic/RAG            70   0.9467
+    37   64.341  reasoning   Statistical Metrics          73   0.9558
+    38   60.773  reasoning   Statistical Metrics          76   0.9527
+    39   63.324  reasoning   General Disorder             85   0.9587
+    40   61.289  reasoning   Neurosymbolic/RAG            70   0.9518
+    41   69.000  reasoning   Neurosymbolic/RAG            81   0.9380
+    42   69.717  reasoning   General Disorder             77   0.9523
+    43   63.142  reasoning   Neurosymbolic/RAG            77   0.9554
+    44   60.892  reasoning   General Disorder             84   0.9371
+    45   59.612  reasoning   Neurosymbolic/RAG            68   0.9587
+    46   60.892  factual     Statistical Metrics          81   0.9516
+    47   66.383  reasoning   General Disorder             77   0.9465
+    48   65.757  reasoning   Neurosymbolic/RAG            84   0.9436
+    49   64.989  reasoning   Neurosymbolic/RAG            74   0.9621
+    50   61.655  reasoning   Amino Acid Composition       74   0.9698
+    51   69.146  reasoning   Neurosymbolic/RAG            74   0.9687
+    52   75.757  reasoning   General Disorder             84   0.9563
+    53   61.289  reasoning   Statistical Metrics          70   0.9541
+    54   54.571  reasoning   General Disorder             70   0.9332
+    55   60.822  reasoning   Amino Acid Composition       74   0.9677
+    56   67.142  reasoning   General Disorder             87   0.9448
+    57   74.000  reasoning   General Disorder             88   0.9475
+    58   56.535  reasoning   Amino Acid Composition       70   0.9554
+    59   54.007  reasoning   pLDDT/AlphaFold              67   0.9442
+    60   65.757  reasoning   Sliding Window               84   0.9215
+    61   63.798  reasoning   Neurosymbolic/RAG            74   0.9696
+    62   56.655  reasoning   Amino Acid Composition       74   0.9621
+    63   57.796  reasoning   Amino Acid Composition       71   0.9749
+    64   61.289  reasoning   General Disorder             70   0.9517
+    65   59.612  reasoning   Amino Acid Composition       68   0.9646
+    66   61.289  reasoning   General Disorder             70   0.9612
+    67   60.822  reasoning   General Disorder             74   0.9625
+    68   70.757  reasoning   General Disorder             84   0.9456
+    69   57.796  reasoning   Neurosymbolic/RAG            71   0.9679
+    70   65.757  reasoning   General Disorder             84   0.9418
+    71   69.000  reasoning   General Disorder             88   0.9412
+    72   61.383  reasoning   General Disorder             77   0.9382
+    73   61.062  reasoning   Neurosymbolic/RAG            71   0.9532
+    74   69.000  reasoning   General Disorder             81   0.9257
+    75   59.612  reasoning   Neurosymbolic/RAG            68   0.9572
+    76   60.709  reasoning   General Disorder             74   0.9543
+    77   61.383  reasoning   General Disorder             77   0.9475
+    78   54.107  reasoning   Amino Acid Composition       70   0.9238
+    79   60.892  reasoning   Neurosymbolic/RAG            84   0.9345
+    80   62.444  reasoning   Neurosymbolic/RAG            72   0.9593
+    81   56.655  reasoning   Neurosymbolic/RAG            74   0.9637
+    82   60.892  reasoning   General Disorder             84   0.9290
+    83   66.655  reasoning   Statistical Metrics          74   0.9645
+    84   63.324  reasoning   General Disorder             85   0.9545
+    85   56.655  reasoning   Neurosymbolic/RAG            74   0.9627
+    86   65.757  reasoning   Neurosymbolic/RAG            84   0.9122
+    87   70.757  reasoning   General Disorder             84   0.9559
+    88   60.892  reasoning   Statistical Metrics          84   0.9426
+    89   61.289  reasoning   Neurosymbolic/RAG            70   0.9520
+    90   64.341  reasoning   General Disorder             73   0.9513
+    91   61.289  reasoning   Amino Acid Composition       70   0.9588
+    92   58.629  reasoning   pLDDT/AlphaFold              71   0.9605
+    93   56.655  reasoning   Neurosymbolic/RAG            74   0.9672
+    94   65.757  reasoning   General Disorder             84   0.9023
+    95   69.717  reasoning   General Disorder             77   0.9634
+    96   53.629  reasoning   General Disorder             71   0.9546
+    97   56.655  reasoning   Statistical Metrics          74   0.9648
+    98   64.612  reasoning   General Disorder             68   0.9563
+    99   68.007  reasoning   Neurosymbolic/RAG            71   0.9523
+   100   60.892  reasoning   General Disorder             87   0.9577
+
+OVERALL SCORE STATISTICS
+----------------------------------------------------------------------
+  Mean   : 63.6018
+  Std    : 5.0515
+  Median : 63.0237
+  Min    : 53.6291
+  Max    : 79.8086
+
+SCORE DISTRIBUTION
+----------------------------------------------------------------------
+  90-100   :    0 (  0.0%)  
+  75-89    :    3 (  3.0%)  #
+  60-74    :   77 ( 77.0%)  ##############################
+  45-59    :   20 ( 20.0%)  ########
+  < 45     :    0 (  0.0%)  
+
+D1 Question Complexity -- Performance Drop
+----------------------------------------------------------------------
+  Baseline : Simple questions (word count <= median)  (n=64)
+  Degraded : Complex questions (word count > median)  (n=36)
+  Baseline mean score : 62.6736  (std=4.6454)
+  Degraded mean score : 65.2518  (std=5.3163)
+  Absolute drop       : -2.5782 points
+  Relative drop       : -4.11%
+  Cohen's d           : -0.5165  (Medium)
+  Verdict             : IMPROVED
+
+D2 Question Type -- Performance Drop
+----------------------------------------------------------------------
+  Baseline : Factual questions  (n=6)
+  Degraded : Reasoning questions  (n=94)
+  Baseline mean score : 64.9136  (std=4.3104)
+  Degraded mean score : 63.5180  (std=5.0837)
+  Absolute drop       : 1.3955 points
+  Relative drop       : 2.15%
+  Cohen's d           : 0.2961  (Small )
+  Verdict             : DEGRADED
+
+D3 Retrieval Score -- Performance Drop
+----------------------------------------------------------------------
+  Baseline : High retrieval score (>= 0.9568)  (n=50)
+  Degraded : Low retrieval score (< 0.9568)  (n=50)
+  Baseline mean score : 63.5063  (std=5.2107)
+  Degraded mean score : 63.6972  (std=4.8852)
+  Absolute drop       : -0.1910 points
+  Relative drop       : -0.30%
+  Cohen's d           : -0.0378  (Negligible)
+  Verdict             : IMPROVED
+
+D5 Answer Length -- Performance Drop
+----------------------------------------------------------------------
+  Baseline : Long answers (>= 76.2 words)  (n=43)
+  Degraded : Short answers (< 76.2 words)  (n=57)
+  Baseline mean score : 66.3305  (std=4.4725)
+  Degraded mean score : 61.5432  (std=4.4522)
+  Absolute drop       : 4.7873 points
+  Relative drop       : 7.22%
+  Cohen's d           : 1.0728  (Large )
+  Verdict             : DEGRADED
+
+D4 Topic Domain -- Performance Drop
+----------------------------------------------------------------------
+  Topic                         N      Mean       Std
+  --------------------------------------------------
+  pLDDT/AlphaFold              10   66.2010    7.4730 <-- BEST 
+  Sliding Window                2   65.1101    0.6467
+  General Disorder             33   64.8857    5.3531
+  Neurosymbolic/RAG            28   62.8257    3.7075
+  Statistical Metrics          16   62.2947    2.8382
+  Amino Acid Composition       11   60.9893    5.1103 <-- WORST
+
+  Best topic  : pLDDT/AlphaFold
+  Worst topic : Amino Acid Composition
+  Absolute drop : 5.2117 points
+  Relative drop : 7.87%
+  Cohen's d     : 0.8141  (Large )
+
+PERFORMANCE DROP SUMMARY (all axes)
+----------------------------------------------------------------------
+  Axis                         AbsDrop   PctDrop   CohenD Effect       Verdict
+  ------------------------------------------------------------------------
+  D1 Question Complexity       -2.5782    -4.11%  -0.5165 Medium       IMPROVED
+  D2 Question Type              1.3955     2.15%   0.2961 Small        DEGRADED
+  D3 Retrieval Score           -0.1910    -0.30%  -0.0378 Negligible   IMPROVED
+  D5 Answer Length              4.7873     7.22%   1.0728 Large        DEGRADED
+  D4 Topic Domain               5.2117     7.87%   0.8141 Large        DEGRADED
+
+  Largest performance drop  : D4 (5.2117 pts)
+  Smallest performance drop : D1 (-2.5782 pts)
+
+INTERPRETATION
+----------------------------------------------------------------------
+  D2 (Question Type) drop reflects BiomedBERT retrieval's
+  known weakness: semantic similarity does not distinguish
+  reasoning questions from factual ones, so the same passages
+  are retrieved regardless of whether the question needs
+  a fact or a causal explanation.
+
+  D3 (Retrieval Score) drop quantifies how much answer quality
+  depends on retrieval confidence. A large drop here means the
+  system is brittle when BiomedBERT retrieval is less certain.
+
+  D4 (Topic Domain) reveals which question domains the KB
+  covers well vs poorly. Statistical/metric questions are
+  expected to show the largest drop since the KB passages
+  focus on biology rather than computational methodology.
+
+  D1 and D5 measure structural robustness -- a large D1 drop
+  means longer/harder questions degrade quality significantly,
+  and a large D5 drop means shorter answers sacrifice content.
+
+  Loading BioMistral-7B as the generator is expected to
+  reduce D2 and D4 drops by generating question-type-aware
+  answers rather than uniform passage concatenations.
+
+======================================================================
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
