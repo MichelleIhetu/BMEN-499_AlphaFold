@@ -1,0 +1,1371 @@
+======================================================================
+  BMEN-499 AlphaFold -- BERTScore: LLM Judge 2 vs Ground Truth
+  Model      : Vanilla RAG -- BiomedBERT Retriever (LLM Judge 2)
+  Metric     : BERTScore (Zhang et al., ICLR 2020)
+  Embeddings : BiomedBERT contextual embeddings
+  Dataset    : 13,396 DisProt proteins
+  Questions  : 100
+======================================================================
+
+WHAT IS BERTSCORE?
+----------------------------------------------------------------------
+  BERTScore measures semantic similarity using contextual token
+  embeddings from BiomedBERT trained on PubMed abstracts.
+  Captures meaning even when different words express the same
+  concept -- unlike NAUR which requires exact word matches.
+
+  Precision = how much of pred is semantically in GT
+  Recall    = how much of GT is semantically in pred
+  F1        = harmonic mean of precision and recall
+
+  Score: >=0.90 VERY HIGH | >=0.80 HIGH | >=0.70 MODERATE
+         >=0.60 LOW       | < 0.60 VERY LOW
+
+OVERALL RESULTS
+----------------------------------------------------------------------
+  Mean BERTScore F1  : 0.9839  (std=0.0274)
+  Mean Precision     : 0.9826
+  Mean Recall        : 0.9853
+  Best  : Q10 = 1.0000 (VERY HIGH)
+  Worst : Q1 = 0.9332 (VERY HIGH)
+
+  Breakdown:
+    VERY HIGH (>=0.90) : 100
+    HIGH      (>=0.80) :   0
+    MODERATE  (>=0.70) :   0
+    LOW       (>=0.60) :   0
+    VERY LOW  (< 0.60) :   0
+
+  Precision vs Recall:
+    Q 1 | P=0.9242 R=0.9425 diff=-0.0183 (balanced)
+    Q 2 | P=0.9408 R=0.9444 diff=-0.0036 (balanced)
+    Q 3 | P=0.9242 R=0.9425 diff=-0.0183 (balanced)
+    Q 4 | P=0.9615 R=0.9508 diff=+0.0107 (balanced)
+    Q 5 | P=0.9242 R=0.9425 diff=-0.0183 (balanced)
+    Q 6 | P=0.9615 R=0.9508 diff=+0.0107 (balanced)
+    Q 7 | P=0.9242 R=0.9425 diff=-0.0183 (balanced)
+    Q 8 | P=0.9408 R=0.9444 diff=-0.0036 (balanced)
+    Q 9 | P=0.9242 R=0.9425 diff=-0.0183 (balanced)
+    Q10 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q11 | P=0.9242 R=0.9425 diff=-0.0183 (balanced)
+    Q12 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q13 | P=0.9242 R=0.9425 diff=-0.0183 (balanced)
+    Q14 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q15 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q16 | P=0.9242 R=0.9425 diff=-0.0183 (balanced)
+    Q17 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q18 | P=0.9408 R=0.9444 diff=-0.0036 (balanced)
+    Q19 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q20 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q21 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q22 | P=0.9242 R=0.9425 diff=-0.0183 (balanced)
+    Q23 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q24 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q25 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q26 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q27 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q28 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q29 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q30 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q31 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q32 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q33 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q34 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q35 | P=0.9442 R=0.9336 diff=+0.0106 (balanced)
+    Q36 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q37 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q38 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q39 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q40 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q41 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q42 | P=0.9242 R=0.9425 diff=-0.0183 (balanced)
+    Q43 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q44 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q45 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q46 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q47 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q48 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q49 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q50 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q51 | P=0.9242 R=0.9425 diff=-0.0183 (balanced)
+    Q52 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q53 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q54 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q55 | P=0.9408 R=0.9444 diff=-0.0036 (balanced)
+    Q56 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q57 | P=0.9242 R=0.9425 diff=-0.0183 (balanced)
+    Q58 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q59 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q60 | P=0.9615 R=0.9508 diff=+0.0107 (balanced)
+    Q61 | P=0.9242 R=0.9425 diff=-0.0183 (balanced)
+    Q62 | P=0.9408 R=0.9444 diff=-0.0036 (balanced)
+    Q63 | P=0.9408 R=0.9444 diff=-0.0036 (balanced)
+    Q64 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q65 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q66 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q67 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q68 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q69 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q70 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q71 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q72 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q73 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q74 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q75 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q76 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q77 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q78 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q79 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q80 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q81 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q82 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q83 | P=0.9242 R=0.9425 diff=-0.0183 (balanced)
+    Q84 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q85 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q86 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q87 | P=0.9242 R=0.9425 diff=-0.0183 (balanced)
+    Q88 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q89 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q90 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q91 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q92 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q93 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q94 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q95 | P=0.9242 R=0.9425 diff=-0.0183 (balanced)
+    Q96 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q97 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q98 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q99 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+    Q100 | P=1.0000 R=1.0000 diff=+0.0000 (balanced)
+
+======================================================================
+  QUESTION-BY-QUESTION BERTSCORE
+======================================================================
+
+[Q1] Is a disorder score above 0.5 a reliable cutoff for calling a region disordered?
+  F1=0.9332 | P=0.9242 | R=0.9425 | VERY HIGH
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+----------------------------------------------------------------------
+
+[Q2] Do confidence scores drop for IDRs shorter than 10 residues?
+  F1=0.9426 | P=0.9408 | R=0.9444 | VERY HIGH
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    Of 0 DisProt regions 0.0% are shorter than 10 residues with mean 
+    0.0 aa. Short IDRs are hard to predict reliably due to limited se
+    quence context. Sliding window averaging smooths per-residue diso
+    rder scores but windows larger than mean region length risk smoot
+    hing out short IDRs entirely.
+----------------------------------------------------------------------
+
+[Q3] Do proline and glycine-rich regions consistently score higher disorder confidence than average?
+  F1=0.9332 | P=0.9242 | R=0.9425 | VERY HIGH
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+----------------------------------------------------------------------
+
+[Q4] Does applying a sliding window smooth out confidence scores without losing true IDR signal?
+  F1=0.9561 | P=0.9615 | R=0.9508 | VERY HIGH
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If sliding window size exceeds this mean short disor
+    dered regions risk being averaged out and lost entirely.
+----------------------------------------------------------------------
+
+[Q5] How far off are raw confidence scores from the true disorder rate in DisProt?
+  F1=0.9332 | P=0.9242 | R=0.9425 | VERY HIGH
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+----------------------------------------------------------------------
+
+[Q6] When a confidence score falls in the uncertain range (0.4–0.6), does applying a sliding window smooth it toward the correct label, and what window size does the literature support?
+  F1=0.9561 | P=0.9615 | R=0.9508 | VERY HIGH
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If sliding window size exceeds this mean short disor
+    dered regions risk being averaged out and lost entirely.
+----------------------------------------------------------------------
+
+[Q7] How much do raw confidence scores overestimate or underestimate true disorder rates across DisProt?
+  F1=0.9332 | P=0.9242 | R=0.9425 | VERY HIGH
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+----------------------------------------------------------------------
+
+[Q8] After applying symbolic smoothing and isotonic calibration together, by how much does residue level F1 improve over raw scores, and is this improvement consistent with gains reported for similar post processing pipelines in the literature?
+  F1=0.9426 | P=0.9408 | R=0.9444 | VERY HIGH
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    Of 0 DisProt regions 0.0% are shorter than 10 residues with mean 
+    0.0 aa. Short IDRs are hard to predict reliably due to limited se
+    quence context. Sliding window averaging smooths per-residue diso
+    rder scores but windows larger than mean region length risk smoot
+    hing out short IDRs entirely.
+----------------------------------------------------------------------
+
+[Q9] What is the MAE between raw disorder confidence scores and DisProt ground truth labels, and how many standard deviations (Z-score) away from the mean prediction is each incorrectly labeled residue?
+  F1=0.9332 | P=0.9242 | R=0.9425 | VERY HIGH
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+----------------------------------------------------------------------
+
+[Q10] Do N-terminal, C-terminal, and internal IDRs show different MAE profiles, and are the Z-scores of prediction errors normally distributed within each positional group or skewed in a way that suggests a systematic bias?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q11] Does a neurosymbolic RAG system reduce variance in disorder confidence predictions compared to raw model outputs?
+  F1=0.9332 | P=0.9242 | R=0.9425 | VERY HIGH
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+----------------------------------------------------------------------
+
+[Q12] How does the precision-recall curve change after applying neurosymbolic reasoning?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q13] Does incorporating symbolic rules improve classification accuracy for borderline disorder regions?
+  F1=0.9332 | P=0.9242 | R=0.9425 | VERY HIGH
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+----------------------------------------------------------------------
+
+[Q14] What is the impact of neurosymbolic calibration on false positive rates in ordered regions?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q15] Does the neurosymbolic approach improve prediction consistency across homologous proteins?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q16] How sensitive are disorder predictions to the choice of retrieval documents in the RAG system?
+  F1=0.9332 | P=0.9242 | R=0.9425 | VERY HIGH
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+----------------------------------------------------------------------
+
+[Q17] Does contextual biological knowledge retrieved via RAG improve long IDR detection accuracy?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q18] How does performance differ between short and long IDRs after neurosymbolic processing?
+  F1=0.9426 | P=0.9408 | R=0.9444 | VERY HIGH
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    Of 0 DisProt regions 0.0% are shorter than 10 residues with mean 
+    0.0 aa. Short IDRs are hard to predict reliably due to limited se
+    quence context. Sliding window averaging smooths per-residue diso
+    rder scores but windows larger than mean region length risk smoot
+    hing out short IDRs entirely.
+----------------------------------------------------------------------
+
+[Q19] Are certain amino acid compositions more responsive to symbolic correction rules?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q20] Does neurosymbolic reasoning reduce prediction noise in low-confidence regions?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q21] How does calibration affect AUROC compared to raw predictions?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q22] Does symbolic smoothing introduce bias toward overprediction of disorder?
+  F1=0.9332 | P=0.9242 | R=0.9425 | VERY HIGH
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+----------------------------------------------------------------------
+
+[Q23] What is the distribution of confidence score corrections applied by the neurosymbolic system?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q24] Does the system improve recall without sacrificing precision?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q25] How does performance vary across different protein families?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q26] Are improvements consistent across species in the DisProt dataset?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q27] Does the neurosymbolic model perform better on experimentally validated long IDRs?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q28] How does retrieval quality impact final prediction confidence?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q29] Are confidence score corrections correlated with sequence length?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q30] Does neurosymbolic reasoning improve predictions for low-complexity regions?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q31] How does entropy of predictions change after symbolic reasoning?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q32] Does the system reduce systematic bias in terminal regions?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q33] Are gains from neurosymbolic processing statistically significant?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q34] How does performance compare against baseline machine learning models?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q35] Does adding domain knowledge improve classification boundaries?
+  F1=0.9389 | P=0.9442 | R=0.9336 | VERY HIGH
+
+  GROUND TRUTH:
+    92.6% of DisProt proteins contain at least one Pfam structured do
+    main alongside disordered regions. Structured domains and IDRs fr
+    equently co-occur in the same protein. Each region must be evalua
+    ted independently rather than labeling the whole protein as order
+    ed or disordered.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    92.6% of DisProt proteins contain Pfam domains alongside disorder
+    ed regions confirming IDRs and structured domains frequently co-o
+    ccur. Each region must be evaluated independently. Proteins with 
+    no Pfam domains and disorder content above 0.5 are classified as 
+    intrinsically disordered proteins IDPs.
+----------------------------------------------------------------------
+
+[Q36] How robust is the model to noisy or incomplete retrieval data?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q37] Does the neurosymbolic system improve calibration curves?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q38] How does Brier score change after calibration?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q39] Are prediction improvements uniform across all confidence intervals?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q40] Does neurosymbolic reasoning improve interpretability of predictions?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q41] How does performance change when removing symbolic rules?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q42] Does the system better detect disordered binding regions?
+  F1=0.9332 | P=0.9242 | R=0.9425 | VERY HIGH
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+----------------------------------------------------------------------
+
+[Q43] Are certain motifs better recognized after symbolic processing?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q44] How does the system handle conflicting retrieved evidence?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q45] Does neurosymbolic reasoning reduce overfitting?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q46] What is the effect on Matthews Correlation Coefficient (MCC)?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q47] Does performance degrade on unseen protein structures?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q48] How does retrieval latency affect prediction quality?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q49] Does symbolic reasoning improve alignment with experimental annotations?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q50] Are prediction improvements localized or global across sequences?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q51] Does neurosymbolic RAG help identify disorder-to-order transitions?
+  F1=0.9332 | P=0.9242 | R=0.9425 | VERY HIGH
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+----------------------------------------------------------------------
+
+[Q52] How does the system perform on proteins with multiple IDRs?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q53] Does calibration reduce prediction skewness?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q54] Are confidence intervals narrower after processing?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q55] Does neurosymbolic reasoning improve classification of ambiguous residues?
+  F1=0.9426 | P=0.9408 | R=0.9444 | VERY HIGH
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    Of 0 DisProt regions 0.0% are shorter than 10 residues with mean 
+    0.0 aa. Short IDRs are hard to predict reliably due to limited se
+    quence context. Sliding window averaging smooths per-residue diso
+    rder scores but windows larger than mean region length risk smoot
+    hing out short IDRs entirely.
+----------------------------------------------------------------------
+
+[Q56] How does the system perform under cross-validation?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q57] Does it generalize across different disorder prediction tools?
+  F1=0.9332 | P=0.9242 | R=0.9425 | VERY HIGH
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+----------------------------------------------------------------------
+
+[Q58] Are improvements correlated with sequence conservation?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q59] Does retrieval of structural data improve predictions?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q60] How does performance change with different window sizes?
+  F1=0.9561 | P=0.9615 | R=0.9508 | VERY HIGH
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region length in DisProt is 0.0 
+    amino acids. If sliding window size exceeds this mean short disor
+    dered regions risk being averaged out and lost entirely.
+----------------------------------------------------------------------
+
+[Q61] Does neurosymbolic reasoning help detect functional disorder regions?
+  F1=0.9332 | P=0.9242 | R=0.9425 | VERY HIGH
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+----------------------------------------------------------------------
+
+[Q62] Are gains higher in specific residue compositions?
+  F1=0.9426 | P=0.9408 | R=0.9444 | VERY HIGH
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    Of 0 DisProt regions 0.0% are shorter than 10 residues with mean 
+    0.0 aa. Short IDRs are hard to predict reliably due to limited se
+    quence context. Sliding window averaging smooths per-residue diso
+    rder scores but windows larger than mean region length risk smoot
+    hing out short IDRs entirely.
+----------------------------------------------------------------------
+
+[Q63] Does the system improve classification of edge residues in IDRs?
+  F1=0.9426 | P=0.9408 | R=0.9444 | VERY HIGH
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    Of 0 DisProt regions 0.0% are shorter than 10 residues with mean 
+    0.0 aa. Short IDRs are hard to predict reliably due to limited se
+    quence context. Sliding window averaging smooths per-residue diso
+    rder scores but windows larger than mean region length risk smoot
+    hing out short IDRs entirely.
+----------------------------------------------------------------------
+
+[Q64] How does prediction confidence correlate with experimental uncertainty?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q65] Does neurosymbolic reasoning improve long-range sequence dependencies?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q66] Are improvements stable across random seeds?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q67] Does the system perform better on curated subsets of DisProt?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q68] How does performance change when excluding uncertain regions?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q69] Does neurosymbolic reasoning improve classification of rare IDRs?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q70] Are prediction gains dependent on dataset size?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q71] Does the system improve classification under imbalanced data?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q72] How does it perform on noisy annotations?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q73] Does symbolic reasoning reduce prediction drift?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q74] How does performance compare before and after normalization?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q75] Does neurosymbolic reasoning improve stability across runs?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q76] Are improvements larger for specific protein lengths?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q77] Does the system better align predictions with biological function?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q78] How does it handle missing sequence information?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q79] Does retrieval diversity impact performance?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q80] Are prediction improvements explainable through symbolic rules?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q81] Does neurosymbolic reasoning improve threshold selection?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q82] How does the system perform on synthetic datasets?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q83] Does calibration improve ranking of disorder scores?
+  F1=0.9332 | P=0.9242 | R=0.9425 | VERY HIGH
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+----------------------------------------------------------------------
+
+[Q84] Are prediction errors reduced uniformly?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q85] Does neurosymbolic reasoning improve classification confidence intervals?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q86] How does performance change with different retrieval strategies?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q87] Does the system improve detection of transient disorder?
+  F1=0.9332 | P=0.9242 | R=0.9425 | VERY HIGH
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+----------------------------------------------------------------------
+
+[Q88] Are gains consistent across evaluation metrics?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q89] Does neurosymbolic reasoning reduce model uncertainty?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q90] How does it perform under adversarial perturbations?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q91] Does the system improve robustness to sequence mutations?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q92] Are prediction improvements correlated with structural flexibility?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q93] Does neurosymbolic reasoning improve functional annotation alignment?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q94] How does performance compare across different datasets?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q95] Does the system improve classification of partially disordered regions?
+  F1=0.9332 | P=0.9242 | R=0.9425 | VERY HIGH
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    The 0.5 disorder score threshold classifies protein regions as in
+    trinsically disordered. Of 13,396 DisProt proteins 29.1% exceed t
+    his threshold with mean disorder score 0.378. However 44.2% excee
+    d 0.3 meaning many true IDRs fall below 0.5 and are missed. Disor
+    der scores between 0.3 and 0.5 define an ambiguous gray zone wher
+    e proteins cannot be confidently classified without secondary val
+    idation.
+----------------------------------------------------------------------
+
+[Q96] Are gains consistent across evaluation folds?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q97] Does neurosymbolic reasoning improve model calibration slope?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q98] How does the system perform on edge-case proteins?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q99] Does neurosymbolic reasoning reduce prediction bias?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+[Q100] Are overall improvements sufficient to justify added system complexity?
+  F1=1.0000 | P=1.0000 | R=1.0000 | VERY HIGH
+
+  GROUND TRUTH:
+    DisProt summary 13,396 proteins mean disorder 0.378.
+
+  LLM2 PREDICTION (Vanilla RAG):
+    DisProt summary 13,396 proteins mean disorder 0.378.
+----------------------------------------------------------------------
+
+======================================================================
+  END OF BERTSCORE -- LLM Judge 2 (Vanilla RAG)
+  Mean F1: 0.9839 | P: 0.9826 | R: 0.9853
+  Reference: Zhang et al. (2020) BERTScore. ICLR 2020.
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
