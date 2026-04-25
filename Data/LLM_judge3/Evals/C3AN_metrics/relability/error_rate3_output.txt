@@ -1,0 +1,216 @@
+======================================================================
+  BMEN-499 AlphaFold -- LLM Judge 3: Error Rate Analysis
+  Script  : error_rate3.py
+  Source  : LLM3_predictions.txt (BioMistral RAG)
+  Questions analyzed : 100
+  Error categories   : 8
+======================================================================
+
+ERROR CATEGORY DEFINITIONS
+----------------------------------------------------------------------
+  E1  Factual Omission        -- stat question answered without numbers
+  E2  Threshold Misapplication -- threshold cited but context inverted
+  E3  pLDDT Inversion          -- pLDDT directionality confused
+  E4  Retrieval-Q Mismatch     -- answer topically unrelated to question
+  E5  Numeric Hallucination    -- number contradicts DisProt ground truth
+  E6  Redundancy               -- substantive phrase repeated in answer
+  E7  Incomplete Answer        -- answer < 30 words or boilerplate only
+  E8  Confidence Miscalibration-- absolute claim about probabilistic biology
+
+  Severity: CRITICAL>=0.40  HIGH>=0.25  MODERATE>=0.10  LOW>0.00  NONE=0.00
+
+PER-QUESTION ERROR FLAGS  (1=error present, 0=absent)
+----------------------------------------------------------------------
+     Q   E1  E2  E3  E4  E5  E6  E7  E8   Total
+  ------------------------------------------------
+     1    0   0   1   0   0   0   0   0       1
+     2    0   0   1   0   1   0   0   0       2
+     3    0   0   1   0   0   0   0   0       1
+     4    0   0   1   0   0   0   0   0       1
+     5    0   0   1   0   0   0   0   0       1
+     6    0   0   0   0   0   0   0   0       0
+     7    0   0   1   0   0   0   0   0       1
+     8    0   0   1   0   0   0   0   0       1
+     9    0   0   1   0   0   0   0   0       1
+    10    0   0   1   0   1   0   0   0       2
+    11    0   0   1   0   0   0   0   0       1
+    12    0   0   1   1   0   0   0   0       2
+    13    0   0   1   0   0   0   0   0       1
+    14    0   0   1   0   0   0   0   0       1
+    15    0   0   1   0   0   0   0   0       1
+    16    0   0   1   0   0   0   0   0       1
+    17    0   0   1   1   0   0   0   0       2
+    18    0   0   1   0   1   0   0   0       2
+    19    0   0   1   1   1   0   0   0       3
+    20    0   0   1   0   0   0   0   0       1
+    21    0   0   1   1   1   0   0   0       3
+    22    0   0   1   0   0   0   0   0       1
+    23    0   0   1   0   1   0   0   0       2
+    24    0   0   0   1   0   0   0   0       1
+    25    0   0   0   0   0   0   0   0       0
+    26    0   0   1   0   0   0   0   0       1
+    27    0   0   1   0   1   0   0   0       2
+    28    0   0   1   0   0   0   0   0       1
+    29    0   0   1   0   1   0   0   0       2
+    30    0   0   1   0   0   0   0   0       1
+    31    0   0   1   1   0   0   0   0       2
+    32    0   0   1   0   1   0   0   0       2
+    33    0   0   1   1   0   0   0   0       2
+    34    0   0   1   1   0   0   0   0       2
+    35    0   0   1   1   0   0   0   0       2
+    36    0   0   1   1   0   0   0   0       2
+    37    0   0   1   1   0   0   0   0       2
+    38    0   0   1   1   0   0   0   0       2
+    39    0   0   1   1   1   0   0   0       3
+    40    0   0   1   1   0   0   0   0       2
+    41    0   0   0   1   0   0   0   0       1
+    42    0   0   1   0   0   0   0   0       1
+    43    0   0   1   1   0   0   0   0       2
+    44    0   0   1   1   0   0   0   0       2
+    45    0   0   1   1   0   0   0   0       2
+    46    0   0   0   1   1   0   0   0       2
+    47    0   0   1   0   0   0   0   0       1
+    48    0   0   1   1   0   0   0   0       2
+    49    0   0   1   0   0   0   0   0       1
+    50    0   0   1   0   0   0   0   0       1
+    51    0   0   1   0   0   0   0   0       1
+    52    0   0   0   0   0   0   0   0       0
+    53    0   0   1   1   0   0   0   0       2
+    54    0   0   0   1   1   0   0   0       2
+    55    0   0   1   0   0   0   0   0       1
+    56    0   0   1   0   0   0   0   0       1
+    57    0   0   1   0   0   0   0   0       1
+    58    0   0   0   0   0   0   0   0       0
+    59    0   0   0   0   0   0   0   0       0
+    60    0   0   0   1   0   0   0   0       1
+    61    0   0   1   0   0   0   0   0       1
+    62    0   0   1   1   0   0   0   0       2
+    63    0   0   1   0   0   0   0   0       1
+    64    0   0   1   1   0   0   0   0       2
+    65    0   0   1   1   0   0   0   0       2
+    66    0   0   1   1   0   0   0   0       2
+    67    0   0   1   0   0   0   0   0       1
+    68    0   0   0   0   0   0   0   0       0
+    69    0   0   1   0   0   0   0   0       1
+    70    0   0   0   1   0   0   0   0       1
+    71    0   0   1   1   0   0   0   0       2
+    72    0   0   1   1   0   0   0   0       2
+    73    0   0   1   0   0   0   0   0       1
+    74    0   0   0   1   0   0   0   0       1
+    75    0   0   1   1   0   0   0   0       2
+    76    0   0   1   1   1   0   0   0       3
+    77    0   0   1   1   0   0   0   0       2
+    78    0   0   0   1   0   0   0   0       1
+    79    0   0   1   1   0   0   0   0       2
+    80    0   0   1   0   0   0   0   0       1
+    81    0   0   1   1   0   0   0   0       2
+    82    0   0   1   1   0   0   0   0       2
+    83    0   0   1   0   0   0   0   0       1
+    84    0   0   1   1   1   0   0   0       3
+    85    0   0   1   1   0   0   0   0       2
+    86    0   0   0   1   0   0   0   0       1
+    87    0   0   1   0   0   0   0   0       1
+    88    0   0   1   1   0   0   0   0       2
+    89    0   0   1   1   0   0   0   0       2
+    90    0   0   1   1   0   0   0   0       2
+    91    0   0   1   1   0   0   0   0       2
+    92    0   0   1   0   0   0   0   0       1
+    93    0   0   1   1   0   0   0   0       2
+    94    0   0   0   1   0   0   0   0       1
+    95    0   0   1   0   0   0   0   0       1
+    96    0   0   1   1   0   0   0   0       2
+    97    0   0   1   1   0   0   0   0       2
+    98    0   0   1   0   0   0   0   0       1
+    99    0   0   1   1   1   0   0   0       3
+   100    0   0   1   1   0   0   0   0       2
+
+ERROR RATE SUMMARY TABLE
+----------------------------------------------------------------------
+  Code Description                         Count    Rate Severity    
+  ------------------------------------------------------------------
+  E1   Factual Omission                        0  0.0000 NONE     
+  E2   Threshold Misapplication                0  0.0000 NONE     
+  E3   pLDDT Inversion                        84  0.8400 CRITICAL 
+  E4   Retrieval-Question Mismatch            51  0.5100 CRITICAL 
+  E5   Numeric Hallucination                  15  0.1500 MODERATE 
+  E6   Redundancy                              0  0.0000 NONE     
+  E7   Incomplete Answer                       0  0.0000 NONE     
+  E8   Confidence Miscalibration               0  0.0000 NONE     
+
+  Overall error flag rate : 0.1875  (150 flags / 800 possible)
+  Total error flags       : 150
+
+DISTRIBUTION: ERRORS PER QUESTION
+----------------------------------------------------------------------
+  0 errors :    6  (  6.0%)  ##
+  1 errors :   44  ( 44.0%)  #################
+  2 errors :   44  ( 44.0%)  #################
+  3 errors :    6  (  6.0%)  ##
+  4 errors :    0  (  0.0%)  
+  5 errors :    0  (  0.0%)  
+  6 errors :    0  (  0.0%)  
+  7 errors :    0  (  0.0%)  
+  8 errors :    0  (  0.0%)  
+
+TOP 5 MOST ERROR-PRONE QUESTIONS
+----------------------------------------------------------------------
+  Q 19  3 errors  [E3, E4, E5]
+       "Are certain amino acid compositions more responsive to symbo"
+  Q 21  3 errors  [E3, E4, E5]
+       "How does calibration affect AUROC compared to raw prediction"
+  Q 39  3 errors  [E3, E4, E5]
+       "Are prediction improvements uniform across all confidence in"
+  Q 76  3 errors  [E3, E4, E5]
+       "Are improvements larger for specific protein lengths?"
+  Q 84  3 errors  [E3, E4, E5]
+       "Are prediction errors reduced uniformly?"
+
+TOP 5 CLEANEST QUESTIONS (fewest errors)
+----------------------------------------------------------------------
+  Q 25  0 errors  [none]
+       "How does performance vary across different protein families?"
+  Q 52  0 errors  [none]
+       "How does the system perform on proteins with multiple IDRs?"
+  Q 58  0 errors  [none]
+       "Are improvements correlated with sequence conservation?"
+  Q 59  0 errors  [none]
+       "Does retrieval of structural data improve predictions?"
+  Q 68  0 errors  [none]
+       "How does performance change when excluding uncertain regions"
+
+DESCRIPTIVE STATISTICS: ERRORS PER QUESTION
+----------------------------------------------------------------------
+  Mean   : 1.5000
+  Std    : 0.7000
+  Median : 1.5000
+  Min    : 0
+  Max    : 3
+  Zero-error questions : 6 / 100  (6.0%)
+
+INTERPRETATION
+----------------------------------------------------------------------
+  E6 (Redundancy) is expected to be the most frequent error in
+  extractive fallback mode because the same KB passages are
+  retrieved repeatedly across questions, causing identical phrases
+  to appear in multiple answers and sometimes within one answer.
+
+  E4 (Retrieval-Question Mismatch) flags cases where BiomedBERT
+  retrieves semantically similar but question-mismatched passages.
+  This is the core weakness of dense retrieval without re-ranking.
+
+  E3 (pLDDT Inversion) should be near zero since the KB passages
+  correctly state pLDDT directionality. Any flags here indicate
+  a retrieval combination that creates an implicit contradiction.
+
+  E5 (Numeric Hallucination) should also be low since answers
+  are extracted directly from the knowledge base built from the
+  actual DisProt dataset statistics.
+
+  Loading BioMistral-7B would primarily reduce E4 (by generating
+  question-specific answers) and E6 (by synthesizing rather than
+  concatenating passages), at the cost of potentially increasing
+  E5 and E8 if the model generates rather than extracts facts.
+
+======================================================================
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================
