@@ -61,7 +61,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), based(0.003), 44(0.003), conservative(0.003)
+  Top shared terms  : exceed(0.007), cutoff(0.007), 44(0.003), based(0.003), fall(0.003), above(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -110,7 +110,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), based(0.003), 44(0.003), conservative(0.003)
+  Top shared terms  : exceed(0.007), cutoff(0.007), 44(0.003), based(0.003), fall(0.003), above(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -134,7 +134,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 31 unique terms
   Pred vocabulary   : 32 unique terms
 
-  Top shared terms  : window(0.054), noise(0.036), signal(0.018), sliding(0.018), size(0.018), scores(0.009)
+  Top shared terms  : window(0.054), noise(0.036), sliding(0.018), signal(0.018), size(0.018), preservation(0.009)
   In GT only        : idr, larger, smoothing, true, windows
   In pred only      : averaged, exceeds, if, length, lost, regions
 
@@ -159,7 +159,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), based(0.003), 44(0.003), conservative(0.003)
+  Top shared terms  : exceed(0.007), cutoff(0.007), 44(0.003), based(0.003), fall(0.003), above(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -183,7 +183,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 31 unique terms
   Pred vocabulary   : 32 unique terms
 
-  Top shared terms  : window(0.054), noise(0.036), signal(0.018), sliding(0.018), size(0.018), scores(0.009)
+  Top shared terms  : window(0.054), noise(0.036), sliding(0.018), signal(0.018), size(0.018), preservation(0.009)
   In GT only        : idr, larger, smoothing, true, windows
   In pred only      : averaged, exceeds, if, length, lost, regions
 
@@ -208,7 +208,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), based(0.003), 44(0.003), conservative(0.003)
+  Top shared terms  : exceed(0.007), cutoff(0.007), 44(0.003), based(0.003), fall(0.003), above(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -257,7 +257,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), based(0.003), 44(0.003), conservative(0.003)
+  Top shared terms  : exceed(0.007), cutoff(0.007), 44(0.003), based(0.003), fall(0.003), above(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -296,7 +296,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), based(0.003), 44(0.003), conservative(0.003)
+  Top shared terms  : exceed(0.007), cutoff(0.007), 44(0.003), based(0.003), fall(0.003), above(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -335,7 +335,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), based(0.003), 44(0.003), conservative(0.003)
+  Top shared terms  : exceed(0.007), cutoff(0.007), 44(0.003), based(0.003), fall(0.003), above(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -389,7 +389,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), based(0.003), 44(0.003), conservative(0.003)
+  Top shared terms  : exceed(0.007), cutoff(0.007), 44(0.003), based(0.003), fall(0.003), above(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -498,7 +498,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), based(0.003), 44(0.003), conservative(0.003)
+  Top shared terms  : exceed(0.007), cutoff(0.007), 44(0.003), based(0.003), fall(0.003), above(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -708,7 +708,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 27 unique terms
   Pred vocabulary   : 26 unique terms
 
-  Top shared terms  : structured(0.101), protein(0.050), co(0.025), domain(0.025), ordered(0.025), least(0.025)
+  Top shared terms  : structured(0.101), protein(0.050), 92(0.025), domain(0.025), occur(0.025), contain(0.025)
   In GT only        : labeling, same
   In pred only      : classifying
 
@@ -823,7 +823,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), based(0.003), 44(0.003), conservative(0.003)
+  Top shared terms  : exceed(0.007), cutoff(0.007), 44(0.003), based(0.003), fall(0.003), above(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -967,7 +967,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), based(0.003), 44(0.003), conservative(0.003)
+  Top shared terms  : exceed(0.007), cutoff(0.007), 44(0.003), based(0.003), fall(0.003), above(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -1076,7 +1076,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), based(0.003), 44(0.003), conservative(0.003)
+  Top shared terms  : exceed(0.007), cutoff(0.007), 44(0.003), based(0.003), fall(0.003), above(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -1130,7 +1130,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 31 unique terms
   Pred vocabulary   : 32 unique terms
 
-  Top shared terms  : window(0.054), noise(0.036), signal(0.018), sliding(0.018), size(0.018), scores(0.009)
+  Top shared terms  : window(0.054), noise(0.036), sliding(0.018), signal(0.018), size(0.018), preservation(0.009)
   In GT only        : idr, larger, smoothing, true, windows
   In pred only      : averaged, exceeds, if, length, lost, regions
 
@@ -1155,7 +1155,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), based(0.003), 44(0.003), conservative(0.003)
+  Top shared terms  : exceed(0.007), cutoff(0.007), 44(0.003), based(0.003), fall(0.003), above(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -1526,7 +1526,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), based(0.003), 44(0.003), conservative(0.003)
+  Top shared terms  : exceed(0.007), cutoff(0.007), 44(0.003), based(0.003), fall(0.003), above(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -1595,7 +1595,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), based(0.003), 44(0.003), conservative(0.003)
+  Top shared terms  : exceed(0.007), cutoff(0.007), 44(0.003), based(0.003), fall(0.003), above(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -1724,7 +1724,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), threshold(0.003), based(0.003), 44(0.003), conservative(0.003)
+  Top shared terms  : exceed(0.007), cutoff(0.007), 44(0.003), based(0.003), fall(0.003), above(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 

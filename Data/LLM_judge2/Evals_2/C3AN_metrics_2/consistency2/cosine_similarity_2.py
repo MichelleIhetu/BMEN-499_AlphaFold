@@ -24,7 +24,7 @@ What This Test Measures:
 Why Cosine Similarity Matters for RAG Evaluation:
     High inter-answer similarity signals that the RAG system is
     collapsing diverse questions into a narrow set of retrieved passages.
-    LLM Judge 1 (symbolic rules) should produce more discriminative
+    LLM Judge 2 (Vanilla RAG) (symbolic rules) should produce more discriminative
     answers because rules steer responses based on question type,
     whereas vanilla RAG relies solely on embedding similarity.
 
@@ -393,7 +393,7 @@ def write_report(results: dict, output_path: str):
             "Answers are highly similar across questions. The vanilla RAG "
             "pipeline retrieves heavily overlapping passage sets because "
             "BiomedBERT embeds disorder-related questions in a tight semantic "
-            "cluster. Symbolic rules (LLM Judge 1) would produce more "
+            "cluster. Symbolic rules (LLM Judge 2 (Vanilla RAG)) would produce more "
             "discriminative responses by applying question-specific reasoning."
         )
     elif m >= 0.70:
@@ -409,7 +409,7 @@ def write_report(results: dict, output_path: str):
         interp = (
             "Moderate similarity suggests partial answer recycling. Some "
             "question types are retrieving distinct passages while others "
-            "share content. The symbolic rules in LLM Judge 1 should "
+            "share content. The symbolic rules in LLM Judge 2 (Vanilla RAG) should "
             "further improve differentiation."
         )
     else:
@@ -589,7 +589,7 @@ def write_report(results: dict, output_path: str):
     )
     lines.append("")
     lines.append(
-        "  LLM Judge 1 addresses this through symbolic rules that:"
+        "  LLM Judge 2 (Vanilla RAG) addresses this through symbolic rules that:"
     )
     lines.append(
         "    (1) Route questions to rule-specific answer branches"
@@ -605,7 +605,7 @@ def write_report(results: dict, output_path: str):
     )
     lines.append("")
     lines.append(
-        "  Expected: LLM Judge 1 inter-answer cosine similarity should"
+        "  Expected: LLM Judge 2 (Vanilla RAG) inter-answer cosine similarity should"
     )
     lines.append(
         "  be significantly lower than LLM Judge 2, demonstrating that"

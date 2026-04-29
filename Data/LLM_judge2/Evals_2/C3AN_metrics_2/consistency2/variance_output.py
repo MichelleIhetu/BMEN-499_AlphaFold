@@ -20,7 +20,7 @@ What This Test Measures:
       - LOW meaningful content variance (answers say the same thing)
 
     This is a key diagnostic for comparing LLM Judge 2 (vanilla RAG)
-    against LLM Judge 1 (symbolic rules + calibration), where calibrated
+    against LLM Judge 2 (Vanilla RAG) (symbolic rules + calibration), where calibrated
     confidence scores should show healthier variance distributions.
 
 Variance Dimensions Tested:
@@ -402,7 +402,7 @@ def write_report(results: dict, predictions: list, output_path: str):
         score_interp = (
             "LOW -- retrieval scores are tightly compressed. The retriever "
             "shows minimal discrimination between questions. Symbolic rules "
-            "in LLM Judge 1 bypass this by applying biological constraints "
+            "in LLM Judge 2 (Vanilla RAG) bypass this by applying biological constraints "
             "independently of embedding similarity."
         )
     elif cv1 < 3.0:
@@ -768,7 +768,7 @@ def write_report(results: dict, predictions: list, output_path: str):
     )
     lines.append("")
     lines.append(
-        "  LLM Judge 1 (BiomedBERT + symbolic rules + calibration) addresses"
+        "  LLM Judge 2 (Vanilla RAG) (BiomedBERT + symbolic rules + calibration) addresses"
     )
     lines.append(
         "  these failures by routing answers through biological constraint"

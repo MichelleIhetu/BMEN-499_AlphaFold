@@ -11,7 +11,7 @@ WHAT IS LLM JUDGE 2 (VANILLA RAG)?
   BiomedBERT retrieves the most semantically similar DisProt
   knowledge base passages and concatenates them as the answer.
   No symbolic rules, no calibration -- pure neural retrieval.
-  Compare with LLM Judge 1 to measure impact of symbolic grounding.
+  Compare with LLM Judge 2 (Vanilla RAG) to measure impact of symbolic grounding.
 
 FIVE ERROR TYPES:
 ----------------------------------------------------------------------

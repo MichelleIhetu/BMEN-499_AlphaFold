@@ -112,7 +112,7 @@ GT_RULES = [
      lambda s: f"AlphaFold pLDDT scores below 50 strongly correlate with intrinsic disorder. DisProt experimentally confirms disorder in {s['total_proteins']:,} proteins. Regions annotated as disordered in DisProt consistently show pLDDT below 50 in AlphaFold predictions making it the most reliable computational signal."),
 ]
 
-LLM2_RULES = [
+LLM_RULES = [
     (["0.5","cutoff","disorder"],
      lambda s: f"The 0.5 disorder score threshold classifies protein regions as intrinsically disordered. Of {s['total_proteins']:,} DisProt proteins {s['pct_above_0.5']:.1f}% exceed this threshold with mean disorder score {s['mean_disorder']:.3f}. However {s['pct_above_0.3']:.1f}% exceed 0.3 meaning many true IDRs fall below 0.5 and are missed. Disorder scores between 0.3 and 0.5 define an ambiguous gray zone where proteins cannot be confidently classified without secondary validation."),
     (["short","residue"],
@@ -288,7 +288,7 @@ def evaluate(questions, stats):
     results = []
     for i, q in enumerate(questions, 1):
         gt   = get_answer(q, GT_RULES,   stats)
-        pred = get_answer(q, LLM2_RULES, stats)
+        pred = get_answer(q, LLM_RULES, stats)
         sc   = likert_score(q, pred, gt)
         results.append({
             "q_num":        i,
@@ -345,7 +345,7 @@ def write_results(results, stats):
     lines.append("  BiomedBERT retrieves the most semantically similar DisProt")
     lines.append("  knowledge base passages and concatenates them as the answer.")
     lines.append("  No symbolic rules, no calibration -- pure neural retrieval.")
-    lines.append("  Compare with LLM Judge 1 to see the value of symbolic grounding.")
+    lines.append("  Compare with LLM Judge 2 (Vanilla RAG) to see the value of symbolic grounding.")
     lines.append("")
     lines.append("LIKERT SCALE")
     lines.append("-" * 70)

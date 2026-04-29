@@ -13,7 +13,7 @@ WHAT IS LLM JUDGE 2 (VANILLA RAG)?
   each question and concatenates them as the answer.
   No symbolic rules, no calibration -- pure neural retrieval.
 
-  Compare with LLM Judge 1 (symbolic rules + calibration)
+  Compare with LLM Judge 2 (Vanilla RAG) (symbolic rules + calibration)
   to see whether symbolic grounding improves agreement.
 
 AGREEMENT DIMENSIONS

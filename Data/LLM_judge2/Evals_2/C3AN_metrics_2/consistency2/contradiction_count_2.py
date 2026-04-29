@@ -605,7 +605,7 @@ def write_report(results: dict, output_path: str):
     )
     lines.append("")
     lines.append(
-        "  LLM Judge 1 avoids this by applying hard biological rules that"
+        "  LLM Judge 2 (Vanilla RAG) avoids this by applying hard biological rules that"
     )
     lines.append(
         "  ground interpretations, resolve ambiguities, and prevent"
