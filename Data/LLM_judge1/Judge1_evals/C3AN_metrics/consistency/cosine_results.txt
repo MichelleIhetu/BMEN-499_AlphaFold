@@ -61,7 +61,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), conservative(0.003), threshold(0.003), used(0.003), range(0.003)
+  Top shared terms  : cutoff(0.007), exceed(0.007), conservative(0.003), range(0.003), commonly(0.003), based(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -85,7 +85,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 23 unique terms
   Pred vocabulary   : 26 unique terms
 
-  Top shared terms  : short(0.027), disordered(0.025), 10(0.018), shorter(0.018), regions(0.014), prediction(0.009)
+  Top shared terms  : short(0.027), disordered(0.025), shorter(0.018), 10(0.018), regions(0.014), prediction(0.009)
   In GT only        : confidence, drops, due, insufficient
   In pred only      : aa, difficult, lack, predict, reliably, sufficient, tools
 
@@ -110,7 +110,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), conservative(0.003), threshold(0.003), used(0.003), range(0.003)
+  Top shared terms  : cutoff(0.007), exceed(0.007), conservative(0.003), range(0.003), commonly(0.003), based(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -134,7 +134,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 31 unique terms
   Pred vocabulary   : 32 unique terms
 
-  Top shared terms  : window(0.054), noise(0.036), signal(0.018), size(0.018), sliding(0.018), averaging(0.009)
+  Top shared terms  : window(0.054), noise(0.036), size(0.018), signal(0.018), sliding(0.018), risk(0.009)
   In GT only        : idr, larger, smoothing, true, windows
   In pred only      : averaged, exceeds, if, length, lost, regions
 
@@ -159,7 +159,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), conservative(0.003), threshold(0.003), used(0.003), range(0.003)
+  Top shared terms  : cutoff(0.007), exceed(0.007), conservative(0.003), range(0.003), commonly(0.003), based(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -183,7 +183,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 31 unique terms
   Pred vocabulary   : 32 unique terms
 
-  Top shared terms  : window(0.054), noise(0.036), signal(0.018), size(0.018), sliding(0.018), averaging(0.009)
+  Top shared terms  : window(0.054), noise(0.036), size(0.018), signal(0.018), sliding(0.018), risk(0.009)
   In GT only        : idr, larger, smoothing, true, windows
   In pred only      : averaged, exceeds, if, length, lost, regions
 
@@ -208,7 +208,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), conservative(0.003), threshold(0.003), used(0.003), range(0.003)
+  Top shared terms  : cutoff(0.007), exceed(0.007), conservative(0.003), range(0.003), commonly(0.003), based(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -232,7 +232,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 23 unique terms
   Pred vocabulary   : 26 unique terms
 
-  Top shared terms  : short(0.027), disordered(0.025), 10(0.018), shorter(0.018), regions(0.014), prediction(0.009)
+  Top shared terms  : short(0.027), disordered(0.025), shorter(0.018), 10(0.018), regions(0.014), prediction(0.009)
   In GT only        : confidence, drops, due, insufficient
   In pred only      : aa, difficult, lack, predict, reliably, sufficient, tools
 
@@ -257,7 +257,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), conservative(0.003), threshold(0.003), used(0.003), range(0.003)
+  Top shared terms  : cutoff(0.007), exceed(0.007), conservative(0.003), range(0.003), commonly(0.003), based(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -281,7 +281,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -296,7 +296,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), conservative(0.003), threshold(0.003), used(0.003), range(0.003)
+  Top shared terms  : cutoff(0.007), exceed(0.007), conservative(0.003), range(0.003), commonly(0.003), based(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -320,7 +320,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -335,7 +335,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), conservative(0.003), threshold(0.003), used(0.003), range(0.003)
+  Top shared terms  : cutoff(0.007), exceed(0.007), conservative(0.003), range(0.003), commonly(0.003), based(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -359,7 +359,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -374,7 +374,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -389,7 +389,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), conservative(0.003), threshold(0.003), used(0.003), range(0.003)
+  Top shared terms  : cutoff(0.007), exceed(0.007), conservative(0.003), range(0.003), commonly(0.003), based(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -413,7 +413,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -428,7 +428,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 23 unique terms
   Pred vocabulary   : 26 unique terms
 
-  Top shared terms  : short(0.027), disordered(0.025), 10(0.018), shorter(0.018), regions(0.014), prediction(0.009)
+  Top shared terms  : short(0.027), disordered(0.025), shorter(0.018), 10(0.018), regions(0.014), prediction(0.009)
   In GT only        : confidence, drops, due, insufficient
   In pred only      : aa, difficult, lack, predict, reliably, sufficient, tools
 
@@ -453,7 +453,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -468,7 +468,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -483,7 +483,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -498,7 +498,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), conservative(0.003), threshold(0.003), used(0.003), range(0.003)
+  Top shared terms  : cutoff(0.007), exceed(0.007), conservative(0.003), range(0.003), commonly(0.003), based(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -522,7 +522,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -537,7 +537,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -552,7 +552,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -567,7 +567,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -582,7 +582,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -597,7 +597,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -633,7 +633,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -648,7 +648,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -663,7 +663,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -678,7 +678,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -693,7 +693,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -708,7 +708,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 27 unique terms
   Pred vocabulary   : 26 unique terms
 
-  Top shared terms  : structured(0.101), protein(0.050), least(0.025), co(0.025), domains(0.025), one(0.025)
+  Top shared terms  : structured(0.101), protein(0.050), frequently(0.025), pfam(0.025), rather(0.025), contain(0.025)
   In GT only        : labeling, same
   In pred only      : classifying
 
@@ -733,7 +733,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -748,7 +748,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -763,7 +763,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -778,7 +778,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -793,7 +793,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -808,7 +808,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -823,7 +823,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), conservative(0.003), threshold(0.003), used(0.003), range(0.003)
+  Top shared terms  : cutoff(0.007), exceed(0.007), conservative(0.003), range(0.003), commonly(0.003), based(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -847,7 +847,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -862,7 +862,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -877,7 +877,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -892,7 +892,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -907,7 +907,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -922,7 +922,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -937,7 +937,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -952,7 +952,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -967,7 +967,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), conservative(0.003), threshold(0.003), used(0.003), range(0.003)
+  Top shared terms  : cutoff(0.007), exceed(0.007), conservative(0.003), range(0.003), commonly(0.003), based(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -991,7 +991,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1006,7 +1006,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1021,7 +1021,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1036,7 +1036,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 23 unique terms
   Pred vocabulary   : 26 unique terms
 
-  Top shared terms  : short(0.027), disordered(0.025), 10(0.018), shorter(0.018), regions(0.014), prediction(0.009)
+  Top shared terms  : short(0.027), disordered(0.025), shorter(0.018), 10(0.018), regions(0.014), prediction(0.009)
   In GT only        : confidence, drops, due, insufficient
   In pred only      : aa, difficult, lack, predict, reliably, sufficient, tools
 
@@ -1061,7 +1061,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1076,7 +1076,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), conservative(0.003), threshold(0.003), used(0.003), range(0.003)
+  Top shared terms  : cutoff(0.007), exceed(0.007), conservative(0.003), range(0.003), commonly(0.003), based(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -1100,7 +1100,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1115,7 +1115,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1130,7 +1130,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 31 unique terms
   Pred vocabulary   : 32 unique terms
 
-  Top shared terms  : window(0.054), noise(0.036), signal(0.018), size(0.018), sliding(0.018), averaging(0.009)
+  Top shared terms  : window(0.054), noise(0.036), size(0.018), signal(0.018), sliding(0.018), risk(0.009)
   In GT only        : idr, larger, smoothing, true, windows
   In pred only      : averaged, exceeds, if, length, lost, regions
 
@@ -1155,7 +1155,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), conservative(0.003), threshold(0.003), used(0.003), range(0.003)
+  Top shared terms  : cutoff(0.007), exceed(0.007), conservative(0.003), range(0.003), commonly(0.003), based(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -1179,7 +1179,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 23 unique terms
   Pred vocabulary   : 26 unique terms
 
-  Top shared terms  : short(0.027), disordered(0.025), 10(0.018), shorter(0.018), regions(0.014), prediction(0.009)
+  Top shared terms  : short(0.027), disordered(0.025), shorter(0.018), 10(0.018), regions(0.014), prediction(0.009)
   In GT only        : confidence, drops, due, insufficient
   In pred only      : aa, difficult, lack, predict, reliably, sufficient, tools
 
@@ -1204,7 +1204,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 23 unique terms
   Pred vocabulary   : 26 unique terms
 
-  Top shared terms  : short(0.027), disordered(0.025), 10(0.018), shorter(0.018), regions(0.014), prediction(0.009)
+  Top shared terms  : short(0.027), disordered(0.025), shorter(0.018), 10(0.018), regions(0.014), prediction(0.009)
   In GT only        : confidence, drops, due, insufficient
   In pred only      : aa, difficult, lack, predict, reliably, sufficient, tools
 
@@ -1229,7 +1229,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1244,7 +1244,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1259,7 +1259,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1274,7 +1274,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1289,7 +1289,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1304,7 +1304,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1319,7 +1319,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1334,7 +1334,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1349,7 +1349,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1364,7 +1364,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1379,7 +1379,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1394,7 +1394,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1430,7 +1430,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1445,7 +1445,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1460,7 +1460,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1475,7 +1475,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1490,7 +1490,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : proteins(0.000), 13(0.000), 396(0.000), disorder(0.000), disprot(0.000)
+  Top shared terms  : proteins(0.000), 396(0.000), 13(0.000), disorder(0.000), disprot(0.000)
   In GT only        : 378, mean, summary
   In pred only      : 29, 44, above, based, commonly, conservative, cutoff, exceed
 
@@ -1511,7 +1511,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1526,7 +1526,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), conservative(0.003), threshold(0.003), used(0.003), range(0.003)
+  Top shared terms  : cutoff(0.007), exceed(0.007), conservative(0.003), range(0.003), commonly(0.003), based(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -1550,7 +1550,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1565,7 +1565,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1580,7 +1580,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1595,7 +1595,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), conservative(0.003), threshold(0.003), used(0.003), range(0.003)
+  Top shared terms  : cutoff(0.007), exceed(0.007), conservative(0.003), range(0.003), commonly(0.003), based(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -1619,7 +1619,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1634,7 +1634,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1649,7 +1649,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1664,7 +1664,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1679,7 +1679,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1694,7 +1694,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1709,7 +1709,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1724,7 +1724,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 29 unique terms
   Pred vocabulary   : 30 unique terms
 
-  Top shared terms  : exceed(0.007), cutoff(0.007), conservative(0.003), threshold(0.003), used(0.003), range(0.003)
+  Top shared terms  : cutoff(0.007), exceed(0.007), conservative(0.003), range(0.003), commonly(0.003), based(0.003)
   In GT only        : 378, content, entirely, gray, indicating, mean, mid, miss
   In pred only      : fully, missed, only, point, reliable, score, starting, true
 
@@ -1748,7 +1748,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1763,7 +1763,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1778,7 +1778,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1793,7 +1793,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
@@ -1808,7 +1808,7 @@ OVERALL RESULTS SUMMARY
   GT vocabulary     : 8 unique terms
   Pred vocabulary   : 8 unique terms
 
-  Top shared terms  : summary(0.002), 378(0.001), 13(0.000), 396(0.000), proteins(0.000), mean(0.000)
+  Top shared terms  : summary(0.002), 378(0.001), 396(0.000), 13(0.000), proteins(0.000), mean(0.000)
 
   GROUND TRUTH:
     DisProt summary 13,396 proteins mean disorder 0.378.
