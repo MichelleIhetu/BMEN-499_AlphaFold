@@ -23,6 +23,8 @@ import time
 import argparse
 from pathlib import Path
 from collections import defaultdict
+from biogpt_guardrail import run_guardrail, get_ground_truth
+
 
 # ── BioGPT (HuggingFace) ─────────────────────────────────
 try:

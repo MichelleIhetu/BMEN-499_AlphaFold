@@ -1,0 +1,3393 @@
+======================================================================
+  BMEN-499 AlphaFold -- BioGPT Guardrail System
+  Baseline : BioGPT (microsoft/biogpt)
+  Guard    : 5-Layer Hallucination Detection + GT Grounding
+  Dataset  : 13,396 DisProt proteins
+  Questions: 100
+======================================================================
+
+WHAT IS THE GUARDRAIL SYSTEM?
+----------------------------------------------------------------------
+  A guardrail validates BioGPT answers against DisProt ground
+  truth BEFORE they enter the evaluation pipeline.
+  This reduces hallucination risk in the baseline answers.
+
+  5 GUARDRAIL LAYERS:
+  Layer 1 -- NUMERIC GUARD
+    Checks BioGPT numbers against known DisProt statistics.
+    Tolerance: 10%. Flags ungrounded numbers.
+
+  Layer 2 -- HALLUCINATION GUARD
+    Checks ratio of BioGPT content not found in GT.
+    >60% ungrounded = HIGH risk, >40% = MEDIUM risk.
+
+  Layer 3 -- CONTRADICTION GUARD
+    Detects opposite directional words vs GT.
+    e.g. GT says 'reliable' but BioGPT says 'unreliable'.
+
+  Layer 4 -- DOMAIN TERM GUARD
+    Checks for missing biomedical terms present in GT.
+    Flags answers missing IDR, pLDDT, Pfam, etc.
+
+  Layer 5 -- CONFIDENCE GUARD
+    Checks answer length and question relevance.
+    <20 words = HIGH risk, <40 words = MEDIUM risk.
+
+  VERDICTS:
+    PASS  -- no issues or LOW only -- use BioGPT answer as-is
+    WARN  -- MEDIUM issues -- use with warning annotation
+    BLOCK -- HIGH issues  -- replace with GT fallback answer
+
+OVERALL GUARDRAIL RESULTS
+----------------------------------------------------------------------
+  PASS  :   0 questions (0.0%)
+  WARN  :   2 questions (2.0%)
+  BLOCK :  98 questions (98.0%)
+  Answers replaced with GT : 98
+  Mean hallucination risk  : 0.6165
+  Total issues detected    : 327
+
+  Issues by layer:
+    Layer 1 Numeric         [########..] 8 issues
+    Layer 2 Hallucination   [####################################################################################################] 100 issues
+    Layer 3 Contradiction   [..........] 0 issues
+    Layer 4 Domain Terms    [#########################] 25 issues
+    Layer 5 Confidence      [##################################################################################################################################################################################################] 194 issues
+
+  Issues by type:
+    HALLUCINATION        [####################################################################################################] 100 issues
+    LOW_CONFIDENCE       [####################################################################################################] 100 issues
+    LOW_RELEVANCE        [##############################################################################################] 94 issues
+    TERMINOLOGY          [#########################] 25 issues
+    NUMERIC              [########..] 8 issues
+
+======================================================================
+  QUESTION-BY-QUESTION GUARDRAIL REPORT
+======================================================================
+
+[Q1] Is a disorder score above 0.5 a reliable cutoff for calling a region disordered?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.4500
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  BIOGPT ORIGINAL ANSWER:
+    A disorder score above 0.5 is generally considered reliable for I
+    DR classification. Studies show approximately 29.1% of proteins e
+    xceed this threshold. However the exact cutoff may vary by predic
+    tor used.
+
+  FINAL ANSWER (after guardrail):
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 63.6% of BioGPT content not in GT. Ungrounded terms: approximately, classification, considered, exact, generally, however, idr, may
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (30 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+----------------------------------------------------------------------
+
+[Q2] Do confidence scores drop for IDRs shorter than 10 residues?
+  Verdict    : WARN  --  2 MEDIUM severity issues detected
+  Risk score : 0.3500
+  Replaced   : NO -- BioGPT answer kept
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  BIOGPT ORIGINAL ANSWER:
+    Short IDRs under 10 residues present challenges for prediction al
+    gorithms. The average disordered region is around 0 residues. Con
+    fidence scores typically decrease significantly for very short re
+    gions due to limited context.
+
+  FINAL ANSWER (after guardrail):
+    Short IDRs under 10 residues present challenges for prediction al
+    gorithms. The average disordered region is around 0 residues. Con
+    fidence scores typically decrease significantly for very short re
+    gions due to limited context. [GUARDRAIL WARNING: 2 issues flagge
+    d]
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | MEDIUM]
+      Issue : 47.8% of content ungrounded in GT.
+      Fix   : Warn and annotate answer with grounding caveat.
+    [Layer 4 | TERMINOLOGY | LOW]
+      Issue : Missing 4 domain terms: amino, disprot, sequence, annotated
+      Fix   : Consider adding missing terms for completeness.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (31 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+----------------------------------------------------------------------
+
+[Q3] Do proline and glycine-rich regions consistently score higher disorder confidence than average?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.5000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  BIOGPT ORIGINAL ANSWER:
+    Proline and glycine rich regions show elevated disorder scores. M
+    ean proline content is approximately 6.0% in disordered proteins.
+     These amino acids destabilize secondary structure elements throu
+    gh steric clashes.
+
+  FINAL ANSWER (after guardrail):
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 82.6% of BioGPT content not in GT. Ungrounded terms: acids, amino, approximately, clashes, destabilize, disordered, elements, elevated
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | LOW]
+      Issue : Missing 4 domain terms: idr, threshold, cutoff, disprot
+      Fix   : Consider adding missing terms for completeness.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (28 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+----------------------------------------------------------------------
+
+[Q4] Does applying a sliding window smooth out confidence scores without losing true IDR signal?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6500
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  BIOGPT ORIGINAL ANSWER:
+    A sliding window approach can smooth local fluctuations in disord
+    er scores. Window sizes of 5 to 9 residues are commonly used. How
+    ever excessively large windows may mask genuine short disordered 
+    regions in the sequence.
+
+  FINAL ANSWER (after guardrail):
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 1 | NUMERIC | MEDIUM]
+      Issue : Ungrounded numbers in BioGPT output: [5.0, 9.0]. Valid DisProt numbers include: [0.0, 0.38, 6.0, 7.0, 29.1, 44.2]
+      Fix   : Replace ungrounded numbers with DisProt values.
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 70.8% of BioGPT content not in GT. Ungrounded terms: approach, can, commonly, excessively, fluctuations, genuine, however, large
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | LOW]
+      Issue : Missing 3 domain terms: idr, amino, disprot
+      Fix   : Consider adding missing terms for completeness.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (34 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+----------------------------------------------------------------------
+
+[Q5] How far off are raw confidence scores from the true disorder rate in DisProt?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6500
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | LOW]
+      Issue : Missing 3 domain terms: idr, threshold, cutoff
+      Fix   : Consider adding missing terms for completeness.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 10% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q6] When a confidence score falls in the uncertain range (0.4–0.6), does applying a sliding window smooth it toward the correct label, and what window size does the literature support?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.8000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  BIOGPT ORIGINAL ANSWER:
+    A sliding window approach can smooth local fluctuations in disord
+    er scores. Window sizes of 5 to 9 residues are commonly used. How
+    ever excessively large windows may mask genuine short disordered 
+    regions in the sequence.
+
+  FINAL ANSWER (after guardrail):
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 1 | NUMERIC | MEDIUM]
+      Issue : Ungrounded numbers in BioGPT output: [5.0, 9.0]. Valid DisProt numbers include: [0.0, 0.38, 6.0, 7.0, 29.1, 44.2]
+      Fix   : Replace ungrounded numbers with DisProt values.
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 70.8% of BioGPT content not in GT. Ungrounded terms: approach, can, commonly, excessively, fluctuations, genuine, however, large
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | LOW]
+      Issue : Missing 3 domain terms: idr, amino, disprot
+      Fix   : Consider adding missing terms for completeness.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (34 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 17% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q7] How much do raw confidence scores overestimate or underestimate true disorder rates across DisProt?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6500
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | LOW]
+      Issue : Missing 3 domain terms: idr, threshold, cutoff
+      Fix   : Consider adding missing terms for completeness.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 8% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q8] After applying symbolic smoothing and isotonic calibration together, by how much does residue level F1 improve over raw scores, and is this improvement consistent with gains reported for similar post processing pipelines in the literature?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.9000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 1 | NUMERIC | MEDIUM]
+      Issue : Ungrounded numbers in BioGPT output: [13.0, 396.0]. Valid DisProt numbers include: [0.0, 0.38, 6.0, 7.0, 10.0, 29.1]
+      Fix   : Replace ungrounded numbers with DisProt values.
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 90.0% of BioGPT content not in GT. Ungrounded terms: 13, 396, catalogues, conditions, database, diverse, experimentally, functional
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | MEDIUM]
+      Issue : Missing 7 domain terms from GT: idr, residue, amino, region, sequence, confidence
+      Fix   : Inject missing terminology into BioGPT answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q9] What is the MAE between raw disorder confidence scores and DisProt ground truth labels, and how many standard deviations (Z-score) away from the mean prediction is each incorrectly labeled residue?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6500
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | LOW]
+      Issue : Missing 3 domain terms: idr, threshold, cutoff
+      Fix   : Consider adding missing terms for completeness.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 4% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q10] Do N-terminal, C-terminal, and internal IDRs show different MAE profiles, and are the Z-scores of prediction errors normally distributed within each positional group or skewed in a way that suggests a systematic bias?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q11] Does a neurosymbolic RAG system reduce variance in disorder confidence predictions compared to raw model outputs?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6500
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | LOW]
+      Issue : Missing 3 domain terms: idr, threshold, cutoff
+      Fix   : Consider adding missing terms for completeness.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q12] How does the precision-recall curve change after applying neurosymbolic reasoning?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q13] Does incorporating symbolic rules improve classification accuracy for borderline disorder regions?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6500
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | LOW]
+      Issue : Missing 3 domain terms: idr, threshold, cutoff
+      Fix   : Consider adding missing terms for completeness.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q14] What is the impact of neurosymbolic calibration on false positive rates in ordered regions?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q15] Does the neurosymbolic approach improve prediction consistency across homologous proteins?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 11% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q16] How sensitive are disorder predictions to the choice of retrieval documents in the RAG system?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6500
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | LOW]
+      Issue : Missing 3 domain terms: idr, threshold, cutoff
+      Fix   : Consider adding missing terms for completeness.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q17] Does contextual biological knowledge retrieved via RAG improve long IDR detection accuracy?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q18] How does performance differ between short and long IDRs after neurosymbolic processing?
+  Verdict    : WARN  --  3 MEDIUM severity issues detected
+  Risk score : 0.5000
+  Replaced   : NO -- BioGPT answer kept
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  BIOGPT ORIGINAL ANSWER:
+    Short IDRs under 10 residues present challenges for prediction al
+    gorithms. The average disordered region is around 0 residues. Con
+    fidence scores typically decrease significantly for very short re
+    gions due to limited context.
+
+  FINAL ANSWER (after guardrail):
+    Short IDRs under 10 residues present challenges for prediction al
+    gorithms. The average disordered region is around 0 residues. Con
+    fidence scores typically decrease significantly for very short re
+    gions due to limited context. [GUARDRAIL WARNING: 3 issues flagge
+    d]
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | MEDIUM]
+      Issue : 47.8% of content ungrounded in GT.
+      Fix   : Warn and annotate answer with grounding caveat.
+    [Layer 4 | TERMINOLOGY | LOW]
+      Issue : Missing 4 domain terms: amino, disprot, sequence, annotated
+      Fix   : Consider adding missing terms for completeness.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (31 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 18% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q19] Are certain amino acid compositions more responsive to symbolic correction rules?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q20] Does neurosymbolic reasoning reduce prediction noise in low-confidence regions?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q21] How does calibration affect AUROC compared to raw predictions?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q22] Does symbolic smoothing introduce bias toward overprediction of disorder?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6500
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | LOW]
+      Issue : Missing 3 domain terms: idr, threshold, cutoff
+      Fix   : Consider adding missing terms for completeness.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q23] What is the distribution of confidence score corrections applied by the neurosymbolic system?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q24] Does the system improve recall without sacrificing precision?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q25] How does performance vary across different protein families?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q26] Are improvements consistent across species in the DisProt dataset?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 17% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q27] Does the neurosymbolic model perform better on experimentally validated long IDRs?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.4500
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+----------------------------------------------------------------------
+
+[Q28] How does retrieval quality impact final prediction confidence?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q29] Are confidence score corrections correlated with sequence length?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q30] Does neurosymbolic reasoning improve predictions for low-complexity regions?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q31] How does entropy of predictions change after symbolic reasoning?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q32] Does the system reduce systematic bias in terminal regions?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q33] Are gains from neurosymbolic processing statistically significant?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q34] How does performance compare against baseline machine learning models?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q35] Does adding domain knowledge improve classification boundaries?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.8000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    92.6% of DisProt proteins contain at least one Pfam structured do
+    main alongside disordered regions. Structured domains and IDRs fr
+    equently co-occur in the same protein. Each region must be evalua
+    ted independently rather than labeling the whole protein as order
+    ed or disordered.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    92.6% of DisProt proteins contain at least one Pfam structured do
+    main alongside disordered regions. Structured domains and IDRs fr
+    equently co-occur in the same protein. Each region must be evalua
+    ted independently rather than labeling the whole protein as order
+    ed or disordered.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 1 | NUMERIC | MEDIUM]
+      Issue : Ungrounded numbers in BioGPT output: [13.0, 396.0]. Valid DisProt numbers include: [0.0, 0.38, 6.0, 7.0, 29.1, 44.2]
+      Fix   : Replace ungrounded numbers with DisProt values.
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 85.0% of BioGPT content not in GT. Ungrounded terms: 13, 396, catalogues, conditions, database, diverse, experimentally, functional
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | LOW]
+      Issue : Missing 3 domain terms: idr, pfam, region
+      Fix   : Consider adding missing terms for completeness.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q36] How robust is the model to noisy or incomplete retrieval data?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q37] Does the neurosymbolic system improve calibration curves?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q38] How does Brier score change after calibration?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q39] Are prediction improvements uniform across all confidence intervals?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q40] Does neurosymbolic reasoning improve interpretability of predictions?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q41] How does performance change when removing symbolic rules?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q42] Does the system better detect disordered binding regions?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6500
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | LOW]
+      Issue : Missing 3 domain terms: idr, threshold, cutoff
+      Fix   : Consider adding missing terms for completeness.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 14% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q43] Are certain motifs better recognized after symbolic processing?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q44] How does the system handle conflicting retrieved evidence?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q45] Does neurosymbolic reasoning reduce overfitting?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q46] What is the effect on Matthews Correlation Coefficient (MCC)?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q47] Does performance degrade on unseen protein structures?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q48] How does retrieval latency affect prediction quality?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q49] Does symbolic reasoning improve alignment with experimental annotations?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q50] Are prediction improvements localized or global across sequences?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q51] Does neurosymbolic RAG help identify disorder-to-order transitions?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6500
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | LOW]
+      Issue : Missing 3 domain terms: idr, threshold, cutoff
+      Fix   : Consider adding missing terms for completeness.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q52] How does the system perform on proteins with multiple IDRs?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 14% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q53] Does calibration reduce prediction skewness?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q54] Are confidence intervals narrower after processing?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q55] Does neurosymbolic reasoning improve classification of ambiguous residues?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.9000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 1 | NUMERIC | MEDIUM]
+      Issue : Ungrounded numbers in BioGPT output: [13.0, 396.0]. Valid DisProt numbers include: [0.0, 0.38, 6.0, 7.0, 10.0, 29.1]
+      Fix   : Replace ungrounded numbers with DisProt values.
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 90.0% of BioGPT content not in GT. Ungrounded terms: 13, 396, catalogues, conditions, database, diverse, experimentally, functional
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | MEDIUM]
+      Issue : Missing 7 domain terms from GT: idr, residue, amino, region, sequence, confidence
+      Fix   : Inject missing terminology into BioGPT answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q56] How does the system perform under cross-validation?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 14% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q57] Does it generalize across different disorder prediction tools?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6500
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | LOW]
+      Issue : Missing 3 domain terms: idr, threshold, cutoff
+      Fix   : Consider adding missing terms for completeness.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q58] Are improvements correlated with sequence conservation?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q59] Does retrieval of structural data improve predictions?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q60] How does performance change with different window sizes?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.8000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    Sliding window averaging smooths per-residue disorder scores to r
+    educe noise. The mean disordered region in DisProt is 0.0 amino a
+    cids. Windows larger than this mean risk smoothing out true short
+     IDR signal. Window size must balance noise reduction against sig
+    nal preservation.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 1 | NUMERIC | MEDIUM]
+      Issue : Ungrounded numbers in BioGPT output: [13.0, 396.0]. Valid DisProt numbers include: [0.0, 0.38, 6.0, 7.0, 29.1, 44.2]
+      Fix   : Replace ungrounded numbers with DisProt values.
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 90.0% of BioGPT content not in GT. Ungrounded terms: 13, 396, catalogues, conditions, database, diverse, experimentally, functional
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | LOW]
+      Issue : Missing 4 domain terms: idr, residue, amino, region
+      Fix   : Consider adding missing terms for completeness.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q61] Does neurosymbolic reasoning help detect functional disorder regions?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6500
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | LOW]
+      Issue : Missing 3 domain terms: idr, threshold, cutoff
+      Fix   : Consider adding missing terms for completeness.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 12% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q62] Are gains higher in specific residue compositions?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.9000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 1 | NUMERIC | MEDIUM]
+      Issue : Ungrounded numbers in BioGPT output: [13.0, 396.0]. Valid DisProt numbers include: [0.0, 0.38, 6.0, 7.0, 10.0, 29.1]
+      Fix   : Replace ungrounded numbers with DisProt values.
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 90.0% of BioGPT content not in GT. Ungrounded terms: 13, 396, catalogues, conditions, database, diverse, experimentally, functional
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | MEDIUM]
+      Issue : Missing 7 domain terms from GT: idr, residue, amino, region, sequence, confidence
+      Fix   : Inject missing terminology into BioGPT answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q63] Does the system improve classification of edge residues in IDRs?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.9000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    Of 0 annotated disordered regions in DisProt 0.0% are shorter tha
+    n 10 residues with a mean region length of 0.0 amino acids. Short
+     IDRs are underrepresented and prediction confidence drops for ve
+    ry short disordered stretches due to insufficient sequence contex
+    t.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 1 | NUMERIC | MEDIUM]
+      Issue : Ungrounded numbers in BioGPT output: [13.0, 396.0]. Valid DisProt numbers include: [0.0, 0.38, 6.0, 7.0, 10.0, 29.1]
+      Fix   : Replace ungrounded numbers with DisProt values.
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 90.0% of BioGPT content not in GT. Ungrounded terms: 13, 396, catalogues, conditions, database, diverse, experimentally, functional
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | MEDIUM]
+      Issue : Missing 7 domain terms from GT: idr, residue, amino, region, sequence, confidence
+      Fix   : Inject missing terminology into BioGPT answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q64] How does prediction confidence correlate with experimental uncertainty?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q65] Does neurosymbolic reasoning improve long-range sequence dependencies?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q66] Are improvements stable across random seeds?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.4500
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+----------------------------------------------------------------------
+
+[Q67] Does the system perform better on curated subsets of DisProt?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 14% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q68] How does performance change when excluding uncertain regions?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q69] Does neurosymbolic reasoning improve classification of rare IDRs?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q70] Are prediction gains dependent on dataset size?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q71] Does the system improve classification under imbalanced data?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 14% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q72] How does it perform on noisy annotations?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q73] Does symbolic reasoning reduce prediction drift?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q74] How does performance compare before and after normalization?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q75] Does neurosymbolic reasoning improve stability across runs?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q76] Are improvements larger for specific protein lengths?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q77] Does the system better align predictions with biological function?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q78] How does it handle missing sequence information?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q79] Does retrieval diversity impact performance?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q80] Are prediction improvements explainable through symbolic rules?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q81] Does neurosymbolic reasoning improve threshold selection?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q82] How does the system perform on synthetic datasets?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q83] Does calibration improve ranking of disorder scores?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6500
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | LOW]
+      Issue : Missing 3 domain terms: idr, threshold, cutoff
+      Fix   : Consider adding missing terms for completeness.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q84] Are prediction errors reduced uniformly?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q85] Does neurosymbolic reasoning improve classification confidence intervals?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q86] How does performance change with different retrieval strategies?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q87] Does the system improve detection of transient disorder?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6500
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | LOW]
+      Issue : Missing 3 domain terms: idr, threshold, cutoff
+      Fix   : Consider adding missing terms for completeness.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q88] Are gains consistent across evaluation metrics?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q89] Does neurosymbolic reasoning reduce model uncertainty?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q90] How does it perform under adversarial perturbations?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 17% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q91] Does the system improve robustness to sequence mutations?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q92] Are prediction improvements correlated with structural flexibility?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q93] Does neurosymbolic reasoning improve functional annotation alignment?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 14% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q94] How does performance compare across different datasets?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q95] Does the system improve classification of partially disordered regions?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6500
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    Based on 13,396 DisProt proteins 29.1% have disorder content abov
+    e 0.5 with a mean of 0.378. A 0.5 cutoff is commonly used but con
+    servative. 44.2% exceed 0.3 indicating many IDRs fall in the mid-
+    range gray zone that a strict 0.5 threshold would miss entirely.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 4 | TERMINOLOGY | LOW]
+      Issue : Missing 3 domain terms: idr, threshold, cutoff
+      Fix   : Consider adding missing terms for completeness.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 14% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q96] Are gains consistent across evaluation folds?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q97] Does neurosymbolic reasoning improve model calibration slope?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q98] How does the system perform on edge-case proteins?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 14% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q99] Does neurosymbolic reasoning reduce prediction bias?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+[Q100] Are overall improvements sufficient to justify added system complexity?
+  Verdict    : BLOCK  --  1 HIGH severity issues detected
+  Risk score : 0.6000
+  Replaced   : YES -- GT fallback used
+
+  GROUND TRUTH:
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  BIOGPT ORIGINAL ANSWER:
+    Intrinsically disordered proteins lack stable tertiary structure 
+    under physiological conditions. The DisProt database catalogues 1
+    3,396 experimentally validated disordered proteins with diverse f
+    unctional roles.
+
+  FINAL ANSWER (after guardrail):
+    DisProt dataset summary: 13,396 proteins, mean disorder=0.378, me
+    an region length=0.0 aa.
+
+  GUARDRAIL ISSUES DETECTED:
+    [Layer 2 | HALLUCINATION | HIGH]
+      Issue : 80.0% of BioGPT content not in GT. Ungrounded terms: catalogues, conditions, database, disordered, diverse, experimentally, functional, intrinsically
+      Fix   : Block and replace with ground truth answer.
+    [Layer 5 | LOW_CONFIDENCE | MEDIUM]
+      Issue : Answer is short (23 words). May lack sufficient detail.
+      Fix   : Warn and supplement with GT information.
+    [Layer 5 | LOW_RELEVANCE | MEDIUM]
+      Issue : Only 0% of question keywords in answer. Answer may be off-topic.
+      Fix   : Warn and flag for manual review.
+----------------------------------------------------------------------
+
+  HOW TO INTEGRATE WITH BIOGPT PIPELINE
+----------------------------------------------------------------------
+  In groundtruth_answers.py or qa_pipeline.py, wrap
+  BioGPT output with the guardrail before evaluation:
+
+  from biogpt_guardrail import run_guardrail, get_ground_truth
+
+  # After BioGPT generates answer:
+  gt     = get_ground_truth(question, stats)
+  result = run_guardrail(question, biogpt_answer, gt, stats)
+
+  # Use guardrailed answer instead of raw BioGPT output:
+  safe_answer = result['final_answer']
+  verdict     = result['verdict']  # PASS / WARN / BLOCK
+  risk        = result['risk_score']
+
+======================================================================
+  END OF GUARDRAIL REPORT
+  PASS: 0 | WARN: 2 | BLOCK: 98 | Replaced: 98 | Mean risk: 0.6165
+  Project: BMEN-499 Independent Research -- Michelle Ihetu, USC
+======================================================================

@@ -1,0 +1,27 @@
+$env:PYTHONIOENCODING="utf-8"
+$DISPROT = "Data\Baseline\DisProt_ProteinData.json"
+$QA      = "Data\QA_Dataset.json"
+
+python "Data\LLM_judge1\Judge1_evals\C3AN_metrics\consistency\naur_llm1.py" --disprot $DISPROT --qa $QA
+python "Data\LLM_judge1\Judge1_evals\C3AN_metrics\explanability\agreement_score.py" --disprot $DISPROT --qa $QA
+python "Data\LLM_judge1\Judge1_evals\C3AN_metrics\explanability\likert_score1.py" --disprot $DISPROT --qa $QA
+python "Data\LLM_judge1\Judge1_evals\C3AN_metrics\consistency\contradiction_count.py" --disprot $DISPROT --qa $QA
+python "Data\LLM_judge1\Judge1_evals\C3AN_metrics\consistency\cosine_similarity1.py" --disprot $DISPROT --qa $QA
+python "Data\LLM_judge1\Judge1_evals\C3AN_metrics\consistency\output_variance1.py" --disprot $DISPROT --qa $QA
+python "Data\LLM_judge1\Judge1_evals\C3AN_metrics\relability\error_rate1.py" --disprot $DISPROT --qa $QA
+python "Data\LLM_judge1\Judge1_evals\C3AN_metrics\relability\preformance_drop1.py" --disprot $DISPROT --qa $QA
+python "Data\LLM_judge1\Judge1_evals\Custom_Evals\bert_score1.py" --disprot $DISPROT --qa $QA
+python "Data\LLM_judge1\Judge1_evals\Custom_Evals\fact_score1.py" --disprot $DISPROT --qa $QA
+python "Data\LLM_judge1\Judge1_evals\Custom_Evals\K_pass_test1\K_pass_test_a.py" --disprot $DISPROT --qa $QA
+python "Data\LLM_judge1\Judge1_evals\Custom_Evals\K_pass_test1\K_pass_test_b.py" --disprot $DISPROT --qa $QA
+python "Data\LLM_judge1\Judge1_evals\Custom_Evals\K_pass_test1\K_pass_test_c.py" --disprot $DISPROT --qa $QA
+python "Data\LLM_judge1\Judge1_evals\Custom_Evals\K_pass_test1\K_pass_test_d.py" --disprot $DISPROT --qa $QA
+python "Data\LLM_judge1\Judge1_evals\Custom_Evals\K_pass_test1\K_pass_test_e.py" --disprot $DISPROT --qa $QA
+python "Data\LLM_judge2\Evals_2\C3AN_metrics_2\explanability2\agreement_score_2.py" --disprot $DISPROT --qa $QA
+python "Data\LLM_judge2\Evals_2\C3AN_metrics_2\explanability2\likert_score_2.py" --disprot $DISPROT --qa $QA
+python "Data\LLM_judge2\Evals_2\C3AN_metrics_2\relability2\error_rate2.py" --disprot $DISPROT --qa $QA
+python "Data\LLM_judge2\Evals_2\C3AN_metrics_2\relability2\performance_drop2.py" --disprot $DISPROT --qa $QA
+python "Data\LLM_judge2\Evals_2\Custom Evals\BERT_score2.py" --disprot $DISPROT --qa $QA
+python "Data\LLM_judge2\Evals_2\Custom Evals\fact_score2.py" --disprot $DISPROT --qa $QA
+
+Write-Host "All evaluations complete."
