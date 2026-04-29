@@ -1,0 +1,47 @@
+======================================================================
+  BMEN-499 AlphaFold -- K-Fold Validation: L3 MODERATE
+  K=5  |  Threshold=0.5  |  MinRegion=10 aa
+  Dataset: 13,396 DisProt proteins  |  Seed: 42
+======================================================================
+
+STRICTNESS LEVEL 3 -- MODERATE
+----------------------------------------------------------------------
+  Disorder threshold : 0.50  (canonical IDR benchmark cutoff)
+  Min region length  : 10 aa (standard minimum IDR length)
+  Calibration        : Z-score normalization per training fold
+  Split strategy     : Stratified by disorder score quartile
+  Extra metric       : MCC (Matthews Correlation Coefficient)
+
+PER-FOLD RESULTS
+----------------------------------------------------------------------
+  Fold        Acc     Prec      Rec       F1      MCC      mu   sigma  PosRate
+  --------------------------------------------------------------------
+  1        0.6996   0.0000   0.0000   0.0000   0.0000  0.3778  0.3330   0.0000
+  2        0.7090   0.0000   0.0000   0.0000   0.0000  0.3773  0.3318   0.0000
+  3        0.7127   0.0000   0.0000   0.0000   0.0000  0.3780  0.3327   0.0000
+  4        0.7119   0.0000   0.0000   0.0000   0.0000  0.3775  0.3324   0.0000
+  5        0.7055   0.0000   0.0000   0.0000   0.0000  0.3774  0.3319   0.0000
+
+AGGREGATE SUMMARY
+----------------------------------------------------------------------
+  Mean Accuracy  : 0.7077  (+/- 0.0048)
+  Mean Precision : 0.0000  (+/- 0.0000)
+  Mean Recall    : 0.0000  (+/- 0.0000)
+  Mean F1        : 0.0000  (+/- 0.0000)
+  Mean MCC       : 0.0000  (+/- 0.0000)
+
+CONFUSION MATRIX TOTALS (across all folds)
+----------------------------------------------------------------------
+  TP=      0  FP=  3,915  TN=  9,481  FN=      0
+
+INTERPRETATION
+----------------------------------------------------------------------
+  L3 Moderate uses the canonical 0.50 threshold adopted by
+  most IDR benchmarks (e.g., CAID). Stratified splitting ensures
+  each fold has a realistic disorder score distribution.
+  MCC is the most balanced metric for imbalanced datasets.
+  Use this as the primary reference fold configuration.
+
+======================================================================
+  Project: BMEN-499 -- Michelle Ihetu, USC
+======================================================================
